@@ -1,0 +1,3277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+            <s:element name="GetActivityLogByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="startDate" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="endDate" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="logModule" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="logAction" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="logInfo" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetActivityLogByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetActivityLogByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertActivityLog">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="logModule" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="logAction" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="logInfo" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertActivityLogResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertActivityLogResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetSitesByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="siteName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="ldapHost" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="searchBase" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="webServicesHTTP" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="replicatedWebServicesHTTP" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="remoteOnReplication" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isMainSite" nillable="true" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetSitesByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetSitesByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetSitesAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetSitesAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetSitesAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertSite">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="siteName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="ldapHost" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="searchBase" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="webServicesHTTP" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="replicatedWebServicesHTTP" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="remoteOnReplication" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isMainSite" type="s:boolean" />
+                        <s:element minOccurs="0" maxOccurs="1" name="allowedSitePKIDList" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertSiteResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertSiteResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertSites">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="sitesData" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertSitesResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertSitesResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSite">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="siteName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="ldapHost" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="searchBase" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="webServicesHTTP" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="replicatedWebServicesHTTP" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="remoteOnReplication" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isMainSite" type="s:boolean" />
+                        <s:element minOccurs="0" maxOccurs="1" name="allowedSitePKIDList" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSiteResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateSiteResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSites">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="sitesData" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSitesResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateSitesResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="SynchronizeSitesNSiteAllowed">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="sitesData" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="SynchronizeSitesNSiteAllowedResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="SynchronizeSitesNSiteAllowedResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteSite">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteSiteResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteSiteResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateAllowedSitePKIDListByName">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="sitesDS">
+                        </s:element>
+                        <s:element minOccurs="1" maxOccurs="1" name="acceptChanges" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateAllowedSitePKIDListByNameResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="sitesDS" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetSystemSettingAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetSystemSettingAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetSystemSettingAllResult" /> 
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertSystemSetting">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="sitePKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="siteName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="localWebServiceURL" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="centralWebServiceURL" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="planFilePath" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailboxPath" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="smtpMailServer" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailAccount" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailAccountLogin" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailAccountPassword" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="domainName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="displayName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="portNumber" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="lowQtyIntervalMins" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="emailStartTime" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="alertLowQtyEmailList" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="expiryNotifyStartTime" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="expiryIntervalMins" nillable="true" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertSystemSettingResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertSystemSettingResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSystemSetting">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="sitePKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="siteName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="localWebServiceURL" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="centralWebServiceURL" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="planFilePath" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailboxPath" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="smtpMailServer" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailAccount" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailAccountLogin" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="mailAccountPassword" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="domainName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="displayName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="portNumber" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="lowQtyIntervalMins" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="emailStartTime" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="alertLowQtyEmailList" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="expiryNotifyStartTime" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="expiryIntervalMins" nillable="true" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSystemSettingResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateSystemSettingResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSystemSettings">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="systemSettingData" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateSystemSettingsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateSystemSettingsResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetUserAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetUserAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetUserAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetUserByUserID">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetUserByUserIDResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetUserByUserIDResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetUserByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="ondexID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="role" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="status" nillable="true" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetUserByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetUserByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertUser">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="ondexID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="userRole" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertUserResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertUserResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateUser">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="ondexID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="userRole" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="resetPass" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateUserResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateUserResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateUserPassword">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="oldUserID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="oldPassword" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="newUserID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="newPassword" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateUserPasswordResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateUserPasswordResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteUser">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteUserResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteUserResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemByPKID">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemByPKIDResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetItemByPKIDResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="onHandQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="status" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unit" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="rack" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="shelf" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="model" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="equipmentType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="stressType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isCritical" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isConsumeable" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="cardType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibCardPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="checkAlert" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemStatus" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="cdarsStatus" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="expiryB4Day" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="expiryStartDate" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="expiryEndDate" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="excludeScrapped" nillable="true" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetItemByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemTransactionByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="startDateTime" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="endDateTime" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="onHandQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="status" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unit" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="rack" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="shelf" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="model" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="equipmentType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="stressType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isCritical" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isConsumeable" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="cardType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibCardPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="checkAlert" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemStatus" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="cdarsStatus" nillable="true" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemTransactionByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetItemTransactionByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetEffortNBenefitByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="onHandQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="status" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unit" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="rack" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="shelf" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="model" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="equipmentType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="stressType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isCritical" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isConsumeable" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="cardType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibCardPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="checkAlert" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemStatus" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="cdarsStatus" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="startDateTime" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="endDateTime" nillable="true" type="s:dateTime" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetEffortNBenefitByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetEffortNBenefitByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemTypeAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetItemTypeAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetItemTypeAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetCardTypeAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetCardTypeAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetCardTypeAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetItemAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetItemAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetItemAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertItem">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="itemID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="onHandQty" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="prodQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="repairQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="otherQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="quarantineQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="externalCleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="externalRecleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="internalCleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="internalRecleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="storageFactoryQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unit" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="unitCost" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="0" maxOccurs="1" name="rack" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="shelf" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="model" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="equipmentType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="stressType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isCritical" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isConsumeable" type="s:boolean" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="cardType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibCardPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="downtimeValue" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="0" maxOccurs="1" name="downtimeUnit" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="implementationCost" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="manpowerValue" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="0" maxOccurs="1" name="manpowerUnit" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="complexityScore" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="expirationDate" nillable="true" type="s:dateTime" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertItemResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertItemResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateItem">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemID" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemName" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="onHandQty" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="prodQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="repairQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="otherQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="quarantineQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="externalCleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="externalRecleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="internalCleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="internalRecleaningQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="storageFactoryQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unit" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="unitCost" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="0" maxOccurs="1" name="rack" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="shelf" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="model" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="equipmentType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="stressType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isCritical" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isConsumeable" type="s:boolean" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="cardType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="bibCardPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemStatus" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="cdarsStatus" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="downtimeValue" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="0" maxOccurs="1" name="downtimeUnit" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="implementationCost" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="manpowerValue" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="0" maxOccurs="1" name="manpowerUnit" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="complexityScore" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="expirationDate" nillable="true" type="s:dateTime" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateItemResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateItemResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateItemStatus">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemID" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemStatus" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateItemStatusResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateItemStatusResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateCDARSStatus">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemID" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="cdarsStatus" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateCDARSStatusResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateCDARSStatusResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteItem">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="forceDelete" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteItemResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteItemResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DisposeItem">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DisposeItemResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DisposeItemResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetRackAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetRackAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetRackAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertRack">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertRackResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertRackResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteRack">
+                <s:complexType />
+            </s:element>
+            <s:element name="DeleteRackResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteRackResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTransactionByPKID">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTransactionByPKIDResponse" >
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTransactionByPKIDResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTransactionByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="startDateTime" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="endDateTime" nillable="true" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemsPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="transType" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="transQty" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="rack" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="shelf" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="model" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="equipmentType" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="stressType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="status" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isCritical" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="isConsumeable" nillable="true" type="s:boolean" />
+                        <s:element minOccurs="1" maxOccurs="1" name="checkAlert" nillable="true" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTransactionByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTransactionByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetTransactionAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetTransactionAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetTransactionAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertTransaction">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="dateTime" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemsPKID" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="transType" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="transQty" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertTransactionResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertTransactionResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateTransaction">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="dateTime" type="s:dateTime" />
+                        <s:element minOccurs="1" maxOccurs="1" name="itemsPKID" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="transType" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="transQty" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="remarks" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateTransactionResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateTransactionResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteTransaction">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteTransactionResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteTransactionResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoreNDetailsAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetScoreNDetailsAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetScoreNDetailsAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoreNDetailsByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="scorePKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreCategory" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreDescription" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="scoreDetailsPKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="description" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minLimit" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxLimit" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="scoreValue" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unitMeasure" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoreNDetailsByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetScoreNDetailsByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoreNDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoreNDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertScoreNDetailsResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoreNDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoreNDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateScoreNDetailsResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoreNDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoreNDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteScoreNDetailsResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoresAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetScoresAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetScoresAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoresByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreCategory" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreDescription" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoresByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetScoresByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScore">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreCategory" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreDescription" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoreResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertScoreResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScores">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoresResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertScoresResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScore">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreCategory" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreDescription" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoreResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateScoreResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScores">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoresResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateScoresResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScore">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoreResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteScoreResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScores">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoresResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteScoresResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoreDetailsAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetScoreDetailsAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetScoreDetailsAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoreDetailsByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="1" maxOccurs="1" name="scorePKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreCategory" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreName" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="scoreDescription" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="description" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minLimit" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxLimit" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="scoreValue" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unitMeasure" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetScoreDetailsByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetScoreDetailsByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoreDetail">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="scorePKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="description" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minLimit" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxLimit" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="scoreValue" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unitMeasure" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoreDetailResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertScoreDetailResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoreDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertScoreDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertScoreDetailsResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoreDetail">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="scorePKID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="description" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="minLimit" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="maxLimit" nillable="true" type="s:decimal" />
+                        <s:element minOccurs="1" maxOccurs="1" name="scoreValue" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="unitMeasure" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoreDetailResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateScoreDetailResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoreDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateScoreDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateScoreDetailsResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoreDetail">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoreDetailResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteScoreDetailResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoreDetails">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteScoreDetailsResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteScoreDetailsResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetExpiryNoticeAll">
+                <s:complexType />
+            </s:element>
+            <s:element name="GetExpiryNoticeAllResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetExpiryNoticeAllResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetExpiryNoticeByParam">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" nillable="true" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="emailB4Day" nillable="true" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="GetExpiryNoticeByParamResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="GetExpiryNoticeByParamResult" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertExpiryNotice">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="emailB4Day" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userPKIDList" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertExpiryNoticeResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertExpiryNoticeResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertExpiryNoticeData">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="data" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="InsertExpiryNoticeDataResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="InsertExpiryNoticeDataResult" type="s:int" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateExpiryNotice">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                        <s:element minOccurs="0" maxOccurs="1" name="itemType" type="s:string" />
+                        <s:element minOccurs="1" maxOccurs="1" name="emailB4Day" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="userPKIDList" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UpdateExpiryNoticeResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="UpdateExpiryNoticeResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteExpiryNotice">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="pkID" type="s:int" />
+                        <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="DeleteExpiryNoticeResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="1" maxOccurs="1" name="DeleteExpiryNoticeResult" type="s:boolean" />
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:schema>
+    </wsdl:types>
+    <wsdl:message name="GetActivityLogByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetActivityLogByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetActivityLogByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetActivityLogByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertActivityLogSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertActivityLog" />
+    </wsdl:message>
+    <wsdl:message name="InsertActivityLogSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertActivityLogResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetSitesByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetSitesByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetSitesByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetSitesByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetSitesAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetSitesAll" />
+    </wsdl:message>
+    <wsdl:message name="GetSitesAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetSitesAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertSiteSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertSite" />
+    </wsdl:message>
+    <wsdl:message name="InsertSiteSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertSiteResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertSitesSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertSites" />
+    </wsdl:message>
+    <wsdl:message name="InsertSitesSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertSitesResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSiteSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateSite" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSiteSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateSiteResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSitesSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateSites" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSitesSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateSitesResponse" />
+    </wsdl:message>
+    <wsdl:message name="SynchronizeSitesNSiteAllowedSoapIn">
+        <wsdl:part name="parameters" element="tns:SynchronizeSitesNSiteAllowed" />
+    </wsdl:message>
+    <wsdl:message name="SynchronizeSitesNSiteAllowedSoapOut">
+        <wsdl:part name="parameters" element="tns:SynchronizeSitesNSiteAllowedResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteSiteSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteSite" />
+    </wsdl:message>
+    <wsdl:message name="DeleteSiteSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteSiteResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateAllowedSitePKIDListByNameSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateAllowedSitePKIDListByName" />
+    </wsdl:message>
+    <wsdl:message name="UpdateAllowedSitePKIDListByNameSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateAllowedSitePKIDListByNameResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetSystemSettingAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetSystemSettingAll" />
+    </wsdl:message>
+    <wsdl:message name="GetSystemSettingAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetSystemSettingAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertSystemSettingSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertSystemSetting" />
+    </wsdl:message>
+    <wsdl:message name="InsertSystemSettingSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertSystemSettingResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSystemSettingSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateSystemSetting" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSystemSettingSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateSystemSettingResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSystemSettingsSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateSystemSettings" />
+    </wsdl:message>
+    <wsdl:message name="UpdateSystemSettingsSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateSystemSettingsResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetUserAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetUserAll" />
+    </wsdl:message>
+    <wsdl:message name="GetUserAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetUserAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetUserByUserIDSoapIn">
+        <wsdl:part name="parameters" element="tns:GetUserByUserID" />
+    </wsdl:message>
+    <wsdl:message name="GetUserByUserIDSoapOut">
+        <wsdl:part name="parameters" element="tns:GetUserByUserIDResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetUserByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetUserByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetUserByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetUserByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertUserSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertUser" />
+    </wsdl:message>
+    <wsdl:message name="InsertUserSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertUserResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateUserSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateUser" />
+    </wsdl:message>
+    <wsdl:message name="UpdateUserSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateUserResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateUserPasswordSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateUserPassword" />
+    </wsdl:message>
+    <wsdl:message name="UpdateUserPasswordSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateUserPasswordResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteUserSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteUser" />
+    </wsdl:message>
+    <wsdl:message name="DeleteUserSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteUserResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetItemByPKIDSoapIn">
+        <wsdl:part name="parameters" element="tns:GetItemByPKID" />
+    </wsdl:message>
+    <wsdl:message name="GetItemByPKIDSoapOut">
+        <wsdl:part name="parameters" element="tns:GetItemByPKIDResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetItemByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetItemByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetItemByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetItemByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetItemTransactionByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetItemTransactionByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetItemTransactionByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetItemTransactionByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetEffortNBenefitByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetEffortNBenefitByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetEffortNBenefitByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetEffortNBenefitByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetItemTypeAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetItemTypeAll" />
+    </wsdl:message>
+    <wsdl:message name="GetItemTypeAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetItemTypeAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetCardTypeAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetCardTypeAll" />
+    </wsdl:message>
+    <wsdl:message name="GetCardTypeAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetCardTypeAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetItemAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetItemAll" />
+    </wsdl:message>
+    <wsdl:message name="GetItemAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetItemAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertItemSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertItem" />
+    </wsdl:message>
+    <wsdl:message name="InsertItemSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertItemResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateItemSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateItem" />
+    </wsdl:message>
+    <wsdl:message name="UpdateItemSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateItemResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateItemStatusSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateItemStatus" />
+    </wsdl:message>
+    <wsdl:message name="UpdateItemStatusSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateItemStatusResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateCDARSStatusSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateCDARSStatus" />
+    </wsdl:message>
+    <wsdl:message name="UpdateCDARSStatusSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateCDARSStatusResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteItemSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteItem" />
+    </wsdl:message>
+    <wsdl:message name="DeleteItemSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteItemResponse" />
+    </wsdl:message>
+    <wsdl:message name="DisposeItemSoapIn">
+        <wsdl:part name="parameters" element="tns:DisposeItem" />
+    </wsdl:message>
+    <wsdl:message name="DisposeItemSoapOut">
+        <wsdl:part name="parameters" element="tns:DisposeItemResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetRackAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetRackAll" />
+    </wsdl:message>
+    <wsdl:message name="GetRackAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetRackAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertRackSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertRack" />
+    </wsdl:message>
+    <wsdl:message name="InsertRackSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertRackResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteRackSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteRack" />
+    </wsdl:message>
+    <wsdl:message name="DeleteRackSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteRackResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetTransactionByPKIDSoapIn">
+        <wsdl:part name="parameters" element="tns:GetTransactionByPKID" />
+    </wsdl:message>
+    <wsdl:message name="GetTransactionByPKIDSoapOut">
+        <wsdl:part name="parameters" element="tns:GetTransactionByPKIDResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetTransactionByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetTransactionByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetTransactionByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetTransactionByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetTransactionAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetTransactionAll" />
+    </wsdl:message>
+    <wsdl:message name="GetTransactionAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetTransactionAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertTransactionSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertTransaction" />
+    </wsdl:message>
+    <wsdl:message name="InsertTransactionSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertTransactionResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateTransactionSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateTransaction" />
+    </wsdl:message>
+    <wsdl:message name="UpdateTransactionSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateTransactionResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteTransactionSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteTransaction" />
+    </wsdl:message>
+    <wsdl:message name="DeleteTransactionSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteTransactionResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreNDetailsAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetScoreNDetailsAll" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreNDetailsAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetScoreNDetailsAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreNDetailsByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetScoreNDetailsByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreNDetailsByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetScoreNDetailsByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreNDetailsSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertScoreNDetails" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreNDetailsSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertScoreNDetailsResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreNDetailsSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateScoreNDetails" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreNDetailsSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateScoreNDetailsResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreNDetailsSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteScoreNDetails" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreNDetailsSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteScoreNDetailsResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetScoresAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetScoresAll" />
+    </wsdl:message>
+    <wsdl:message name="GetScoresAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetScoresAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetScoresByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetScoresByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetScoresByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetScoresByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertScore" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertScoreResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoresSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertScores" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoresSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertScoresResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateScore" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateScoreResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoresSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateScores" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoresSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateScoresResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteScore" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteScoreResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoresSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteScores" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoresSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteScoresResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreDetailsAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetScoreDetailsAll" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreDetailsAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetScoreDetailsAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreDetailsByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetScoreDetailsByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetScoreDetailsByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetScoreDetailsByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreDetailSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertScoreDetail" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreDetailSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertScoreDetailResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreDetailsSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertScoreDetails" />
+    </wsdl:message>
+    <wsdl:message name="InsertScoreDetailsSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertScoreDetailsResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreDetailSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateScoreDetail" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreDetailSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateScoreDetailResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreDetailsSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateScoreDetails" />
+    </wsdl:message>
+    <wsdl:message name="UpdateScoreDetailsSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateScoreDetailsResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreDetailSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteScoreDetail" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreDetailSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteScoreDetailResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreDetailsSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteScoreDetails" />
+    </wsdl:message>
+    <wsdl:message name="DeleteScoreDetailsSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteScoreDetailsResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetExpiryNoticeAllSoapIn">
+        <wsdl:part name="parameters" element="tns:GetExpiryNoticeAll" />
+    </wsdl:message>
+    <wsdl:message name="GetExpiryNoticeAllSoapOut">
+        <wsdl:part name="parameters" element="tns:GetExpiryNoticeAllResponse" />
+    </wsdl:message>
+    <wsdl:message name="GetExpiryNoticeByParamSoapIn">
+        <wsdl:part name="parameters" element="tns:GetExpiryNoticeByParam" />
+    </wsdl:message>
+    <wsdl:message name="GetExpiryNoticeByParamSoapOut">
+        <wsdl:part name="parameters" element="tns:GetExpiryNoticeByParamResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertExpiryNoticeSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertExpiryNotice" />
+    </wsdl:message>
+    <wsdl:message name="InsertExpiryNoticeSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertExpiryNoticeResponse" />
+    </wsdl:message>
+    <wsdl:message name="InsertExpiryNoticeDataSoapIn">
+        <wsdl:part name="parameters" element="tns:InsertExpiryNoticeData" />
+    </wsdl:message>
+    <wsdl:message name="InsertExpiryNoticeDataSoapOut">
+        <wsdl:part name="parameters" element="tns:InsertExpiryNoticeDataResponse" />
+    </wsdl:message>
+    <wsdl:message name="UpdateExpiryNoticeSoapIn">
+        <wsdl:part name="parameters" element="tns:UpdateExpiryNotice" />
+    </wsdl:message>
+    <wsdl:message name="UpdateExpiryNoticeSoapOut">
+        <wsdl:part name="parameters" element="tns:UpdateExpiryNoticeResponse" />
+    </wsdl:message>
+    <wsdl:message name="DeleteExpiryNoticeSoapIn">
+        <wsdl:part name="parameters" element="tns:DeleteExpiryNotice" />
+    </wsdl:message>
+    <wsdl:message name="DeleteExpiryNoticeSoapOut">
+        <wsdl:part name="parameters" element="tns:DeleteExpiryNoticeResponse" />
+    </wsdl:message>
+    <wsdl:portType name="SPTSServicesSoap">
+        <wsdl:operation name="GetActivityLogByParam">
+            <wsdl:input message="tns:GetActivityLogByParamSoapIn" />
+            <wsdl:output message="tns:GetActivityLogByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertActivityLog">
+            <wsdl:input message="tns:InsertActivityLogSoapIn" />
+            <wsdl:output message="tns:InsertActivityLogSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetSitesByParam">
+            <wsdl:input message="tns:GetSitesByParamSoapIn" />
+            <wsdl:output message="tns:GetSitesByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetSitesAll">
+            <wsdl:input message="tns:GetSitesAllSoapIn" />
+            <wsdl:output message="tns:GetSitesAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertSite">
+            <wsdl:input message="tns:InsertSiteSoapIn" />
+            <wsdl:output message="tns:InsertSiteSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertSites">
+            <wsdl:input message="tns:InsertSitesSoapIn" />
+            <wsdl:output message="tns:InsertSitesSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSite">
+            <wsdl:input message="tns:UpdateSiteSoapIn" />
+            <wsdl:output message="tns:UpdateSiteSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSites">
+            <wsdl:input message="tns:UpdateSitesSoapIn" />
+            <wsdl:output message="tns:UpdateSitesSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="SynchronizeSitesNSiteAllowed">
+            <wsdl:input message="tns:SynchronizeSitesNSiteAllowedSoapIn" />
+            <wsdl:output message="tns:SynchronizeSitesNSiteAllowedSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteSite">
+            <wsdl:input message="tns:DeleteSiteSoapIn" />
+            <wsdl:output message="tns:DeleteSiteSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateAllowedSitePKIDListByName">
+            <wsdl:input message="tns:UpdateAllowedSitePKIDListByNameSoapIn" />
+            <wsdl:output message="tns:UpdateAllowedSitePKIDListByNameSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetSystemSettingAll">
+            <wsdl:input message="tns:GetSystemSettingAllSoapIn" />
+            <wsdl:output message="tns:GetSystemSettingAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertSystemSetting">
+            <wsdl:input message="tns:InsertSystemSettingSoapIn" />
+            <wsdl:output message="tns:InsertSystemSettingSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSystemSetting">
+            <wsdl:input message="tns:UpdateSystemSettingSoapIn" />
+            <wsdl:output message="tns:UpdateSystemSettingSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSystemSettings">
+            <wsdl:input message="tns:UpdateSystemSettingsSoapIn" />
+            <wsdl:output message="tns:UpdateSystemSettingsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetUserAll">
+            <wsdl:input message="tns:GetUserAllSoapIn" />
+            <wsdl:output message="tns:GetUserAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetUserByUserID">
+            <wsdl:input message="tns:GetUserByUserIDSoapIn" />
+            <wsdl:output message="tns:GetUserByUserIDSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetUserByParam">
+            <wsdl:input message="tns:GetUserByParamSoapIn" />
+            <wsdl:output message="tns:GetUserByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertUser">
+            <wsdl:input message="tns:InsertUserSoapIn" />
+            <wsdl:output message="tns:InsertUserSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateUser">
+            <wsdl:input message="tns:UpdateUserSoapIn" />
+            <wsdl:output message="tns:UpdateUserSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateUserPassword">
+            <wsdl:input message="tns:UpdateUserPasswordSoapIn" />
+            <wsdl:output message="tns:UpdateUserPasswordSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteUser">
+            <wsdl:input message="tns:DeleteUserSoapIn" />
+            <wsdl:output message="tns:DeleteUserSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetItemByPKID">
+            <wsdl:input message="tns:GetItemByPKIDSoapIn" />
+            <wsdl:output message="tns:GetItemByPKIDSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetItemByParam">
+            <wsdl:input message="tns:GetItemByParamSoapIn" />
+            <wsdl:output message="tns:GetItemByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetItemTransactionByParam">
+            <wsdl:input message="tns:GetItemTransactionByParamSoapIn" />
+            <wsdl:output message="tns:GetItemTransactionByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetEffortNBenefitByParam">
+            <wsdl:input message="tns:GetEffortNBenefitByParamSoapIn" />
+            <wsdl:output message="tns:GetEffortNBenefitByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetItemTypeAll">
+            <wsdl:input message="tns:GetItemTypeAllSoapIn" />
+            <wsdl:output message="tns:GetItemTypeAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetCardTypeAll">
+            <wsdl:input message="tns:GetCardTypeAllSoapIn" />
+            <wsdl:output message="tns:GetCardTypeAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetItemAll">
+            <wsdl:input message="tns:GetItemAllSoapIn" />
+            <wsdl:output message="tns:GetItemAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertItem">
+            <wsdl:input message="tns:InsertItemSoapIn" />
+            <wsdl:output message="tns:InsertItemSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateItem">
+            <wsdl:input message="tns:UpdateItemSoapIn" />
+            <wsdl:output message="tns:UpdateItemSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateItemStatus">
+            <wsdl:input message="tns:UpdateItemStatusSoapIn" />
+            <wsdl:output message="tns:UpdateItemStatusSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateCDARSStatus">
+            <wsdl:input message="tns:UpdateCDARSStatusSoapIn" />
+            <wsdl:output message="tns:UpdateCDARSStatusSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteItem">
+            <wsdl:input message="tns:DeleteItemSoapIn" />
+            <wsdl:output message="tns:DeleteItemSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DisposeItem">
+            <wsdl:input message="tns:DisposeItemSoapIn" />
+            <wsdl:output message="tns:DisposeItemSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetRackAll">
+            <wsdl:input message="tns:GetRackAllSoapIn" />
+            <wsdl:output message="tns:GetRackAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertRack">
+            <wsdl:input message="tns:InsertRackSoapIn" />
+            <wsdl:output message="tns:InsertRackSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteRack">
+            <wsdl:input message="tns:DeleteRackSoapIn" />
+            <wsdl:output message="tns:DeleteRackSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionByPKID">
+            <wsdl:input message="tns:GetTransactionByPKIDSoapIn" />
+            <wsdl:output message="tns:GetTransactionByPKIDSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionByParam">
+            <wsdl:input message="tns:GetTransactionByParamSoapIn" />
+            <wsdl:output message="tns:GetTransactionByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionAll">
+            <wsdl:input message="tns:GetTransactionAllSoapIn" />
+            <wsdl:output message="tns:GetTransactionAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertTransaction">
+            <wsdl:input message="tns:InsertTransactionSoapIn" />
+            <wsdl:output message="tns:InsertTransactionSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateTransaction">
+            <wsdl:input message="tns:UpdateTransactionSoapIn" />
+            <wsdl:output message="tns:UpdateTransactionSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteTransaction">
+            <wsdl:input message="tns:DeleteTransactionSoapIn" />
+            <wsdl:output message="tns:DeleteTransactionSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreNDetailsAll">
+            <wsdl:input message="tns:GetScoreNDetailsAllSoapIn" />
+            <wsdl:output message="tns:GetScoreNDetailsAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreNDetailsByParam">
+            <wsdl:input message="tns:GetScoreNDetailsByParamSoapIn" />
+            <wsdl:output message="tns:GetScoreNDetailsByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreNDetails">
+            <wsdl:input message="tns:InsertScoreNDetailsSoapIn" />
+            <wsdl:output message="tns:InsertScoreNDetailsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreNDetails">
+            <wsdl:input message="tns:UpdateScoreNDetailsSoapIn" />
+            <wsdl:output message="tns:UpdateScoreNDetailsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreNDetails">
+            <wsdl:input message="tns:DeleteScoreNDetailsSoapIn" />
+            <wsdl:output message="tns:DeleteScoreNDetailsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetScoresAll">
+            <wsdl:input message="tns:GetScoresAllSoapIn" />
+            <wsdl:output message="tns:GetScoresAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetScoresByParam">
+            <wsdl:input message="tns:GetScoresByParamSoapIn" />
+            <wsdl:output message="tns:GetScoresByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertScore">
+            <wsdl:input message="tns:InsertScoreSoapIn" />
+            <wsdl:output message="tns:InsertScoreSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertScores">
+            <wsdl:input message="tns:InsertScoresSoapIn" />
+            <wsdl:output message="tns:InsertScoresSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScore">
+            <wsdl:input message="tns:UpdateScoreSoapIn" />
+            <wsdl:output message="tns:UpdateScoreSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScores">
+            <wsdl:input message="tns:UpdateScoresSoapIn" />
+            <wsdl:output message="tns:UpdateScoresSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScore">
+            <wsdl:input message="tns:DeleteScoreSoapIn" />
+            <wsdl:output message="tns:DeleteScoreSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScores">
+            <wsdl:input message="tns:DeleteScoresSoapIn" />
+            <wsdl:output message="tns:DeleteScoresSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreDetailsAll">
+            <wsdl:input message="tns:GetScoreDetailsAllSoapIn" />
+            <wsdl:output message="tns:GetScoreDetailsAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreDetailsByParam">
+            <wsdl:input message="tns:GetScoreDetailsByParamSoapIn" />
+            <wsdl:output message="tns:GetScoreDetailsByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreDetail">
+            <wsdl:input message="tns:InsertScoreDetailSoapIn" />
+            <wsdl:output message="tns:InsertScoreDetailSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreDetails">
+            <wsdl:input message="tns:InsertScoreDetailsSoapIn" />
+            <wsdl:output message="tns:InsertScoreDetailsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreDetail">
+            <wsdl:input message="tns:UpdateScoreDetailSoapIn" />
+            <wsdl:output message="tns:UpdateScoreDetailSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreDetails">
+            <wsdl:input message="tns:UpdateScoreDetailsSoapIn" />
+            <wsdl:output message="tns:UpdateScoreDetailsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreDetail">
+            <wsdl:input message="tns:DeleteScoreDetailSoapIn" />
+            <wsdl:output message="tns:DeleteScoreDetailSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreDetails">
+            <wsdl:input message="tns:DeleteScoreDetailsSoapIn" />
+            <wsdl:output message="tns:DeleteScoreDetailsSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetExpiryNoticeAll">
+            <wsdl:input message="tns:GetExpiryNoticeAllSoapIn" />
+            <wsdl:output message="tns:GetExpiryNoticeAllSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="GetExpiryNoticeByParam">
+            <wsdl:input message="tns:GetExpiryNoticeByParamSoapIn" />
+            <wsdl:output message="tns:GetExpiryNoticeByParamSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertExpiryNotice">
+            <wsdl:input message="tns:InsertExpiryNoticeSoapIn" />
+            <wsdl:output message="tns:InsertExpiryNoticeSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="InsertExpiryNoticeData">
+            <wsdl:input message="tns:InsertExpiryNoticeDataSoapIn" />
+            <wsdl:output message="tns:InsertExpiryNoticeDataSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateExpiryNotice">
+            <wsdl:input message="tns:UpdateExpiryNoticeSoapIn" />
+            <wsdl:output message="tns:UpdateExpiryNoticeSoapOut" />
+        </wsdl:operation>
+        <wsdl:operation name="DeleteExpiryNotice">
+            <wsdl:input message="tns:DeleteExpiryNoticeSoapIn" />
+            <wsdl:output message="tns:DeleteExpiryNoticeSoapOut" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="SPTSServicesSoap" type="tns:SPTSServicesSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="GetActivityLogByParam">
+            <soap:operation soapAction="http://tempuri.org/GetActivityLogByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertActivityLog">
+            <soap:operation soapAction="http://tempuri.org/InsertActivityLog" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSitesByParam">
+            <soap:operation soapAction="http://tempuri.org/GetSitesByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSitesAll">
+            <soap:operation soapAction="http://tempuri.org/GetSitesAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertSite">
+            <soap:operation soapAction="http://tempuri.org/InsertSite" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertSites">
+            <soap:operation soapAction="http://tempuri.org/InsertSites" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSite">
+            <soap:operation soapAction="http://tempuri.org/UpdateSite" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSites">
+            <soap:operation soapAction="http://tempuri.org/UpdateSites" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SynchronizeSitesNSiteAllowed">
+            <soap:operation soapAction="http://tempuri.org/SynchronizeSitesNSiteAllowed" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteSite">
+            <soap:operation soapAction="http://tempuri.org/DeleteSite" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateAllowedSitePKIDListByName">
+            <soap:operation soapAction="http://tempuri.org/UpdateAllowedSitePKIDListByName" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSystemSettingAll">
+            <soap:operation soapAction="http://tempuri.org/GetSystemSettingAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertSystemSetting">
+            <soap:operation soapAction="http://tempuri.org/InsertSystemSetting" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSystemSetting">
+            <soap:operation soapAction="http://tempuri.org/UpdateSystemSetting" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSystemSettings">
+            <soap:operation soapAction="http://tempuri.org/UpdateSystemSettings" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUserAll">
+            <soap:operation soapAction="http://tempuri.org/GetUserAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUserByUserID">
+            <soap:operation soapAction="http://tempuri.org/GetUserByUserID" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUserByParam">
+            <soap:operation soapAction="http://tempuri.org/GetUserByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertUser">
+            <soap:operation soapAction="http://tempuri.org/InsertUser" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateUser">
+            <soap:operation soapAction="http://tempuri.org/UpdateUser" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateUserPassword">
+            <soap:operation soapAction="http://tempuri.org/UpdateUserPassword" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteUser">
+            <soap:operation soapAction="http://tempuri.org/DeleteUser" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemByPKID">
+            <soap:operation soapAction="http://tempuri.org/GetItemByPKID" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemByParam">
+            <soap:operation soapAction="http://tempuri.org/GetItemByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemTransactionByParam">
+            <soap:operation soapAction="http://tempuri.org/GetItemTransactionByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetEffortNBenefitByParam">
+            <soap:operation soapAction="http://tempuri.org/GetEffortNBenefitByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemTypeAll">
+            <soap:operation soapAction="http://tempuri.org/GetItemTypeAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetCardTypeAll">
+            <soap:operation soapAction="http://tempuri.org/GetCardTypeAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemAll">
+            <soap:operation soapAction="http://tempuri.org/GetItemAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertItem">
+            <soap:operation soapAction="http://tempuri.org/InsertItem" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateItem">
+            <soap:operation soapAction="http://tempuri.org/UpdateItem" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateItemStatus">
+            <soap:operation soapAction="http://tempuri.org/UpdateItemStatus" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateCDARSStatus">
+            <soap:operation soapAction="http://tempuri.org/UpdateCDARSStatus" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteItem">
+            <soap:operation soapAction="http://tempuri.org/DeleteItem" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DisposeItem">
+            <soap:operation soapAction="http://tempuri.org/DisposeItem" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetRackAll">
+            <soap:operation soapAction="http://tempuri.org/GetRackAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertRack">
+            <soap:operation soapAction="http://tempuri.org/InsertRack" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteRack">
+            <soap:operation soapAction="http://tempuri.org/DeleteRack" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionByPKID">
+            <soap:operation soapAction="http://tempuri.org/GetTransactionByPKID" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionByParam">
+            <soap:operation soapAction="http://tempuri.org/GetTransactionByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionAll">
+            <soap:operation soapAction="http://tempuri.org/GetTransactionAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertTransaction">
+            <soap:operation soapAction="http://tempuri.org/InsertTransaction" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateTransaction">
+            <soap:operation soapAction="http://tempuri.org/UpdateTransaction" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteTransaction">
+            <soap:operation soapAction="http://tempuri.org/DeleteTransaction" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreNDetailsAll">
+            <soap:operation soapAction="http://tempuri.org/GetScoreNDetailsAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreNDetailsByParam">
+            <soap:operation soapAction="http://tempuri.org/GetScoreNDetailsByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreNDetails">
+            <soap:operation soapAction="http://tempuri.org/InsertScoreNDetails" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreNDetails">
+            <soap:operation soapAction="http://tempuri.org/UpdateScoreNDetails" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreNDetails">
+            <soap:operation soapAction="http://tempuri.org/DeleteScoreNDetails" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoresAll">
+            <soap:operation soapAction="http://tempuri.org/GetScoresAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoresByParam">
+            <soap:operation soapAction="http://tempuri.org/GetScoresByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScore">
+            <soap:operation soapAction="http://tempuri.org/InsertScore" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScores">
+            <soap:operation soapAction="http://tempuri.org/InsertScores" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScore">
+            <soap:operation soapAction="http://tempuri.org/UpdateScore" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScores">
+            <soap:operation soapAction="http://tempuri.org/UpdateScores" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScore">
+            <soap:operation soapAction="http://tempuri.org/DeleteScore" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScores">
+            <soap:operation soapAction="http://tempuri.org/DeleteScores" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreDetailsAll">
+            <soap:operation soapAction="http://tempuri.org/GetScoreDetailsAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreDetailsByParam">
+            <soap:operation soapAction="http://tempuri.org/GetScoreDetailsByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreDetail">
+            <soap:operation soapAction="http://tempuri.org/InsertScoreDetail" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreDetails">
+            <soap:operation soapAction="http://tempuri.org/InsertScoreDetails" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreDetail">
+            <soap:operation soapAction="http://tempuri.org/UpdateScoreDetail" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreDetails">
+            <soap:operation soapAction="http://tempuri.org/UpdateScoreDetails" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreDetail">
+            <soap:operation soapAction="http://tempuri.org/DeleteScoreDetail" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreDetails">
+            <soap:operation soapAction="http://tempuri.org/DeleteScoreDetails" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetExpiryNoticeAll">
+            <soap:operation soapAction="http://tempuri.org/GetExpiryNoticeAll" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetExpiryNoticeByParam">
+            <soap:operation soapAction="http://tempuri.org/GetExpiryNoticeByParam" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertExpiryNotice">
+            <soap:operation soapAction="http://tempuri.org/InsertExpiryNotice" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertExpiryNoticeData">
+            <soap:operation soapAction="http://tempuri.org/InsertExpiryNoticeData" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateExpiryNotice">
+            <soap:operation soapAction="http://tempuri.org/UpdateExpiryNotice" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteExpiryNotice">
+            <soap:operation soapAction="http://tempuri.org/DeleteExpiryNotice" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="SPTSServicesSoap12" type="tns:SPTSServicesSoap">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="GetActivityLogByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetActivityLogByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertActivityLog">
+            <soap12:operation soapAction="http://tempuri.org/InsertActivityLog" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSitesByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetSitesByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSitesAll">
+            <soap12:operation soapAction="http://tempuri.org/GetSitesAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertSite">
+            <soap12:operation soapAction="http://tempuri.org/InsertSite" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertSites">
+            <soap12:operation soapAction="http://tempuri.org/InsertSites" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSite">
+            <soap12:operation soapAction="http://tempuri.org/UpdateSite" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSites">
+            <soap12:operation soapAction="http://tempuri.org/UpdateSites" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SynchronizeSitesNSiteAllowed">
+            <soap12:operation soapAction="http://tempuri.org/SynchronizeSitesNSiteAllowed" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteSite">
+            <soap12:operation soapAction="http://tempuri.org/DeleteSite" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateAllowedSitePKIDListByName">
+            <soap12:operation soapAction="http://tempuri.org/UpdateAllowedSitePKIDListByName" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSystemSettingAll">
+            <soap12:operation soapAction="http://tempuri.org/GetSystemSettingAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertSystemSetting">
+            <soap12:operation soapAction="http://tempuri.org/InsertSystemSetting" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSystemSetting">
+            <soap12:operation soapAction="http://tempuri.org/UpdateSystemSetting" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateSystemSettings">
+            <soap12:operation soapAction="http://tempuri.org/UpdateSystemSettings" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUserAll">
+            <soap12:operation soapAction="http://tempuri.org/GetUserAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUserByUserID">
+            <soap12:operation soapAction="http://tempuri.org/GetUserByUserID" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUserByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetUserByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertUser">
+            <soap12:operation soapAction="http://tempuri.org/InsertUser" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateUser">
+            <soap12:operation soapAction="http://tempuri.org/UpdateUser" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateUserPassword">
+            <soap12:operation soapAction="http://tempuri.org/UpdateUserPassword" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteUser">
+            <soap12:operation soapAction="http://tempuri.org/DeleteUser" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemByPKID">
+            <soap12:operation soapAction="http://tempuri.org/GetItemByPKID" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetItemByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemTransactionByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetItemTransactionByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetEffortNBenefitByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetEffortNBenefitByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemTypeAll">
+            <soap12:operation soapAction="http://tempuri.org/GetItemTypeAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetCardTypeAll">
+            <soap12:operation soapAction="http://tempuri.org/GetCardTypeAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetItemAll">
+            <soap12:operation soapAction="http://tempuri.org/GetItemAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertItem">
+            <soap12:operation soapAction="http://tempuri.org/InsertItem" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateItem">
+            <soap12:operation soapAction="http://tempuri.org/UpdateItem" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateItemStatus">
+            <soap12:operation soapAction="http://tempuri.org/UpdateItemStatus" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateCDARSStatus">
+            <soap12:operation soapAction="http://tempuri.org/UpdateCDARSStatus" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteItem">
+            <soap12:operation soapAction="http://tempuri.org/DeleteItem" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DisposeItem">
+            <soap12:operation soapAction="http://tempuri.org/DisposeItem" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetRackAll">
+            <soap12:operation soapAction="http://tempuri.org/GetRackAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertRack">
+            <soap12:operation soapAction="http://tempuri.org/InsertRack" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteRack">
+            <soap12:operation soapAction="http://tempuri.org/DeleteRack" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionByPKID">
+            <soap12:operation soapAction="http://tempuri.org/GetTransactionByPKID" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetTransactionByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetTransactionAll">
+            <soap12:operation soapAction="http://tempuri.org/GetTransactionAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertTransaction">
+            <soap12:operation soapAction="http://tempuri.org/InsertTransaction" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateTransaction">
+            <soap12:operation soapAction="http://tempuri.org/UpdateTransaction" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteTransaction">
+            <soap12:operation soapAction="http://tempuri.org/DeleteTransaction" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreNDetailsAll">
+            <soap12:operation soapAction="http://tempuri.org/GetScoreNDetailsAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreNDetailsByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetScoreNDetailsByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreNDetails">
+            <soap12:operation soapAction="http://tempuri.org/InsertScoreNDetails" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreNDetails">
+            <soap12:operation soapAction="http://tempuri.org/UpdateScoreNDetails" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreNDetails">
+            <soap12:operation soapAction="http://tempuri.org/DeleteScoreNDetails" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoresAll">
+            <soap12:operation soapAction="http://tempuri.org/GetScoresAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoresByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetScoresByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScore">
+            <soap12:operation soapAction="http://tempuri.org/InsertScore" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScores">
+            <soap12:operation soapAction="http://tempuri.org/InsertScores" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScore">
+            <soap12:operation soapAction="http://tempuri.org/UpdateScore" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScores">
+            <soap12:operation soapAction="http://tempuri.org/UpdateScores" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScore">
+            <soap12:operation soapAction="http://tempuri.org/DeleteScore" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScores">
+            <soap12:operation soapAction="http://tempuri.org/DeleteScores" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreDetailsAll">
+            <soap12:operation soapAction="http://tempuri.org/GetScoreDetailsAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetScoreDetailsByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetScoreDetailsByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreDetail">
+            <soap12:operation soapAction="http://tempuri.org/InsertScoreDetail" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertScoreDetails">
+            <soap12:operation soapAction="http://tempuri.org/InsertScoreDetails" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreDetail">
+            <soap12:operation soapAction="http://tempuri.org/UpdateScoreDetail" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateScoreDetails">
+            <soap12:operation soapAction="http://tempuri.org/UpdateScoreDetails" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreDetail">
+            <soap12:operation soapAction="http://tempuri.org/DeleteScoreDetail" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteScoreDetails">
+            <soap12:operation soapAction="http://tempuri.org/DeleteScoreDetails" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetExpiryNoticeAll">
+            <soap12:operation soapAction="http://tempuri.org/GetExpiryNoticeAll" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetExpiryNoticeByParam">
+            <soap12:operation soapAction="http://tempuri.org/GetExpiryNoticeByParam" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertExpiryNotice">
+            <soap12:operation soapAction="http://tempuri.org/InsertExpiryNotice" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="InsertExpiryNoticeData">
+            <soap12:operation soapAction="http://tempuri.org/InsertExpiryNoticeData" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateExpiryNotice">
+            <soap12:operation soapAction="http://tempuri.org/UpdateExpiryNotice" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteExpiryNotice">
+            <soap12:operation soapAction="http://tempuri.org/DeleteExpiryNotice" style="document" />
+            <wsdl:input>
+                <soap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="SPTSServices">
+        <wsdl:port name="SPTSServicesSoap" binding="tns:SPTSServicesSoap">
+            <soap:address location="http://localhost/SPTSServices/SPTSServices.asmx" />
+        </wsdl:port>
+        <wsdl:port name="SPTSServicesSoap12" binding="tns:SPTSServicesSoap12">
+            <soap12:address location="http://localhost/SPTSServices/SPTSServices.asmx" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

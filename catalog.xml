@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/C:/Users/fg79cj/Documents/SPTSServices.wsdl" uri="src/main/resources/jaxb/sptsWebService/SPTSServices.wsdl"/>
+    <system systemId="file:/D:/New/CDARS/../SPTSServices.wsdl" uri="src/main/resources/jaxb/sptsWebService/SPTSServices.wsdl"/>
+    <system systemId="http://mysed-rel-spv2/SPTSServices/SPTSServices.asmx?schema=ScoreNDetailsDS" uri="src/main/resources/jaxb/sptsWebService/mysed-rel-spv2/SPTSServices/SPTSServices.asmx.schema_scorendetailsds.xsd"/>
+</catalog>
