@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhRequestDAO;
+import com.onsemi.cdars.dao.WhShippingDAO;
 import com.onsemi.cdars.model.ParameterDetails;
 import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.UserSession;
+import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
 import com.opencsv.CSVReader;
@@ -449,9 +451,22 @@ public class WhRequestController {
                     + " for approval status checking."
             );
 
+            if ("Approved".equals(finalApprovedStatus)) {
+
+                //save id to table wh_shipping
+                WhShipping ship = new WhShipping();
+
+                ship.setRequestId(id);
+                ship.setStatus("No Material Pass Number");
+                WhShippingDAO whShippingDAO = new WhShippingDAO();
+                QueryResult queryResultShip = whShippingDAO.insertWhShipping(ship);
+
+            }
+
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
         }
+
         return "redirect:/wh/whRequest";
     }
 }
