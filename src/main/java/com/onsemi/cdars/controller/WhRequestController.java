@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhRequestDAO;
 import com.onsemi.cdars.dao.WhShippingDAO;
+import com.onsemi.cdars.model.IonicFtpTemp;
 import com.onsemi.cdars.model.ParameterDetails;
 import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.UserSession;
@@ -16,10 +17,12 @@ import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
@@ -53,6 +56,7 @@ public class WhRequestController {
     //File header
     private static final String HEADER = "id,request_type,hardware_type,hardware_id,type,quantity,requested_by,"
             + "requested_date,remarks";
+    private static final String HEADERArray = "id, request_type, hardware_type, hardware_id, type, quantity, requested_by, requested_date, remarks";
 
     @Autowired
     private MessageSource messageSource;
@@ -183,50 +187,95 @@ public class WhRequestController {
 //            only create csv file and send email to warehouse if requestor want to retrieve hardware
             if ("Retrieve".equals(requestType)) {
 
-                FileWriter fileWriter = null;
+                File file = new File("C:\\test.csv");
 
-                try {
-                    fileWriter = new FileWriter("C:\\test.csv");
-
-                    //Adding the header
-                    fileWriter.append(HEADER);
-                    //New Line after the header
-                    fileWriter.append(LINE_SEPARATOR);
-
-                    //Iterate the empList
-                    WhRequestDAO whdao = new WhRequestDAO();
-                    WhRequest wh = whdao.getWhRequest(queryResult.getGeneratedKey());
-
-                    fileWriter.append(queryResult.getGeneratedKey());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getRequestType());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getEquipmentType());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getEquipmentId());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getType());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getQuantity());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getRequestedBy());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getRequestedDate());
-                    fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getRemarks());
-//    			fileWriter.append(LINE_SEPARATOR);
-                    System.out.println("Write to CSV file Succeeded!!!");
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                } finally {
+                if (file.exists()) {
+                    //Create List for holding Employee objects
+                    LOGGER.info("tiada header");
+                    FileWriter fileWriter = null;
                     try {
-                        fileWriter.close();
-                    } catch (IOException ie) {
-                        System.out.println("Error occured while closing the fileWriter");
-                        ie.printStackTrace();
+                        fileWriter = new FileWriter("C:\\test.csv", true);
+                        //New Line after the header
+                        fileWriter.append(LINE_SEPARATOR);
+
+                        WhRequestDAO whdao = new WhRequestDAO();
+                        WhRequest wh = whdao.getWhRequest(queryResult.getGeneratedKey());
+
+                        fileWriter.append(queryResult.getGeneratedKey());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRequestType());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getEquipmentType());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getEquipmentId());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getType());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getQuantity());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRequestedBy());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRequestedDate());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRemarks());
+                        fileWriter.append(COMMA_DELIMITER);
+                        System.out.println("append to CSV file Succeed!!!");
+                    } catch (Exception ee) {
+                        ee.printStackTrace();
+                    } finally {
+                        try {
+                            fileWriter.close();
+                        } catch (IOException ie) {
+                            System.out.println("Error occured while closing the fileWriter");
+                            ie.printStackTrace();
+                        }
+                    }
+                } else {
+                    FileWriter fileWriter = null;
+                    try {
+                        fileWriter = new FileWriter("C:\\test.csv", true);
+                        LOGGER.info("no file yet");
+                        //Adding the header
+                        fileWriter.append(HEADER);
+
+                        //New Line after the header
+                        fileWriter.append(LINE_SEPARATOR);
+
+                        WhRequestDAO whdao = new WhRequestDAO();
+                        WhRequest wh = whdao.getWhRequest(queryResult.getGeneratedKey());
+
+                        fileWriter.append(queryResult.getGeneratedKey());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRequestType());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getEquipmentType());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getEquipmentId());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getType());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getQuantity());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRequestedBy());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRequestedDate());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getRemarks());
+                        fileWriter.append(COMMA_DELIMITER);
+                        System.out.println("Write new to CSV file Succeed!!!");
+                    } catch (Exception ee) {
+                        ee.printStackTrace();
+                    } finally {
+                        try {
+                            fileWriter.close();
+                        } catch (IOException ie) {
+                            System.out.println("Error occured while closing the fileWriter");
+                            ie.printStackTrace();
+                        }
                     }
                 }
 
+                //Iterate the empList
 //                send email
                 LOGGER.info("send email to warehouse");
 
@@ -238,7 +287,7 @@ public class WhRequestController {
                         //                    user name
                         user,
                         //                    to
-                        "ama_nina1993@yahoo.com",
+                        "hmsrelon@gmail.com",
                         //                    subject
                         "New Hardware Request from CDARS",
                         //                    msg
@@ -246,7 +295,6 @@ public class WhRequestController {
                         + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">CDARS</a>"
                         + " for shipping process."
                 );
-
             }
 
             return "redirect:/wh/whRequest/edit/" + queryResult.getGeneratedKey();

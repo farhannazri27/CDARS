@@ -5,13 +5,9 @@
  */
 package com.onsemi.cdars.dao;
 
-import com.onsemi.cdars.model.ItemSpts;
 import com.onsemi.cdars.wsdl.GetItemByParam;
 import com.onsemi.cdars.wsdl.GetItemByParamResponse;
 import com.onsemi.cdars.wsdl.ObjectFactory;
-import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.dateTime;
-import java.sql.Timestamp;
-import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

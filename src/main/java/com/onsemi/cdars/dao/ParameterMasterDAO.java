@@ -215,9 +215,6 @@ public class ParameterMasterDAO {
                 name = rs.getString("name");
                 code = rs.getNString("code");
                 codeName = code + " - " + name;
-                LOGGER.info("xxxxxxxxxxx........" + name);
-                LOGGER.info("yyyyyyyyyyy........" + code);
-                LOGGER.info("zzzzzzzzzzz........" + codeName);
             }
             rs.close();
             ps.close();
@@ -244,7 +241,6 @@ public class ParameterMasterDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 code = rs.getNString("code");
-                LOGGER.info("wewewewewewewe........" + code);
             }
             rs.close();
             ps.close();

@@ -5,135 +5,162 @@
         <link rel="stylesheet" href="${contextPath}/resources/private/css/libs/datepicker.css" type="text/css" />
     </s:layout-component>
     <s:layout-component name="page_css_inline">
-
     </s:layout-component>
     <s:layout-component name="page_container">
         <div class="col-lg-12">
-            <h1>Edit Hardware Request</h1>
+            <h1>Shipping</h1>
             <div class="row">
                 <div class="col-lg-6">
                     <div class="main-box">
-                        <h2>Hardware Request Information</h2>
-                        <form id="edit_hardwarequest_form" class="form-horizontal" role="form" action="${contextPath}/wh/whRequest/update" method="post">
-                            <input type="hidden" name="id" value="${whRequest.id}" />
+                        <h2>Details</h2>
+                        <form id="detail_form" class="form-horizontal" role="form">
                             <div class="form-group">
-                                <label for="requestBy" class="col-lg-4 control-label">Request By</label>
-                                <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="requestBy" name="requestBy" placeholder="Request For" value="${whRequest.requestedBy}" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="requestType" class="col-lg-4 control-label">Request For *</label>
-                                <div class="col-lg-3">
-                                    <select id="requestType" name="requestType" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${requestType}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="equipmentType" class="col-lg-4 control-label">Hardware Category *</label>
+                                <label for=" hardwareType" class="col-lg-4 control-label">Hardware Type </label>
                                 <div class="col-lg-5">
-                                    <select id="equipmentType" name="equipmentType" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${equipmentType}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
+                                    <input type="text" class="form-control" id="hardwareType" name="hardwareType" value="${whShipping.requestEquipmentType}" readonly>
                                 </div>
                             </div>
-                            <div class="form-group" id="listdiv">
-                                <label for="equipmentId" class="col-lg-4 control-label">Equipment ID * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentId" name="equipmentId" class="form-control">
-                                        <option value="" selected=""></option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group" id="mblistdiv" >
-                                <label for="equipmentIdMb" class="col-lg-4 control-label">Motherboard ID * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentIdMb" name="equipmentIdMb" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${mb}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group" id="stencillistdiv" >
-                                <label for="equipmentIdStencil" class="col-lg-4 control-label">Stencil ID * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentIdStencil" name="equipmentIdStencil" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${stencil}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group" id="traylistdiv" >
-                                <label for="equipmentIdTray" class="col-lg-4 control-label">Tray Type * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentIdTray" name="equipmentIdTray" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${tray}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group" id="pcblistdiv" hidden>
-                                <label for="equipmentIdPcb" class="col-lg-4 control-label">PCB Name * </label>
+                            <div class="form-group">
+                                <label for=" hardwareId" class="col-lg-4 control-label">${IdLabel} </label>
                                 <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="equipmentIdPcb" name="equipmentIdPcb" placeholder="PCB Name" value="${whRequest.equipmentId}">
+                                    <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.requestEquipmentId}" readonly>
                                 </div>
                             </div>
-                            <div class="form-group" id="typediv" hidden>
-                                <label for="type" class="col-lg-4 control-label">Type </label>
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" id="type" name="type" placeholder="Type" value="${whRequest.type}">
+                            <div class="form-group">
+                                <label for=" quantity" class="col-lg-4 control-label">Quantity </label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" id="quantity" name="quantity" value="${whShipping.requestQuantity}" readonly>
                                 </div>
-                            </div>    
-                            <div class="form-group" id="quantitydiv" hidden>
-                                <label for="quantity" class="col-lg-4 control-label">Quantity *</label>
-                                <div class="col-lg-2">
-                                    <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.quantity}">
-                                </div>
-                            </div> 
-                            <div class="form-group" id="remarksDiv">
-                                <label for="remarks" class="col-lg-4 control-label">Remarks </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="requestedBy" class="col-lg-4 control-label">Requested By </label>
                                 <div class="col-lg-8">
-                                    <textarea class="form-control" rows="5" id="remarks" name="remarks">${whRequest.remarks}</textarea>
+                                    <input type="text" class="form-control" id="requestedBy" name="requestedBy" value="${whShipping.requestRequestedBy}" readonly>
                                 </div>
                             </div>
-                            <!--approval-->
-                            <br>
-                            <br>
-                            <div class="form-group" id="statusDiv" hidden>
-                                <label for="status" class="col-lg-4 control-label">Status</label>                                     
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" id="status" name="status" value="${whRequest.status}" readonly>
+                            <div class="form-group">
+                                <label for="requestedDate" class="col-lg-4 control-label">Requested Date </label>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" id="requestedDate" name="requestedDate" value="${whShipping.requestRequestedDate}" readonly>
                                 </div>
                             </div>
-                            <div class="form-group"id="approvalRemarksDiv" hidden>
-                                <label for="remarksApprover" class="col-lg-4 control-label">Remarks </label>
-                                <div class="col-lg-8">
-                                    <textarea class="form-control" rows="5" id="remarksApprover" name="remarksApprover" readonly>${whRequest.remarksApprover}</textarea>
-                                </div>
-                            </div>
-
-                            <a href="${contextPath}/wh/whRequest" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>
-                            <div class="pull-right">
-                                <button type="reset" class="btn btn-secondary cancel">Reset</button>
-                                <button type="submit" class="btn btn-primary" id="submit" name="submit">Save</button>
-                            </div>
+                            <a href="${contextPath}/wh/whShipping" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>
                             <div class="clearfix"></div>
                         </form>
                     </div>
                 </div>	
+            </div>
+        </div>
+        <hr class="separator">
+        <div class="col-lg-12">
+            <br>
+            <div class="row">
+                <ul class="nav nav-tabs">
+                    <li class="${mpActive}"><a data-toggle="tab" href="#mp">Material Pass</a></li>
+                    <li class="${ttActive}"><a data-toggle="tab" href="#tt">Scan Trip Ticket</a></li>
+                    <li class="${bsActive}"><a data-toggle="tab" href="#bs">Scan Barcode Sticker </a></li>
+                </ul>
+                <div class="tab-content">
+
+                    <!--Tab for Material Pass-->
+                    <div id="mp" class="tab-pane fade ${mpActiveTab}">
+
+                        <h6></h6>
+                        <div class="col-lg-7">
+                            <div class="main-box">
+                                <h2>Material Pass</h2>
+                                <form id="mp_form" class="form-horizontal" role="form" action="${contextPath}/wh/whShipping/updateMp" method="post">
+                                    <input type="hidden" name="id" value="${whShipping.id}" />
+                                    <input type="hidden" name="status" value="${whShipping.status}" />
+                                    <input type="hidden" name="id" value="${mpActiveTab}" />
+                                    <div class="form-group">
+                                        <label for=" mpNo" class="col-lg-4 control-label">Material Pass Number *</label>
+                                        <div class="col-lg-5">
+                                            <input type="text" class="form-control" id="mpNo" name="mpNo" autofocus="autofocus" value="${whShipping.mpNo}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="mpExpiryDate" class="col-lg-4 control-label">Material Pass Expiry Date *</label>
+                                        <div class="col-lg-5">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                <input type="text" name="mpExpiryDate" class="form-control" id="mpExpiryDate" value="${whShipping.mpExpiryDate}">
+                                            </div>
+                                            <label id="datepickerDate-error" class="error" for="mpExpiryDate" style="display: none;"></label>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right">
+                                        <button type="reset" class="btn btn-secondary cancel">Reset</button>
+                                        <button type="submit" class="btn btn-primary">Save & Print Trip Ticket</button>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--tab for scan trip ticket-->
+
+                    <div id="tt" class="tab-pane fade ${ttActiveTab}">
+                        <!--<br>-->
+                        <h6></h6>
+                        <div class="col-lg-7">
+                            <div class="main-box">
+                                <h2>Scan Trip Ticket</h2>
+                                <form id="tt_form" class="form-horizontal" role="form" action="${contextPath}/wh/whShipping/updateScanTt" method="post">
+                                    <input type="hidden" name="id" value="${whShipping.id}" />
+                                    <input type="hidden" name="status" value="${whShipping.status}" />
+                                    <input type="hidden" name="id" value="${ttActiveTab}" />
+                                    <div class="form-group">
+                                        <label for=" hardwareBarcode1" class="col-lg-4 control-label">${IdLabel} *</label>
+                                        <div class="col-lg-5">
+                                            <input type="text" class="form-control" id="hardwareBarcode1" name="hardwareBarcode1" autofocus="autofocus" placeholder="Please scan trip ticket" value="${whShipping.hardwareBarcode1}">
+                                        </div>
+                                    </div>
+                                    <div class="pull-right">
+                                        <button type="reset" class="btn btn-secondary cancel1">Reset</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--tab for scan barcode sticker-->
+
+                    <div id="bs" class="tab-pane fade ${bsActiveTab}">
+                        <!--<br>-->
+                        <h6></h6>
+                        <div class="col-lg-7">
+                            <div class="main-box">
+                                <h2>Scan Barcode Sticker</h2>
+                                <form id="bs_form" class="form-horizontal" role="form" action="${contextPath}/wh/whShipping/updateScanBs" method="post">
+                                    <input type="hidden" name="id" value="${whShipping.id}" />
+                                    <input type="hidden" name="status" value="${whShipping.status}" />
+                                    <input type="hidden" name="id" value="${bsActiveTab}" />
+                                    <div class="form-group">
+                                        <label for=" hardwareBarcode2" class="col-lg-4 control-label">${IdLabel} *</label>
+                                        <div class="col-lg-5">
+                                            <input type="text" class="form-control" id="hardwareBarcode2" name="hardwareBarcode2" autofocus="autofocus" placeholder="Please scan barcode sticker" value="${whShipping.hardwareBarcode2}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" hidden>
+                                        <label for=" hardwareBarcode1" class="col-lg-4 control-label">${IdLabel} *</label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareBarcode1" name="hardwareBarcode1" placeholder="Please scan trip ticket" value="${whShipping.hardwareBarcode1}">
+                                        </div>
+                                    </div>
+                                    <div class="pull-right">
+                                        <button type="reset" class="btn btn-secondary cancel2">Reset</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </s:layout-component>
@@ -146,178 +173,59 @@
         <script>
             $(document).ready(function () {
 
-                var element = $('#equipmentType');
-                if (element.val() === "Motherboard") {
-                    $("#mblistdiv").show();
-                    $("#listdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#pcblistdiv").hide();
-                    $("#typediv").hide();
-                    $("#quantitydiv").hide();
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdTray").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#quantity").val("");
-                    $("#type").val("");
-                } else if (element.val() === "Stencil") {
-                    $("#stencillistdiv").show();
-                    $("#listdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#pcblistdiv").hide();
-                    $("#typediv").hide();
-                    $("#quantitydiv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdTray").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#quantity").val("");
-                    $("#type").val("");
-                } else if (element.val() === "Tray") {
-                    $("#traylistdiv").show();
-                    $("#quantitydiv").show();
-                    $("#listdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#pcblistdiv").hide();
-                    $("#typediv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#type").val("");
-                } else if (element.val() === "PCB") {
-                    $("#pcblistdiv").show();
-                    $("#typediv").hide();
-                    $("#quantitydiv").show();
-                    $("#listdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdTray").val("");
-                } else {
-                    $("#listdiv").show();
-                    $("#pcblistdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#typediv").hide();
-                    $("#quantitydiv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdTray").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#quantity").val("");
-                    $("#type").val("");
-                }
-                var element = $('#status');
-                if (element.val() !== "Waiting for Approval") {
-                    $("#statusDiv").show();
-                    $("#approvalRemarksDiv").show();
-                    $("#requestType").attr("readonly", true);
-                    $("#equipmentType").attr("readonly", true);
-                    $("#equipmentId").attr("readonly", true);
-                    $("#equipmentIdMb").attr("readonly", true);
-                    $("#equipmentIdStencil").attr("readonly", true);
-                    $("#equipmentIdTray").attr("readonly", true);
-                    $("#equipmentIdPcb").attr("readonly", true);
-                    $("#type").attr("readonly", true);
-                    $("#quantity").attr("readonly", true);
-                    $("#remarks").attr("readonly", true);
-                    $("#submit").attr("disabled", true);
-                }
+                $('#mpExpiryDate').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
 
-
-                var validator = $("#edit_hardwarequest_form").validate({
+                var validator = $("#mp_form").validate({
                     rules: {
-                        requestType: {
+                        mpNo: {
                             required: true
                         },
-                        equipmentType: {
+                        mpExpiryDate: {
                             required: true
-                        },
-                        equipmentId: {
-                            required: true
-                        },
-                        quantity: {
-//                            required: true,
-                            number: true
                         }
                     }
                 });
+
+                var validator1 = $("#tt_form").validate({
+                    rules: {
+                        hardwareBarcode1: {
+                            required: true
+                        }
+                    }
+                });
+
+                var validator2 = $("#bs_form").validate({
+                    rules: {
+                        hardwareBarcode2: {
+                            required: true
+                        }
+                    }
+                });
+
                 $(".cancel").click(function () {
                     validator.resetForm();
                 });
+                $(".cancel1").click(function () {
+                    validator1.resetForm();
+                });
+                $(".cancel1").click(function () {
+                    validator2.resetForm();
+                });
             });
+            
+            if($('#hardwareBarcode2').val() !== $('#hardwareBarcode1').val()){
+                alert("Barcode Sticker not matched with Barcode Trip Ticket!!");
+            }
+            
+            
 
-            $('#equipmentType').on('change', function () {
-                if ($(this).val() === "Motherboard") {
-                    $("#mblistdiv").show();
-                    $("#listdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#pcblistdiv").hide();
-                    $("#typediv").hide();
-                    $("#quantitydiv").hide();
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdTray").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#quantity").val("");
-                    $("#type").val("");
-                } else if ($(this).val() === "Stencil") {
-                    $("#stencillistdiv").show();
-                    $("#listdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#pcblistdiv").hide();
-                    $("#typediv").hide;
-                    $("#quantitydiv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdTray").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#quantity").val("");
-                    $("#type").val("");
-                } else if ($(this).val() === "Tray") {
-                    $("#traylistdiv").show();
-                    $("#quantitydiv").show();
-                    $("#listdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#pcblistdiv").hide();
-                    $("#typediv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#type").val("");
-                } else if ($(this).val() === "PCB") {
-                    $("#pcblistdiv").show();
-                    $("#typediv").hide();
-                    $("#quantitydiv").show();
-                    $("#listdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdTray").val("");
-                } else {
-                    $("#listdiv").show();
-                    $("#pcblistdiv").hide();
-                    $("#mblistdiv").hide();
-                    $("#stencillistdiv").hide();
-                    $("#traylistdiv").hide();
-                    $("#typediv").hide();
-                    $("#quantitydiv").hide();
-                    $("#equipmentIdMb").val("");
-                    $("#equipmentIdStencil").val("");
-                    $("#equipmentIdTray").val("");
-                    $("#equipmentIdPcb").val("");
-                    $("#quantity").val("");
-                    $("#type").val("");
-                }
-
-            });
+//            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+//                var target = e.target.attributes.href.value;
+//                $(target + ' input').focus();
+//            })
 
         </script>
     </s:layout-component>

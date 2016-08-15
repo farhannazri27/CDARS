@@ -68,13 +68,13 @@
                                             <td><c:out value="${whShipping.mpNo}"/></td>
                                             <td><c:out value="${whShipping.status}"/></td>
                                             <td align="center">
-                                                <a href="${contextPath}/wh/whShipping/view/${whRequest.id}" class="table-link" title="Trip Ticket">
+                                                <a href="${contextPath}/wh/whShipping/view/${whShipping.id}" class="table-link" title="Trip Ticket">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
                                                         <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <a href="${contextPath}/wh/whShipping/edit/${whRequest.id}" class="table-link" title="Edit">
+                                                <a href="${contextPath}/wh/whShipping/edit/${whShipping.id}" class="table-link" title="Edit">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
                                                         <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
@@ -119,7 +119,7 @@
                                                             ],
                                                             "sDom": "tp"
                                                         });
-                                                        var exportTitle = "Hardware Request List";
+                                                        var exportTitle = "Hardware Shipping List";
                                                         var tt = new $.fn.dataTable.TableTools(oTable, {
                                                             "sSwfPath": "${contextPath}/resources/private/datatables/swf/copy_csv_xls_pdf.swf",
                                                             "aButtons": [

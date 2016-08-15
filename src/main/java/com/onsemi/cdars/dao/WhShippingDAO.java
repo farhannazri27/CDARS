@@ -107,6 +107,85 @@ public class WhShippingDAO {
 		}
 		return queryResult;
 	}
+        public QueryResult updateWhShippingMp(WhShipping whShipping) {
+		QueryResult queryResult = new QueryResult();
+		try {
+			PreparedStatement ps = conn.prepareStatement(
+				"UPDATE cdars_wh_shipping SET mp_no = ?, mp_expiry_date = ?,  status = ?,  modified_by = ?, modified_date = NOW() WHERE id = ?"
+			);
+			ps.setString(1, whShipping.getMpNo());
+			ps.setString(2, whShipping.getMpExpiryDate());			
+			ps.setString(3, whShipping.getStatus());
+			ps.setString(4, whShipping.getModifiedBy());
+			ps.setString(5, whShipping.getId());
+			queryResult.setResult(ps.executeUpdate());
+			ps.close();
+		} catch (SQLException e) {
+			queryResult.setErrorMessage(e.getMessage());
+			LOGGER.error(e.getMessage());
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					LOGGER.error(e.getMessage());
+				}
+			}
+		}
+		return queryResult;
+	}
+        public QueryResult updateWhShippingTt(WhShipping whShipping) {
+		QueryResult queryResult = new QueryResult();
+		try {
+			PreparedStatement ps = conn.prepareStatement(
+				"UPDATE cdars_wh_shipping SET hardware_barcode_1 = ?, date_scan_1 = NOW(), status = ?,  modified_by = ?, modified_date = NOW() WHERE id = ?"
+			);
+			ps.setString(1, whShipping.getHardwareBarcode1());
+			ps.setString(2, whShipping.getStatus());
+			ps.setString(3, whShipping.getModifiedBy());
+			ps.setString(4, whShipping.getId());
+			queryResult.setResult(ps.executeUpdate());
+			ps.close();
+		} catch (SQLException e) {
+			queryResult.setErrorMessage(e.getMessage());
+			LOGGER.error(e.getMessage());
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					LOGGER.error(e.getMessage());
+				}
+			}
+		}
+		return queryResult;
+	}
+        public QueryResult updateWhShippingBs(WhShipping whShipping) {
+		QueryResult queryResult = new QueryResult();
+		try {
+			PreparedStatement ps = conn.prepareStatement(
+				"UPDATE cdars_wh_shipping SET hardware_barcode_2 = ?, date_scan_2 = NOW(), status = ?, modified_by = ?, modified_date = NOW() WHERE id = ?"
+			);
+			ps.setString(1, whShipping.getHardwareBarcode2());
+			ps.setString(2, whShipping.getStatus());
+			ps.setString(3, whShipping.getModifiedBy());
+			ps.setString(4, whShipping.getId());
+			queryResult.setResult(ps.executeUpdate());
+			ps.close();
+		} catch (SQLException e) {
+			queryResult.setErrorMessage(e.getMessage());
+			LOGGER.error(e.getMessage());
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					LOGGER.error(e.getMessage());
+				}
+			}
+		}
+		return queryResult;
+	}
 
 	public QueryResult deleteWhShipping(String whShippingId) {
 		QueryResult queryResult = new QueryResult();
@@ -156,6 +235,57 @@ public class WhShippingDAO {
 				whShipping.setCreatedDate(rs.getString("created_date"));
 				whShipping.setModifiedBy(rs.getString("modified_by"));
 				whShipping.setModifiedDate(rs.getString("modified_date"));
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					LOGGER.error(e.getMessage());
+				}
+			}
+		}
+		return whShipping;
+	}
+        
+        public WhShipping getWhShippingMergeWithRequest(String whShippingId) {
+		String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.type AS type, re.requested_by AS requested_by, DATE_FORMAT(re.requested_date,'%d %M %Y') AS requested_date "
+                        + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id AND sh.id = '" + whShippingId + "'";
+		WhShipping whShipping = null;
+		try {
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				whShipping = new WhShipping();
+				whShipping.setId(rs.getString("id"));
+				whShipping.setRequestId(rs.getString("request_id"));
+				whShipping.setBoxId(rs.getString("box_id"));
+				whShipping.setMpNo(rs.getString("mp_no"));
+				whShipping.setMpExpiryDate(rs.getString("new_mp_expiry_date"));
+				whShipping.setHardwareBarcode1(rs.getString("hardware_barcode_1"));
+				whShipping.setDateScan1(rs.getString("date_scan_1"));
+				whShipping.setHardwareBarcode2(rs.getString("hardware_barcode_2"));
+				whShipping.setDateScan2(rs.getString("date_scan_2"));
+				whShipping.setShippingDate(rs.getString("shipping_date"));
+				whShipping.setStatus(rs.getString("status"));
+				whShipping.setRemarks(rs.getString("remarks"));
+				whShipping.setFlag(rs.getString("flag"));
+				whShipping.setCreatedBy(rs.getString("created_by"));
+				whShipping.setCreatedDate(rs.getString("created_date"));
+				whShipping.setModifiedBy(rs.getString("modified_by"));
+				whShipping.setModifiedDate(rs.getString("modified_date"));
+                                
+                                //utk display data from table wh_request
+                                whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
+                                whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
+                                whShipping.setRequestQuantity(rs.getString("quantity"));
+                                whShipping.setRequestType(rs.getString("type"));
+                                whShipping.setRequestRequestedBy(rs.getString("requested_by"));
+                                whShipping.setRequestRequestedDate(rs.getString("requested_date"));
 			}
 			rs.close();
 			ps.close();
