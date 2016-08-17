@@ -10,6 +10,7 @@ import com.onsemi.cdars.dao.WhShippingDAO;
 import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhRequest;
+import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
@@ -47,8 +48,6 @@ public class WhShippingController {
     ) {
         WhShippingDAO whShippingDAO = new WhShippingDAO();
         List<WhShipping> whShippingList = whShippingDAO.getWhShippingListMergeWithRequest();
-        
-        LOGGER.info("test cmne..."+ServletContext.class);
 
         model.addAttribute("whShippingList", whShippingList);
         return "whShipping/whShipping";
@@ -191,20 +190,40 @@ public class WhShippingController {
             Model model,
             Locale locale,
             RedirectAttributes redirectAttrs,
+            HttpServletRequest request,
             @ModelAttribute UserSession userSession,
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String hardwareBarcode1,
             @RequestParam(required = false) String hardwareBarcode2,
             @RequestParam(required = false) String shippingDate,
+            @RequestParam(required = false) String mpNoV,
             @RequestParam(required = false) String status
     ) {
         WhShipping whShipping = new WhShipping();
         whShipping.setId(id);
         whShipping.setHardwareBarcode2(hardwareBarcode2);
-        if (hardwareBarcode2 == null ? hardwareBarcode1 == null : hardwareBarcode2.equals(hardwareBarcode1)) {
+        if (hardwareBarcode2 == null ? mpNoV == null : hardwareBarcode2.equals(mpNoV)) {
             whShipping.setStatus("Verified");
         } else {
             whShipping.setStatus("Trip Ticket and Barcode Sticker Not Match");
+
+            //send email to supervisor if mismatch
+            EmailSender emailSender = new EmailSender();
+            com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+            user.setFullname(userSession.getFullname());
+            emailSender.htmlEmail(
+                    servletContext,
+                    //                    user name
+                    user,
+                    //                    to
+                    "farhannazri27@yahoo.com",
+                    //                    subject
+                    "Mismatch Scan for Barcode Sticker Vs Trip Ticket",
+                    //                    msg
+                    "Mismatch scan for barcode sticker vs trip ticket has been found. Please click this "
+                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whShipping/edit/" + id + "\">link</a>"
+                    + " and re-check to ensure barcode sticker vs trip ticket are match.  "
+            );
         }
         whShipping.setModifiedBy(userSession.getFullname());
         WhShippingDAO whShippingDAO = new WhShippingDAO();
