@@ -18,12 +18,8 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.pdf.AbstractITextPdfViewPotrait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WhShippingPdf extends AbstractITextPdfViewPotrait {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(WhShippingPdf.class);
 
     @Override
     protected void buildPdfDocument(Map<String, Object> model, Document doc,
@@ -31,7 +27,6 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
             throws Exception {
 
         WhShipping whShipping = (WhShipping) model.get("whShipping");
-        
         
 
         if ("Motherboard".equals(whShipping.getRequestEquipmentType())) {
