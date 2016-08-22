@@ -236,7 +236,6 @@ public class ParameterMasterController {
     ) {
         ParameterDetails parameterDetails = new ParameterDetails();
         parameterDetails.setMasterCode(masterCode);
-        ParameterDetailsDAO p = new ParameterDetailsDAO();
         parameterDetails.setDetailCode(detailsCode);
         parameterDetails.setName(detailsName);
         parameterDetails.setRemarks(remarks);
