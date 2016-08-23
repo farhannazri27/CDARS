@@ -17,7 +17,7 @@
                             <div class="form-group">
                                 <label for="mpNo" class="col-lg-4 control-label">Material Pass Number *</label>
                                 <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="mpNo" name="mpNo" placeholder="Material Pass Number" value="">
+                                    <input type="text" class="form-control" id="mpNo" name="mpNo" placeholder="Material Pass Number" value="" autofocus="autofocus">
                                 </div>
                             </div>
                             <a href="${contextPath}/wh/whMpList" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>

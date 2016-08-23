@@ -214,4 +214,32 @@ public class WhMpListDAO {
         }
         return queryResult;
     }
+    
+     public Integer getCountMpNo(String mpNo) {
+//        QueryResult queryResult = new QueryResult();
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_mp_list WHERE mp_no = '" + mpNo + "'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
 }

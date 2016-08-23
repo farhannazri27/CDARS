@@ -73,139 +73,149 @@ public class WhMpListController {
             @ModelAttribute UserSession userSession,
             @RequestParam(required = false) String mpNo
     ) {
-        //check ad material pass ke tidak.
+        //check ad material pass ke tidak dkt shipping.
         WhShippingDAO whShipD = new WhShippingDAO();
         int count = whShipD.getCountMpNo(mpNo);
         if (count != 0) {
-            WhShippingDAO whshipD = new WhShippingDAO();
-
-            WhShipping whship = whshipD.getWhShippingMergeWithRequestByMpNo(mpNo);
-
-            WhMpList whMpList = new WhMpList();
-            whMpList.setWhShipId(whship.getId());
-            whMpList.setMpNo(mpNo);
-            whMpList.setMpExpiryDate(whship.getMpExpiryDate());
-            whMpList.setHardwareId(whship.getRequestEquipmentId());
-            whMpList.setHardwareType(whship.getRequestEquipmentType());
-            whMpList.setQuantity(whship.getRequestQuantity());
-            whMpList.setRequestedBy(whship.getRequestRequestedBy());
-            whMpList.setRequestedDate(whship.getRequestRequestedDate());
-            whMpList.setCreatedBy(userSession.getFullname());
+            //check da ade ke mp_no dkt whmplist
             WhMpListDAO whMpListDAO = new WhMpListDAO();
-            QueryResult queryResult = whMpListDAO.insertWhMpList(whMpList);
-            args = new String[1];
-            args[0] = mpNo;
-            if (queryResult.getGeneratedKey().equals("0")) {
-                model.addAttribute("error", messageSource.getMessage("general.label.save.error", args, locale));
-                model.addAttribute("whMpList", whMpList);
-                return "whMpList/add";
-            } else {
-                File file = new File("C:\\cdars_shipping.csv");
+            int countMpNo = whMpListDAO.getCountMpNo(mpNo);
+            if (countMpNo == 0) {
+                WhShippingDAO whshipD = new WhShippingDAO();
 
-                if (file.exists()) {
-                    //create csv file
-                    LOGGER.info("tiada header");
-                    FileWriter fileWriter = null;
-                    try {
-                        fileWriter = new FileWriter("C:\\cdars_shipping.csv", true);
-                        //New Line after the header
-                        fileWriter.append(LINE_SEPARATOR);
+                WhShipping whship = whshipD.getWhShippingMergeWithRequestByMpNo(mpNo);
 
-                        fileWriter.append(queryResult.getGeneratedKey());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestEquipmentType());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestEquipmentId());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestQuantity());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(mpNo);
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getMpExpiryDate());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestRequestedBy());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestRequestedDate());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRemarks());
-                        fileWriter.append(COMMA_DELIMITER);
-                        System.out.println("append to CSV file Succeed!!!");
-                    } catch (Exception ee) {
-                        ee.printStackTrace();
-                    } finally {
-                        try {
-                            fileWriter.close();
-                        } catch (IOException ie) {
-                            System.out.println("Error occured while closing the fileWriter");
-                            ie.printStackTrace();
-                        }
-                    }
+                WhMpList whMpList = new WhMpList();
+                whMpList.setWhShipId(whship.getId());
+                whMpList.setMpNo(mpNo);
+                whMpList.setMpExpiryDate(whship.getMpExpiryDate());
+                whMpList.setHardwareId(whship.getRequestEquipmentId());
+                whMpList.setHardwareType(whship.getRequestEquipmentType());
+                whMpList.setQuantity(whship.getRequestQuantity());
+                whMpList.setRequestedBy(whship.getRequestRequestedBy());
+                whMpList.setRequestedDate(whship.getRequestRequestedDate());
+                whMpList.setCreatedBy(userSession.getFullname());
+                whMpListDAO = new WhMpListDAO();
+                QueryResult queryResult = whMpListDAO.insertWhMpList(whMpList);
+                args = new String[1];
+                args[0] = mpNo;
+                if (queryResult.getGeneratedKey().equals("0")) {
+                    model.addAttribute("error", messageSource.getMessage("general.label.save.error", args, locale));
+                    model.addAttribute("whMpList", whMpList);
+                    return "whMpList/add";
                 } else {
-                    FileWriter fileWriter = null;
-                    try {
-                        fileWriter = new FileWriter("C:\\cdars_shipping.csv");
-                        LOGGER.info("no file yet");
-                        //Adding the header
-                        fileWriter.append(HEADER);
+                    File file = new File("C:\\cdars_shipping.csv");
 
-                        //New Line after the header
-                        fileWriter.append(LINE_SEPARATOR);
-
-                        fileWriter.append(queryResult.getGeneratedKey());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestEquipmentType());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestEquipmentId());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestQuantity());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(mpNo);
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getMpExpiryDate());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestRequestedBy());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRequestRequestedDate());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(whship.getRemarks());
-                        fileWriter.append(COMMA_DELIMITER);
-                        System.out.println("Write new to CSV file Succeed!!!");
-                    } catch (Exception ee) {
-                        ee.printStackTrace();
-                    } finally {
+                    if (file.exists()) {
+                        //create csv file
+                        LOGGER.info("tiada header");
+                        FileWriter fileWriter = null;
                         try {
-                            fileWriter.close();
-                        } catch (IOException ie) {
-                            System.out.println("Error occured while closing the fileWriter");
-                            ie.printStackTrace();
+                            fileWriter = new FileWriter("C:\\cdars_shipping.csv", true);
+                            //New Line after the header
+                            fileWriter.append(LINE_SEPARATOR);
+
+                            fileWriter.append(queryResult.getGeneratedKey());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestEquipmentType());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestEquipmentId());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestQuantity());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(mpNo);
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getMpExpiryDate());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestRequestedBy());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestRequestedDate());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRemarks());
+                            fileWriter.append(COMMA_DELIMITER);
+                            System.out.println("append to CSV file Succeed!!!");
+                        } catch (Exception ee) {
+                            ee.printStackTrace();
+                        } finally {
+                            try {
+                                fileWriter.close();
+                            } catch (IOException ie) {
+                                System.out.println("Error occured while closing the fileWriter");
+                                ie.printStackTrace();
+                            }
+                        }
+                    } else {
+                        FileWriter fileWriter = null;
+                        try {
+                            fileWriter = new FileWriter("C:\\cdars_shipping.csv");
+                            LOGGER.info("no file yet");
+                            //Adding the header
+                            fileWriter.append(HEADER);
+
+                            //New Line after the header
+                            fileWriter.append(LINE_SEPARATOR);
+
+                            fileWriter.append(queryResult.getGeneratedKey());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestEquipmentType());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestEquipmentId());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestQuantity());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(mpNo);
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getMpExpiryDate());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestRequestedBy());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestRequestedDate());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRemarks());
+                            fileWriter.append(COMMA_DELIMITER);
+                            System.out.println("Write new to CSV file Succeed!!!");
+                        } catch (Exception ee) {
+                            ee.printStackTrace();
+                        } finally {
+                            try {
+                                fileWriter.close();
+                            } catch (IOException ie) {
+                                System.out.println("Error occured while closing the fileWriter");
+                                ie.printStackTrace();
+                            }
                         }
                     }
-                }
 
-                EmailSender emailSender = new EmailSender();
-                com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
-                user.setFullname(userSession.getFullname());
-                String[] to = {"farhannazri27@yahoo.com", "hmsrelon@gmail.com"};
-                emailSender.htmlEmailWithAttachment(
-                        servletContext,
-                        //                    user name
-                        user,
-                        //                    to
-                        to,
-                        //                         "farhannazri27@yahoo.com",
-                        // attachment file
-                        new File("C:\\cdars_shipping.csv"),
-                        //                    subject
-                        "New Hardware Shipping from CDARS",
-                        //                    msg
-                        "New hardware will be ship to storage factory. Please go to this link "
-                        + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">CDARS</a>"
-                        + " to check the shipping list."
-                );
-                redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.save.success", args, locale));
+                    EmailSender emailSender = new EmailSender();
+                    com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+                    user.setFullname(userSession.getFullname());
+                    String[] to = {"farhannazri27@yahoo.com", "hmsrelon@gmail.com"};
+                    emailSender.htmlEmailWithAttachment(
+                            servletContext,
+                            //                    user name
+                            user,
+                            //                    to
+                            to,
+                            //                         "farhannazri27@yahoo.com",
+                            // attachment file
+                            new File("C:\\cdars_shipping.csv"),
+                            //                    subject
+                            "New Hardware Shipping from CDARS",
+                            //                    msg
+                            "New hardware will be ship to storage factory. Please go to this link "
+                            + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">CDARS</a>"
+                            + " to check the shipping list."
+                    );
+                    redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.save.success", args, locale));
 //			return "redirect:/whMpList/edit/" + queryResult.getGeneratedKey();
+                    return "whMpList/add";
+                }
+            } else {
+                String messageError = "Material Pass Number " + mpNo + " already added to the list!";
+                model.addAttribute("error", messageError);
                 return "whMpList/add";
             }
+
         } else {
             String messageError = "Material Pass Number " + mpNo + " Not Exist!";
             model.addAttribute("error", messageError);
