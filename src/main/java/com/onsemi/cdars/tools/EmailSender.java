@@ -18,14 +18,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import org.springframework.ws.mime.Attachment;
 
 public class EmailSender extends SpringBeanAutowiringSupport {
 
@@ -128,7 +126,7 @@ public class EmailSender extends SpringBeanAutowiringSupport {
         }).start();
     }
 
-    public void htmlEmailWithAttachment(final ServletContext servletContext, final User user, final String to, final String subject, final String msg) {
+    public void htmlEmailWithAttachment(final ServletContext servletContext, final User user, final String[] to, final File file, final String subject, final String msg) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -143,7 +141,7 @@ public class EmailSender extends SpringBeanAutowiringSupport {
                     htmlEmail.setSSLOnConnect(true);
                     htmlEmail.setDebug(true);
 
-                    File file = new File("C:\\test.csv");
+//                    File file = new File("C:\\test.csv");
 
                     htmlEmail.setFrom(email.getSender());
                     htmlEmail.addTo(to);

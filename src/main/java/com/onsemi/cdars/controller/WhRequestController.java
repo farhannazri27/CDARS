@@ -187,14 +187,14 @@ public class WhRequestController {
 //            only create csv file and send email to warehouse if requestor want to retrieve hardware
             if ("Retrieve".equals(requestType)) {
 
-                File file = new File("C:\\test.csv");
+                File file = new File("C:\\cdars_retrieve.csv");
 
                 if (file.exists()) {
                     //Create List for holding Employee objects
                     LOGGER.info("tiada header");
                     FileWriter fileWriter = null;
                     try {
-                        fileWriter = new FileWriter("C:\\test.csv", true);
+                        fileWriter = new FileWriter("C:\\cdars_retrieve.csv", true);
                         //New Line after the header
                         fileWriter.append(LINE_SEPARATOR);
 
@@ -233,7 +233,7 @@ public class WhRequestController {
                 } else {
                     FileWriter fileWriter = null;
                     try {
-                        fileWriter = new FileWriter("C:\\test.csv", true);
+                        fileWriter = new FileWriter("C:\\cdars_retrieve.csv");
                         LOGGER.info("no file yet");
                         //Adding the header
                         fileWriter.append(HEADER);
@@ -282,12 +282,15 @@ public class WhRequestController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
+                String[] to = {"farhannazri27@yahoo.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
                         user,
                         //                    to
-                        "hmsrelon@gmail.com",
+                        to,
+                        // attachment file
+                        new File("C:\\cdars_retrieve.csv"),
                         //                    subject
                         "New Hardware Request from CDARS",
                         //                    msg

@@ -16,11 +16,11 @@
                         <div class="clearfix">
                             <h2 class="pull-left">Shipping List</h2>
 
-                            <!--                            <div class="filter-block pull-right">
-                                                            <a href="${contextPath}/wh/whRequest/add" class="btn btn-primary pull-right">
-                                                                <i class="fa fa-plus-circle fa-lg"></i> Add New Request
-                                                            </a>
-                                                        </div>-->
+                            <div class="filter-block pull-right">
+                                <a href="${contextPath}/wh/whMpList" class="btn btn-primary pull-right">
+                                    <i class="fa fa-bars fa-lg"></i> Create Shipping Material Pass List
+                                </a>
+                            </div>
                         </div>
                         <hr/>
                         <div class="clearfix">
@@ -64,7 +64,7 @@
                                             <td id="modal_delete_info_${whShipping.id}"><c:out value="${whShipping.requestEquipmentId}"/></td>
                                             <td><c:out value="${whShipping.requestQuantity}"/></td>
                                             <td><c:out value="${whShipping.requestRequestedBy}"/></td>
-                                            <td><c:out value="${whShipping.requestRequestedDate}"/></td>
+                                            <td><c:out value="${whShipping.requestViewRequestedDate}"/></td>
                                             <td><c:out value="${whShipping.mpNo}"/></td>
                                             <td><c:out value="${whShipping.status}"/></td>
                                             <td align="center">

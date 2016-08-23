@@ -28,6 +28,7 @@ public class WhShipping {
     private String requestType;
     private String requestRequestedBy;
     private String requestRequestedDate;
+    private String requestViewRequestedDate;
 
     public String getId() {
         return id;
@@ -219,6 +220,14 @@ public class WhShipping {
 
     public void setRequestRequestedDate(String requestRequestedDate) {
         this.requestRequestedDate = requestRequestedDate;
+    }
+
+    public String getRequestViewRequestedDate() {
+        return requestViewRequestedDate;
+    }
+
+    public void setRequestViewRequestedDate(String requestViewRequestedDate) {
+        this.requestViewRequestedDate = requestViewRequestedDate;
     }
     
     

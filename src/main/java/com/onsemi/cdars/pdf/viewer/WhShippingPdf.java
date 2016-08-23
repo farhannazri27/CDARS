@@ -27,7 +27,6 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
             throws Exception {
 
         WhShipping whShipping = (WhShipping) model.get("whShipping");
-        
 
         if ("Motherboard".equals(whShipping.getRequestEquipmentType())) {
             String title = "MOTHERBOARD TRIP TICKET";
@@ -66,10 +65,9 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
         Barcode128 code128 = new Barcode128();
         code128.setGenerateChecksum(true);
         code128.setCode(whShipping.getRequestEquipmentId());
-
+        
         doc.add(code128.createImageWithBarcode(writer.getDirectContent(), null, null));
         //        doc.add(code128.createImageWithBarcode(barcodewriter.getDirectContent(), BaseColor.BLACK, BaseColor.YELLOW));
-
         Integer cellPadding = 7;
 
         PdfPTable table = new PdfPTable(2);
@@ -140,6 +138,17 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
         cellContent.setPhrase(new Phrase(whShipping.getRequestRequestedDate(), fontContent));
         table.addCell(cellContent);
 
+//        cellHeader.setPhrase(new Phrase("Requested Date", fontHeader));
+//        table.addCell(cellHeader);
+//        Barcode128 code128 = new Barcode128();
+//        code128.setGenerateChecksum(true);
+//        code128.setCode(whShipping.getRequestEquipmentId());
+//        code128.setBarHeight(20f); // great! but what about width???
+//        code128.setX(1.5f);
+//        cellContent.setImage(code128.createImageWithBarcode(writer.getDirectContent(), null, null));
+//        table.addCell(cellContent);
+
+//        doc.add(code128.createImageWithBarcode(writer.getDirectContent(), null, null));
         doc.add(table);
 
     }
