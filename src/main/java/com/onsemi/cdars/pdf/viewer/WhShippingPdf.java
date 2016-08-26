@@ -10,9 +10,12 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.Barcode128;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -62,17 +65,12 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
 
         doc.add(Chunk.NEWLINE);
 
-        Barcode128 code128 = new Barcode128();
-        code128.setGenerateChecksum(true);
-        code128.setCode(whShipping.getRequestEquipmentId());
-        
-        doc.add(code128.createImageWithBarcode(writer.getDirectContent(), null, null));
         //        doc.add(code128.createImageWithBarcode(barcodewriter.getDirectContent(), BaseColor.BLACK, BaseColor.YELLOW));
         Integer cellPadding = 7;
 
         PdfPTable table = new PdfPTable(2);
         table.setWidthPercentage(100.0f);
-        table.setWidths(new float[]{2.0f, 4.0f});
+        table.setWidths(new float[]{1.2f, 4.0f});
         table.setSpacingBefore(20);
 
         Font fontHeader = fontOpenSans(9f, Font.BOLD);
@@ -81,41 +79,51 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
         PdfPCell cellHeader = new PdfPCell();
         cellHeader.setBackgroundColor(BaseColor.DARK_GRAY);
         cellHeader.setPadding(cellPadding);
+//        cellHeader.setBorder(Rectangle.NO_BORDER);
 
         Font fontContent = fontOpenSans();
 
         PdfPCell cellContent = new PdfPCell();
         cellContent.setPadding(cellPadding);
+//        cellContent.setBorder(Rectangle.NO_BORDER);
+
+        PdfContentByte cb = writer.getDirectContent();
+        Barcode128 code128 = new Barcode128();
+        code128.setGenerateChecksum(true);
+        code128.setCode(whShipping.getRequestEquipmentId());
+        code128.setSize(cellPadding);
+        Image code128Image = code128.createImageWithBarcode(cb, null, null);
+        PdfPCell barcode = new PdfPCell(code128Image);
+//            cell.setBorder(Rectangle.NO_BORDER);
+        barcode.setPaddingLeft(8.0f);
+        barcode.setPaddingTop(5.0f);
 
         whShipping = (WhShipping) model.get("whShipping");
 
         if ("Motherboard".equals(whShipping.getRequestEquipmentType())) {
             cellHeader.setPhrase(new Phrase("Motherboard ID", fontHeader));
             table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whShipping.getRequestEquipmentId(), fontContent));
-            table.addCell(cellContent);
+            table.addCell(barcode);
         } else if ("Stencil".equals(whShipping.getRequestEquipmentType())) {
             cellHeader.setPhrase(new Phrase("Stencil ID", fontHeader));
             table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whShipping.getRequestEquipmentId(), fontContent));
-            table.addCell(cellContent);
+            table.addCell(barcode);
         } else if ("Tray".equals(whShipping.getRequestEquipmentType())) {
             cellHeader.setPhrase(new Phrase("Tray ID", fontHeader));
             table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whShipping.getRequestEquipmentId(), fontContent));
-            table.addCell(cellContent);
+            table.addCell(barcode);
 
         } else if ("PCB".equals(whShipping.getRequestEquipmentType())) {
             cellHeader.setPhrase(new Phrase("PCB ID", fontHeader));
             table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whShipping.getRequestEquipmentId(), fontContent));
-            table.addCell(cellContent);
+            table.addCell(barcode);
 
         } else {
             cellHeader.setPhrase(new Phrase("Equipment ID", fontHeader));
             table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whShipping.getRequestEquipmentId(), fontContent));
-            table.addCell(cellContent);
+//            cellContent.setPhrase(new Phrase(whShipping.getRequestEquipmentId(), fontContent));
+//            table.addCell(cellContent);
+            table.addCell(barcode);
         }
 
         cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
@@ -135,20 +143,9 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
 
         cellHeader.setPhrase(new Phrase("Requested Date", fontHeader));
         table.addCell(cellHeader);
-        cellContent.setPhrase(new Phrase(whShipping.getRequestRequestedDate(), fontContent));
+        cellContent.setPhrase(new Phrase(whShipping.getRequestViewRequestedDate(), fontContent));
         table.addCell(cellContent);
 
-//        cellHeader.setPhrase(new Phrase("Requested Date", fontHeader));
-//        table.addCell(cellHeader);
-//        Barcode128 code128 = new Barcode128();
-//        code128.setGenerateChecksum(true);
-//        code128.setCode(whShipping.getRequestEquipmentId());
-//        code128.setBarHeight(20f); // great! but what about width???
-//        code128.setX(1.5f);
-//        cellContent.setImage(code128.createImageWithBarcode(writer.getDirectContent(), null, null));
-//        table.addCell(cellContent);
-
-//        doc.add(code128.createImageWithBarcode(writer.getDirectContent(), null, null));
         doc.add(table);
 
     }

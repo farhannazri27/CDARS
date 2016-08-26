@@ -17,7 +17,7 @@
                             <h2 class="pull-left">Material Pass List</h2>
 
                             <div class="filter-block pull-right">
-                                <a href="${contextPath}/wh/whMpList/add" class="btn btn-primary pull-right">
+                                <a href="${contextPath}/wh/whShipping/whMpList/add" class="btn btn-primary pull-right">
                                     <i class="fa fa-plus-circle fa-lg"></i> Add New Material Pass Number
                                 </a>
                             </div>
@@ -136,7 +136,7 @@
                                     function modalDelete(e) {
 //                var deleteId = $(e).attr("modaldeleteid");
 //                var deleteInfo = $("#modal_delete_info_" + deleteId).html();
-                                        var deleteUrl = "${contextPath}/wh/whMpList/deleteAll";
+                                        var deleteUrl = "${contextPath}/wh/whShipping/whMpList/deleteAll";
                                         var deleteMsg = "Are you sure want to delete all? All related data will be deleted.";
                                         $("#delete_modal .modal-body").html(deleteMsg);
                                         $("#modal_delete_button").attr("href", deleteUrl);

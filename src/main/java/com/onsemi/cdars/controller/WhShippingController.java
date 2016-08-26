@@ -137,7 +137,7 @@ public class WhShippingController {
         whShipping.setMpNo(mpNo);
         whShipping.setMpExpiryDate(mpExpiryDate);
         if ("No Material Pass Number".equals(status)) {
-            whShipping.setStatus("No Scan Trip Ticket Yet");
+            whShipping.setStatus("Not Scan Trip Ticket Yet");
         } else {
             whShipping.setStatus(status);
         }
@@ -167,22 +167,30 @@ public class WhShippingController {
         WhShipping whShipping = new WhShipping();
         whShipping.setId(id);
         whShipping.setHardwareBarcode1(hardwareBarcode1);
-        if ("No Scan Trip Ticket Yet".equals(status)) {
-            whShipping.setStatus("No Scan Barcode Sticker Yet");
+        if ("Not Scan Trip Ticket Yet".equals(status)) {
+            whShipping.setStatus("Not Scan Barcode Sticker Yet");
         } else {
             whShipping.setStatus(status);
         }
         whShipping.setModifiedBy(userSession.getFullname());
         WhShippingDAO whShippingDAO = new WhShippingDAO();
-        QueryResult queryResult = whShippingDAO.updateWhShippingTt(whShipping);
-        args = new String[1];
-        args[0] = hardwareBarcode1;
-        if (queryResult.getResult() == 1) {
-            redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+        WhShipping whShipping2 = whShippingDAO.getWhShippingMergeWithRequest(id);
+        if (hardwareBarcode1.equals(whShipping2.getRequestEquipmentId())) {
+            whShippingDAO = new WhShippingDAO();
+            QueryResult queryResult = whShippingDAO.updateWhShippingTt(whShipping);
+            args = new String[1];
+            args[0] = hardwareBarcode1;
+            if (queryResult.getResult() == 1) {
+                redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+            } else {
+                redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
+            }
+            return "redirect:/wh/whShipping/edit/" + id;
         } else {
-            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
+            redirectAttrs.addFlashAttribute("error", "ID Not Match! Please re-check.");
+            return "redirect:/wh/whShipping/edit/" + id;
         }
-        return "redirect:/wh/whShipping/edit/" + id;
+
     }
 
     @RequestMapping(value = "/updateScanBs", method = RequestMethod.POST)
@@ -349,5 +357,29 @@ public class WhShippingController {
         WhShippingDAO whShippingDAO = new WhShippingDAO();
         WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
         return new ModelAndView("whShippingPdf", "whShipping", whShipping);
+    }
+
+    @RequestMapping(value = "/viewBarcodeSticker/{whShippingId}", method = RequestMethod.GET)
+    public String viewBarcodeSticker(
+            Model model,
+            HttpServletRequest request,
+            @PathVariable("whShippingId") String whShippingId
+    ) throws UnsupportedEncodingException {
+        String pdfUrl = URLEncoder.encode(request.getContextPath() + "/wh/whShipping/viewWhBarcodeStickerPdf/" + whShippingId, "UTF-8");
+        String backUrl = servletContext.getContextPath() + "/wh/whShipping";
+        model.addAttribute("pdfUrl", pdfUrl);
+        model.addAttribute("backUrl", backUrl);
+        model.addAttribute("pageTitle", "Barcode Sticker");
+        return "pdf/viewer";
+    }
+
+    @RequestMapping(value = "/viewWhBarcodeStickerPdf/{whShippingId}", method = RequestMethod.GET)
+    public ModelAndView viewWhBarcodeStickerPdf(
+            Model model,
+            @PathVariable("whShippingId") String whShippingId
+    ) {
+        WhShippingDAO whShippingDAO = new WhShippingDAO();
+        WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
+        return new ModelAndView("whBarcodeStickerPdf", "whShipping", whShipping);
     }
 }

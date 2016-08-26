@@ -59,7 +59,7 @@
                     <div class="body">
                         <!--<label>Username</label-->
                          <label>Ondex ID</label>
-                        <input type="text" name="username">
+                        <input type="text" name="username" autofocus="autofocus">
 
                         <label>Password</label>
                         <input type="password" name="password">

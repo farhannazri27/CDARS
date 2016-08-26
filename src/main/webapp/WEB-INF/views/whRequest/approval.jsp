@@ -58,8 +58,8 @@
                                     <textarea class="form-control" rows="5" id="remarks" name="remarks" readonly>${whRequest.remarks}</textarea>
                                 </div>
                             </div>
-                                
-                                <!--approval-->
+
+                            <!--approval-->
                             <br>
                             <br>
                             <div class="form-group" id="approvalDiv" >
@@ -73,7 +73,7 @@
                                     </select>
                                 </div>
                             </div>
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label for="remarksApprover" class="col-lg-4 control-label">Remarks </label>
                                 <div class="col-lg-8">
                                     <textarea class="form-control" rows="5" id="remarksApprover" name="remarksApprover">${whRequest.remarksApprover}</textarea>
@@ -83,7 +83,7 @@
                             <a href="${contextPath}/wh/whRequest" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>
                             <div class="pull-right">
                                 <button type="reset" class="btn btn-secondary cancel">Reset</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="submit" id ="submit" name="submit" class="btn btn-primary">Save</button>
                             </div>
                             <div class="clearfix"></div>
                         </form>
@@ -117,6 +117,13 @@
                 } else {
                     $("#typediv").hide();
                     $("#quantitydiv").hide();
+                }
+
+                var element = $('#finalApprovedStatus');
+                if (element.val() === "Approved") {
+                    $("#submit").attr("disabled", true);
+                    $("#finalApprovedStatus").attr("readonly", true);
+                    $("#remarksApprover").attr("readonly", true);
                 }
 
 

@@ -13,14 +13,14 @@
                 <div class="col-lg-6">
                     <div class="main-box">
                         <h2>Material Pass Number</h2>
-                        <form id="add_mp_list_form" class="form-horizontal" role="form" action="${contextPath}/wh/whMpList/save" method="post">
+                        <form id="add_mp_list_form" class="form-horizontal" role="form" action="${contextPath}/wh/whShipping/whMpList/save" method="post">
                             <div class="form-group">
                                 <label for="mpNo" class="col-lg-4 control-label">Material Pass Number *</label>
                                 <div class="col-lg-8">
                                     <input type="text" class="form-control" id="mpNo" name="mpNo" placeholder="Material Pass Number" value="" autofocus="autofocus">
                                 </div>
                             </div>
-                            <a href="${contextPath}/wh/whMpList" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>
+                            <a href="${contextPath}/wh/whShipping/whMpList" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>
                             <div class="pull-right">
                                 <button type="reset" class="btn btn-secondary cancel">Reset</button>
                                 <button type="submit" class="btn btn-primary">Save</button>

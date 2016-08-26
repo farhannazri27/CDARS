@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping(value = "/wh/whMpList")
+@RequestMapping(value = "/wh/whShipping/whMpList")
 @SessionAttributes({"userSession"})
 public class WhMpListController {
 
@@ -240,6 +240,6 @@ public class WhMpListController {
         } else {
             redirectAttrs.addFlashAttribute("error", error);
         }
-        return "redirect:/wh/whMpList";
+        return "redirect:/wh/whShipping/whMpList";
     }
 }

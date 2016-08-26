@@ -61,7 +61,7 @@ public abstract class AbstractITextPdfViewPotrait extends AbstractView {
         // Add Logo
         ServletContext context = getServletContext();
         //String file = "/resources/img/cmts_all.png";
-        String file = "/resources/img/cdars_logo.png";
+        String file = "/resources/img/on_semi.png";
         InputStream is = context.getResourceAsStream(file);
         byte[] bytes = IOUtils.toByteArray(is);
         Image image = Image.getInstance(bytes);

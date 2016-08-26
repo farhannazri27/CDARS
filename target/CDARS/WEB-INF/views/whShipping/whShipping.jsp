@@ -17,7 +17,7 @@
                             <h2 class="pull-left">Shipping List</h2>
 
                             <div class="filter-block pull-right">
-                                <a href="${contextPath}/wh/whMpList" class="btn btn-primary pull-right">
+                                <a href="${contextPath}/wh/whShipping/whMpList" class="btn btn-primary pull-right">
                                     <i class="fa fa-bars fa-lg"></i> Create Shipping Material Pass List
                                 </a>
                             </div>
@@ -67,19 +67,28 @@
                                             <td><c:out value="${whShipping.requestViewRequestedDate}"/></td>
                                             <td><c:out value="${whShipping.mpNo}"/></td>
                                             <td><c:out value="${whShipping.status}"/></td>
-                                            <td align="center">
-                                                <a href="${contextPath}/wh/whShipping/view/${whShipping.id}" class="table-link" title="Trip Ticket">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-square fa-stack-2x"></i>
-                                                        <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
-                                                    </span>
-                                                </a>
+                                            <td align="left">
                                                 <a href="${contextPath}/wh/whShipping/edit/${whShipping.id}" class="table-link" title="Edit">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
                                                         <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
+                                                <a href="${contextPath}/wh/whShipping/view/${whShipping.id}" class="table-link" title="Trip Ticket">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-square fa-stack-2x"></i>
+                                                        <i class="fa fa-ticket fa-stack-1x fa-inverse"></i>
+                                                    </span>
+                                                </a>
+                                                <c:if test="${whShipping.status == 'No Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match'}">
+                                                    </a>
+                                                    <a href="${contextPath}/wh/whShipping/viewBarcodeSticker/${whShipping.id}" class="table-link" title="Barcode Sticker">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-barcode fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                </c:if>
                                                 <a modaldeleteid="${whShipping.id}" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
