@@ -242,10 +242,24 @@
         </dependency>
         
         <!--JSON - 25/7/16-->
-         <dependency>
+        <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.13</version>
+        </dependency>
+        
+        <!--org.json-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20141113</version>
+        </dependency>
+        
+        <!--commons-httpclient-->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
         </dependency>
         
         <!-- Simple JSON -->
@@ -291,33 +305,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-            
-            <!--jaxb2 - web service-->
 <!--            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.11.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <schemaLanguage>WSDL</schemaLanguage>
-                    <generatePackage>com.onsemi.cdars</generatePackage>
-                    <forceRegenerate>true</forceRegenerate>
-                    <schemas>
-                        <schema>
-                            <url>http://mysed-rel-spv2/SPTSServices/SPTSServices.asmx?WSDL</url>
-                        </schema>
-                    </schemas>
-                </configuration>
-            </plugin>-->
-            <!-- end::wsdl[] -->
-            
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <version>1.5</version>
@@ -330,74 +318,20 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- Package to store the generated file -->
+                     Package to store the generated file 
                     <packageName>com.onsemi.cdars.wsdl</packageName>
-                    <!-- Treat the input as WSDL -->
+                     Treat the input as WSDL 
                     <wsdl>true</wsdl>
-                    <!-- Input is not XML schema -->
+                     Input is not XML schema 
                     <xmlschema>false</xmlschema>
-                    <!-- The WSDL file that you saved earlier -->
+                     The WSDL file that you saved earlier 
                     <schemaFiles>SPTSServices2.wsdl</schemaFiles>
-                    <!-- The location of the WSDL file -->
+                     The location of the WSDL file 
                     <schemaDirectory>${project.basedir}/src/main/resources</schemaDirectory>
-                    <!-- The output directory to store the generated Java files -->
+                     The output directory to store the generated Java files 
                     <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
-                    <!-- Don't clear output directory on each run -->
+                     Don't clear output directory on each run 
                     <clearOutputDir>false</clearOutputDir>
-                </configuration>
-            </plugin>
-            
-            <!--            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.12.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <schemaIncludes>
-                                <include>jaxb/sptsWebService/*.xsd</include>
-                            </schemaIncludes>
-                            <episodeFile>${project.build.directory}/generated-sources/xjc/META-INF/jaxb-sptsWebService.episode</episodeFile>
-                            <generatePackage>com.onsemi.cdars</generatePackage>
-                        </configuration>
-                        <id>jaxb-generate-sptsWebService</id>
-                    </execution>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <schemaIncludes>
-                                <include>jaxb/sptsWebService/*.xsd</include>
-                            </schemaIncludes>
-                            <episodeFile>${project.build.directory}/generated-sources/xjc/META-INF/jaxb-sptsWebService.episode</episodeFile>
-                            <generatePackage>com.onsemi.cdars</generatePackage>
-                        </configuration>
-                        <id>jaxb-generate-sptsWebService_1</id>
-                    </execution>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <schemaIncludes>
-                                <include>jaxb/SptsWebService/*.xsd</include>
-                            </schemaIncludes>
-                            <episodeFile>${project.build.directory}/generated-sources/xjc/META-INF/jaxb-SptsWebService.episode</episodeFile>
-                            <generatePackage>com.onsemi.cdars</generatePackage>
-                        </configuration>
-                        <id>jaxb-generate-SptsWebService</id>
-                    </execution>
-                </executions>
-                <configuration>
-                    <catalog>src/main/resources/jaxb/catalog.xml</catalog>
-                    <catalogResolver>org.jvnet.jaxb2.maven2.resolver.tools.ClasspathCatalogResolver</catalogResolver>
-                    <forceRegenerate>true</forceRegenerate>
-                    <generateDirectory>${project.build.directory}/generated-sources/xjc</generateDirectory>
-                    <verbose>true</verbose>
                 </configuration>
             </plugin>-->
         </plugins>
