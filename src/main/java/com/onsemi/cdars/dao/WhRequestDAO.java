@@ -136,9 +136,6 @@ public class WhRequestDAO {
                 whRequest.setRequestedBy(rs.getString("requested_by"));
                 whRequest.setRequestedDate(rs.getString("requested_date"));
                 whRequest.setRequestedDateView(rs.getString("requested_date_view"));
-                whRequest.setFirstApprovedStatus(rs.getString("first_approved_status"));
-                whRequest.setFirstApprovedBy(rs.getString("first_approved_by"));
-                whRequest.setFirstApprovedDate(rs.getString("first_approved_date"));
                 whRequest.setFinalApprovedStatus(rs.getString("final_approved_status"));
                 whRequest.setFinalApprovedBy(rs.getString("final_approved_by"));
                 whRequest.setFinalApprovedDate(rs.getString("final_approved_date"));
@@ -185,9 +182,6 @@ public class WhRequestDAO {
                 whRequest.setRequestedBy(rs.getString("requested_by"));
                 whRequest.setRequestedDate(rs.getString("requested_date"));
                 whRequest.setRequestedDateView(rs.getString("requested_date_view"));
-                whRequest.setFirstApprovedStatus(rs.getString("first_approved_status"));
-                whRequest.setFirstApprovedBy(rs.getString("first_approved_by"));
-                whRequest.setFirstApprovedDate(rs.getString("first_approved_date"));
                 whRequest.setFinalApprovedStatus(rs.getString("final_approved_status"));
                 whRequest.setFinalApprovedBy(rs.getString("final_approved_by"));
                 whRequest.setFinalApprovedDate(rs.getString("final_approved_date"));
@@ -233,8 +227,6 @@ public class WhRequestDAO {
                 whRequest.setRequestedBy(rs.getString("requested_by"));
                 whRequest.setRequestedDate(rs.getString("requested_date"));
                 whRequest.setRequestedDateView(rs.getString("requested_date_view"));
-                whRequest.setFirstApprovedBy(rs.getString("first_approved_by"));
-                whRequest.setFirstApprovedDate(rs.getString("first_approved_date"));
                 whRequest.setFinalApprovedBy(rs.getString("final_approved_by"));
                 whRequest.setFinalApprovedDate(rs.getString("final_approved_date"));
                 whRequest.setRemarks(rs.getString("remarks"));

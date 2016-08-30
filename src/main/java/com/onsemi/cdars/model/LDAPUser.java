@@ -1,6 +1,7 @@
 package com.onsemi.cdars.model;
 
 public class LDAPUser {
+
     /* LDAPUser */
     private String id;
     private String loginId;
@@ -15,6 +16,7 @@ public class LDAPUser {
     private String createdTime;
     private String modifiedBy;
     private String modifiedTime;
+    private String selected;
 
     public LDAPUser() {
     }
@@ -122,7 +124,7 @@ public class LDAPUser {
     public void setModifiedTime(String modifiedTime) {
         this.modifiedTime = modifiedTime;
     }
-    
+
     /* LDAP User Group */
     private String groupCode;
     private String groupName;
@@ -142,5 +144,13 @@ public class LDAPUser {
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
-    
+
+    public String getSelected() {
+        return selected;
+    }
+
+    public void setSelected(String selected) {
+        this.selected = selected;
+    }
+
 }

@@ -153,6 +153,39 @@ public class LDAPUserDAO {
         return user;
     }
     
+     public LDAPUser getByOncid(String oncid) {
+        LDAPUser user = new LDAPUser();
+        String sql = "SELECT u.*, IFNULL(ug.code, '') AS group_code, IFNULL(ug.name, '') AS group_name FROM cdars_user_ldap u "
+                + "LEFT JOIN cdars_user_group ug ON (u.group_id = ug.id) "
+                + "WHERE u.oncid = ?";
+        try {
+            ResultSetHandler<LDAPUser> h = new ResultSetHandler<LDAPUser>() {
+                @Override
+                public LDAPUser handle(ResultSet rs) throws SQLException {
+                    LDAPUser user = new LDAPUser();
+                    while (rs.next()) {
+                        user.setId(rs.getString("id"));
+                        user.setLoginId(rs.getString("login_id"));
+                        user.setOncid(rs.getString("oncid"));
+                        user.setFirstname(rs.getString("firstname"));
+                        user.setLastname(rs.getString("lastname"));
+                        user.setEmail(rs.getString("email"));
+                        user.setTitle(rs.getString("title"));
+                        user.setGroupId(rs.getString("group_id"));
+                        user.setGroupCode(rs.getString("group_code"));
+                        user.setGroupName(rs.getString("group_name"));
+                    }
+                    return user;
+                }
+            };
+            QueryRunner run = new QueryRunner(dataSource);
+            user = run.query(sql, h, oncid);
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+        }
+        return user;
+    }
+    
     public LDAPUser getByLoginId(String loginId) {
         LDAPUser user = new LDAPUser();
         String sql = "SELECT u.*, IFNULL(ug.code, '') AS group_code, IFNULL(ug.name, '') AS group_name FROM cdars_user_ldap u "
@@ -207,6 +240,42 @@ public class LDAPUserDAO {
                         user.setGroupId(rs.getString("group_id"));
                         user.setGroupCode(rs.getString("group_code"));
                         user.setGroupName(rs.getString("group_name"));
+                        list.add(user);
+                    }
+                    return list;
+                }
+            };
+            QueryRunner run = new QueryRunner(dataSource);
+            list = run.query(sql, h);
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getMessage());
+        }
+        return list;
+    }
+    
+     public List<LDAPUser> list(String oncid) {
+        List<LDAPUser> list = new ArrayList<LDAPUser>();
+        String sql = "SELECT u.*, IFNULL(ug.code, '') AS group_code, IFNULL(ug.name, '') AS group_name, IF(u.oncid=\"" + oncid + "\",\"selected=''\",\"\") AS selected "
+                + "FROM cdars_user_ldap u "
+                + "LEFT JOIN cdars_user_group ug ON (u.group_id = ug.id)";
+        try {
+            ResultSetHandler<List<LDAPUser>> h = new ResultSetHandler<List<LDAPUser>>() {
+                @Override
+                public List<LDAPUser> handle(ResultSet rs) throws SQLException {
+                    List<LDAPUser> list = new ArrayList<LDAPUser>();
+                    while (rs.next()) {
+                        LDAPUser user = new LDAPUser();
+                        user.setId(rs.getString("id"));
+                        user.setLoginId(rs.getString("login_id"));
+                        user.setOncid(rs.getString("oncid"));
+                        user.setFirstname(rs.getString("firstname"));
+                        user.setLastname(rs.getString("lastname"));
+                        user.setEmail(rs.getString("email"));
+                        user.setTitle(rs.getString("title"));
+                        user.setGroupId(rs.getString("group_id"));
+                        user.setGroupCode(rs.getString("group_code"));
+                        user.setGroupName(rs.getString("group_name"));
+                        user.setSelected(rs.getString("selected"));
                         list.add(user);
                     }
                     return list;

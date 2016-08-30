@@ -10,9 +10,6 @@ public class WhRequest {
     private String type;
     private String requestedBy;
     private String requestedDate;
-    private String firstApprovedStatus;
-    private String firstApprovedBy;
-    private String firstApprovedDate;
     private String finalApprovedStatus;
     private String finalApprovedBy;
     private String finalApprovedDate;
@@ -75,22 +72,6 @@ public class WhRequest {
 
     public void setRequestedDate(String requestedDate) {
         this.requestedDate = requestedDate;
-    }
-
-    public String getFirstApprovedBy() {
-        return firstApprovedBy;
-    }
-
-    public void setFirstApprovedBy(String firstApprovedBy) {
-        this.firstApprovedBy = firstApprovedBy;
-    }
-
-    public String getFirstApprovedDate() {
-        return firstApprovedDate;
-    }
-
-    public void setFirstApprovedDate(String firstApprovedDate) {
-        this.firstApprovedDate = firstApprovedDate;
     }
 
     public String getFinalApprovedBy() {
@@ -179,14 +160,6 @@ public class WhRequest {
 
     public void setRequestedDateView(String requestedDateView) {
         this.requestedDateView = requestedDateView;
-    }
-
-    public String getFirstApprovedStatus() {
-        return firstApprovedStatus;
-    }
-
-    public void setFirstApprovedStatus(String firstApprovedStatus) {
-        this.firstApprovedStatus = firstApprovedStatus;
     }
 
     public String getFinalApprovedStatus() {

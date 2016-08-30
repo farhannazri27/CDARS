@@ -4,7 +4,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>CDARS - Login</title>
+        <title>HMS - Login</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Sistem Pengurusan Maklumat Latihan">
         <meta name="author" content="FTC">
@@ -35,7 +35,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Contamination Database and Reaction System (CDARS)</a></center>
+                    <center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Hardware Management System (HMS) - Rel Lab</a></center>
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@
                     <a href="${contextPath}/">
                         <img src="${contextPath}/resources/img/cdars_logo.png" alt="FTC" width="35%" />
                     </a>
-                    <legend>Sign in to <span class="blue">CDARS</span></legend>
+                    <legend>Sign in to <span class="blue">HMS</span></legend>
 
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger">
