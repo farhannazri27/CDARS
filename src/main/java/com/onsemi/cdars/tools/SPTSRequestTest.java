@@ -47,9 +47,9 @@ public class SPTSRequestTest {
          */
         System.out.println("GET ITEM BY PARAM...");
         JSONObject params0 = new JSONObject();
-        params0.put("itemType", "PCB%");
+        params0.put("itemType", "BIB");
         params0.put("itemStatus", "0");
-        params0.put("itemID", "12644%");
+        params0.put("itemID", "AVI772-1");
         JSONArray getItemByParam = SPTSWebService.getItemByParam(params0);
         for (int i = 0; i < getItemByParam.length(); i++) {
             System.out.println(getItemByParam.getJSONObject(i));
@@ -180,7 +180,7 @@ public class SPTSRequestTest {
             System.out.println("GET ITEM BY PKID...");
             JSONObject jsonObject1 = SPTSWebService.getItemByPKID(pkID.toString());
 //        JSONObject jsonObject1 = SPTSWebService.getItemByPKID("6085");
-
+//
             System.out.println(jsonObject1.toString());
 
             String version1 = jsonObject1.getString("Version");
@@ -189,7 +189,7 @@ public class SPTSRequestTest {
             System.out.println("UPDATE ITEM...");
             JSONObject params2 = new JSONObject();
             params2.put("pkID", pkID.toString());
-//        params2.put("pkID", "6085");
+////        params2.put("pkID", "6085");
             params2.put("version", version1);
 //        params2.put("itemID", itemID);
             params2.put("itemID", "AHWFB-18");
