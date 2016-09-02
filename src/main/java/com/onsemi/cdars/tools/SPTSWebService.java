@@ -15,7 +15,7 @@ import org.json.XML;
 
 public class SPTSWebService {
 
-//    private static final String SPTS_WEB_SERVICE_URL = "http://sptstest.jorfei.com/SPTSServices/SPTSServices.asmx";
+    // private static final String SPTS_WEB_SERVICE_URL = "http://sptstest.jorfei.com/SPTSServices/SPTSServices.asmx";
     private static final String SPTS_WEB_SERVICE_URL = "http://mysed-rel-spv2/SPTSServices/SPTSServices.asmx";
     private static final String SPTS_ACTION_GETITEMALL = "http://tempuri.org/GetItemAll";
     private static final String SPTS_ACTION_GETITEMBYPKID = "http://tempuri.org/GetItemByPKID";
@@ -46,7 +46,15 @@ public class SPTSWebService {
             JSONObject getAllItemResult = getAllItemResponse.getJSONObject("GetItemAllResult");
             JSONObject resultContent = getAllItemResult.getJSONObject("diffgr:diffgram");
             JSONObject itemDS = resultContent.getJSONObject("ItemDS");
-            items = itemDS.getJSONArray("ITEMS");
+            JSONArray jsonArray = itemDS.optJSONArray("ITEMS");
+            if (jsonArray == null) {
+                JSONObject jo = itemDS.getJSONObject("ITEMS");
+                JSONArray ja = new JSONArray();
+                ja.put(jo);
+                items = ja;
+            } else {
+                items = jsonArray;
+            }
         } else {
             String errorResponse = postMethod.getResponseBodyAsString();
             errorResponse(result, errorResponse);
@@ -106,7 +114,15 @@ public class SPTSWebService {
             JSONObject getAllItemResult = getAllItemResponse.getJSONObject("GetItemByParamResult");
             JSONObject resultContent = getAllItemResult.getJSONObject("diffgr:diffgram");
             JSONObject itemDS = resultContent.getJSONObject("ItemDS");
-            items = itemDS.getJSONArray("ITEMS");
+            JSONArray jsonArray = itemDS.optJSONArray("ITEMS");
+            if (jsonArray == null) {
+                JSONObject jo = itemDS.getJSONObject("ITEMS");
+                JSONArray ja = new JSONArray();
+                ja.put(jo);
+                items = ja;
+            } else {
+                items = jsonArray;
+            }
         } else {
             String errorResponse = postMethod.getResponseBodyAsString();
             errorResponse(result, errorResponse);
@@ -216,7 +232,7 @@ public class SPTSWebService {
             }
         } else if (result == 400) {
             System.out.println("SPTSWebService Status: " + result);
-            System.out.println("SPTSWebService Response: " + errorResponse);           
+            System.out.println("SPTSWebService Response: " + errorResponse);
         }
     }
 }
