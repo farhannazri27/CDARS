@@ -6,8 +6,11 @@
 package com.onsemi.cdars.config;
 
 import com.onsemi.cdars.dao.WhInventoryDAO;
+import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.model.WhInventory;
 import com.onsemi.cdars.model.WhInventoryTemp;
+import com.onsemi.cdars.model.WhRetrieval;
+import com.onsemi.cdars.model.WhRetrievalTemp;
 import com.onsemi.cdars.tools.QueryResult;
 import com.opencsv.CSVReader;
 import java.io.File;
@@ -134,18 +137,69 @@ public class HmsFtpConfig {
             } else {
                 LOGGER.info("csv file not found!");
             }
-            
+
             //for retrieval from sg gadut
-            File fileRetrieval = new File("C:\\Users\\fg79cj\\Documents\\retrieval\\hms_shipping.csv");
-            
-            if(fileRetrieval.exists()){
-                
-              CSVReader csvReaderForRetrieval  = new CSVReader(new FileReader("C:\\Users\\fg79cj\\Documents\\retrieval\\hms_shipping.csv"), ',', '"', 1);
-              
-               String[] retrieval = null;
-                
-            }else{
-                LOGGER.info("retrieval csv file not found!"); 
+            File fileRetrieval = new File("C:\\Users\\fg79cj\\Documents\\HMS\\hms_shipping.csv");
+
+            if (fileRetrieval.exists()) {
+
+                CSVReader csvReaderForRetrieval = new CSVReader(new FileReader("C:\\Users\\fg79cj\\Documents\\HMS\\hms_shipping.csv"), ',', '"', 1);
+
+                String[] retrieval = null;
+
+                List<WhRetrievalTemp> empList = new ArrayList<WhRetrievalTemp>();
+
+                while ((retrieval = csvReaderForRetrieval.readNext()) != null) {
+                    //Save the employee details in Employee object
+                    WhRetrievalTemp emp = new WhRetrievalTemp(retrieval[0],
+                            retrieval[1], retrieval[2],
+                            retrieval[3], retrieval[4],
+                            retrieval[5], retrieval[6]);
+                    empList.add(emp);
+                }
+
+                for (WhRetrievalTemp e : empList) {
+
+                    WhRetrievalDAO retriveDao = new WhRetrievalDAO();
+
+                    int count = retriveDao.getCountRequestIdAndMpNo(e.getRequestId(), e.getMpNo());
+
+                    if (count == 1) {
+
+                        WhRetrievalDAO idDao = new WhRetrievalDAO();
+                        String id = idDao.getId(e.getRequestId(), e.getMpNo());
+
+                        WhRetrievalDAO check = new WhRetrievalDAO();
+                        String checkstatus = check.getWhRetrieval(id).getStatus();
+
+                        if (!"Ship".equals(checkstatus) && !"Closed".equals(checkstatus) && !"Barcode Verified".equals(checkstatus)) {
+                            WhRetrieval update = new WhRetrieval();
+                            update.setId(id);
+                            update.setRequestId(e.getRequestId());
+                            update.setMpNo(e.getMpNo());
+                            update.setVerifiedBy(e.getVerifiedBy());
+                            update.setVerifiedDate(e.getVerifiedDate());
+                            update.setShippingBy(e.getShippingBy());
+                            update.setShippingDate(e.getShippingDate());
+                            update.setStatus(e.getStatus());
+                            update.setFlag("0");
+
+                            WhRetrievalDAO updateDao = new WhRetrievalDAO();
+                            QueryResult updateRetrieval = updateDao.updateWhRetrievalFromCsv(update);
+                            if (updateRetrieval.getResult() == 1) {
+                                LOGGER.info("Update Done!");
+                            } else {
+                                LOGGER.info("Update Failed!");
+                            }
+                        }
+
+                    } else {
+                        LOGGER.info("No data found");
+                    }
+                }
+
+            } else {
+                LOGGER.info("retrieval csv file not found!");
             }
 
         } catch (Exception ee) {

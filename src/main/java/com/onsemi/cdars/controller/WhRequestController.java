@@ -1,5 +1,7 @@
 package com.onsemi.cdars.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onsemi.cdars.dao.ParameterDetailsDAO;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -7,25 +9,24 @@ import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhRequestDAO;
+import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.dao.WhShippingDAO;
-import com.onsemi.cdars.model.IonicFtpTemp;
 import com.onsemi.cdars.model.ParameterDetails;
 import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.UserSession;
+import com.onsemi.cdars.model.WhRetrieval;
 import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
+import com.onsemi.cdars.tools.SPTSWebService;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class WhRequestController {
             Model model, @ModelAttribute UserSession userSession
     ) {
         WhRequestDAO whRequestDAO = new WhRequestDAO();
-        List<WhRequest> whRequestList = whRequestDAO.getWhRequestList();
+        List<WhRequest> whRequestList = whRequestDAO.getWhRequestListWithoutRetrievalAndStatusApproved();
         String groupId = userSession.getGroup();
 
         model.addAttribute("whRequestList", whRequestList);
@@ -79,7 +80,8 @@ public class WhRequestController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.GET)
-    public String add(Model model, @ModelAttribute UserSession userSession) {
+    public String add(Model model, @ModelAttribute UserSession userSession)
+            throws IOException {
 
         ParameterDetailsDAO sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> requestType = sDAO.getGroupParameterDetailList("", "006");
@@ -95,6 +97,38 @@ public class WhRequestController {
 
         sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> tray = sDAO.getGroupParameterDetailList("", "013");
+
+        JSONObject params = new JSONObject();
+//        params.put("itemName", "SO8FL 15032A Stencil");
+        params.put("itemType", "Stencil");
+        params.put("itemStatus", "0");
+        JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+        List<LinkedHashMap<String, String>> itemList = new ArrayList();
+        for (int i = 0; i < getItemByParam.length(); i++) {
+            JSONObject jsonObject = getItemByParam.getJSONObject(i);
+            LinkedHashMap<String, String> item;
+            ObjectMapper mapper = new ObjectMapper();
+            item = mapper.readValue(jsonObject.toString(), new TypeReference<LinkedHashMap<String, String>>() {
+            });
+            itemList.add(item);
+        }
+        model.addAttribute("StencilItemList", itemList);
+        
+        JSONObject paramsbib = new JSONObject();
+//        params.put("itemName", "SO8FL 15032A Stencil");
+        paramsbib.put("itemType", "BIB");
+        paramsbib.put("itemStatus", "0");
+        JSONArray getItemByParambib = SPTSWebService.getItemByParam(paramsbib);
+        List<LinkedHashMap<String, String>> itemListbib = new ArrayList();
+        for (int i = 0; i < getItemByParambib.length(); i++) {
+            JSONObject jsonObject = getItemByParambib.getJSONObject(i);
+            LinkedHashMap<String, String> item;
+            ObjectMapper mapper = new ObjectMapper();
+            item = mapper.readValue(jsonObject.toString(), new TypeReference<LinkedHashMap<String, String>>() {
+            });
+            itemListbib.add(item);
+        }
+        model.addAttribute("bibItemList", itemListbib);
 
         String username = userSession.getFullname();
         model.addAttribute("requestType", requestType);
@@ -132,9 +166,7 @@ public class WhRequestController {
         } else {
             whRequest.setQuantity("1");
         }
-
         whRequest.setType(type);
-
         if (!equipmentIdMb.equals("")) {
             whRequest.setEquipmentId(equipmentIdMb);
         } else if (!equipmentIdStencil.equals("")) {
@@ -149,8 +181,12 @@ public class WhRequestController {
         whRequest.setRequestedBy(userSession.getFullname());
         whRequest.setRemarks(remarks);
         whRequest.setCreatedBy(userSession.getId());
-        whRequest.setStatus("Waiting for Approval");
-        whRequest.setFlag("1");
+        if ("Retrieve".equals(requestType)) {
+            whRequest.setStatus("Requested");
+        } else {
+            whRequest.setStatus("Waiting for Approval");
+        }
+        whRequest.setFlag("0");
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         QueryResult queryResult = whRequestDAO.insertWhRequest(whRequest);
         args = new String[1];
@@ -186,6 +222,27 @@ public class WhRequestController {
 
 //            only create csv file and send email to warehouse if requestor want to retrieve hardware
             if ("Retrieve".equals(requestType)) {
+
+                WhRequestDAO whredao = new WhRequestDAO();
+                WhRequest whrequest = whredao.getWhRequest(queryResult.getGeneratedKey());
+
+                WhRetrieval whRetrieval = new WhRetrieval();
+                whRetrieval.setRequestId(queryResult.getGeneratedKey());
+                whRetrieval.setHardwareType(whrequest.getEquipmentType());
+                whRetrieval.setHardwareId(whrequest.getEquipmentId());
+                whRetrieval.setHardwareQty(whrequest.getQuantity());
+                whRetrieval.setRequestedBy(whrequest.getRequestedBy());
+                whRetrieval.setRequestedDate(whrequest.getRequestedDate());
+                whRetrieval.setRemarks(whrequest.getRemarks());
+                whRetrieval.setStatus("Requested");
+                whRetrieval.setFlag("0");
+                WhRetrievalDAO whRetrievalDAO = new WhRetrievalDAO();
+                QueryResult queryResultRetrieval = whRetrievalDAO.insertWhRetrieval(whRetrieval);
+                if (queryResultRetrieval.getResult() == 1) {
+                    LOGGER.info("done save to retrieval table");
+                } else {
+                    LOGGER.info("failed save to retrieval table");
+                }
 
                 File file = new File("C:\\cdars_retrieve.csv");
 
@@ -282,7 +339,7 @@ public class WhRequestController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-                String[] to = {"farhannazri27@yahoo.com"};
+                String[] to = {"hmsrelon@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
@@ -487,6 +544,8 @@ public class WhRequestController {
             String fullname = whRequest1.getRequestedBy();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
             user.setFullname(fullname);
+            
+            
 
             emailSender.htmlEmail(
                     servletContext,

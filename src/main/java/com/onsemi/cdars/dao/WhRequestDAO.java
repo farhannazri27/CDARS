@@ -210,6 +210,53 @@ public class WhRequestDAO {
         }
         return whRequestList;
     }
+    
+    public List<WhRequest> getWhRequestListWithoutRetrievalAndStatusApproved() {
+        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y') AS requested_date_view FROM cdars_wh_request WHERE request_type = 'Ship' AND status <> 'Approved' ORDER BY id DESC";
+        List<WhRequest> whRequestList = new ArrayList<WhRequest>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhRequest whRequest;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whRequest = new WhRequest();
+                whRequest.setId(rs.getString("id"));
+                whRequest.setRequestType(rs.getString("request_type"));
+                whRequest.setEquipmentType(rs.getString("equipment_type"));
+                whRequest.setEquipmentId(rs.getString("equipment_id"));
+                whRequest.setType(rs.getString("type"));
+                whRequest.setQuantity(rs.getString("quantity"));
+                whRequest.setRequestedBy(rs.getString("requested_by"));
+                whRequest.setRequestedDate(rs.getString("requested_date"));
+                whRequest.setRequestedDateView(rs.getString("requested_date_view"));
+                whRequest.setFinalApprovedStatus(rs.getString("final_approved_status"));
+                whRequest.setFinalApprovedBy(rs.getString("final_approved_by"));
+                whRequest.setFinalApprovedDate(rs.getString("final_approved_date"));
+                whRequest.setRemarks(rs.getString("remarks"));
+                whRequest.setRemarksApprover(rs.getString("remarks_approver"));
+                whRequest.setCreatedBy(rs.getString("created_by"));
+                whRequest.setCreatedDate(rs.getString("created_date"));
+                whRequest.setModifiedBy(rs.getString("modified_by"));
+                whRequest.setModifiedDate(rs.getString("modified_date"));
+                whRequest.setStatus(rs.getString("status"));
+                whRequest.setFlag(rs.getString("flag"));
+                whRequestList.add(whRequest);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whRequestList;
+    }
 
     public List<WhRequest> getWhRequestListForShipping() {
         String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y') AS requested_date_view FROM cdars_wh_request WHERE status = \"Approved\" ORDER BY id DESC";

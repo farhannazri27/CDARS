@@ -79,7 +79,7 @@
                                 <form id="mp_form" class="form-horizontal" role="form" action="${contextPath}/wh/whShipping/updateMp" method="post">
                                     <input type="hidden" name="id" value="${whShipping.id}" />
                                     <input type="hidden" name="status" value="${whShipping.status}" />
-                                    <input type="hidden" name="id" value="${mpActiveTab}" />
+                                    <input type="hidden" name="tab" value="${mpActiveTab}" />
                                     <div class="form-group">
                                         <label for=" mpNo" class="col-lg-4 control-label">Material Pass Number *</label>
                                         <div class="col-lg-5">
@@ -117,7 +117,7 @@
                                 <form id="tt_form" class="form-horizontal" role="form" action="${contextPath}/wh/whShipping/updateScanTt" method="post">
                                     <input type="hidden" name="id" value="${whShipping.id}" />
                                     <input type="hidden" name="status" value="${whShipping.status}" />
-                                    <input type="hidden" name="id" value="${ttActiveTab}" />
+                                    <input type="hidden" name="tab" value="${ttActiveTab}" />
                                     <div class="form-group">
                                         <label for=" hardwareBarcode1" class="col-lg-4 control-label">${IdLabel} *</label>
                                         <div class="col-lg-5">
@@ -125,9 +125,10 @@
                                         </div>
                                     </div>
                                     <input type="hidden" class="form-control" id="hardwareIdV" name="hardwareIdV" value="${whShipping.requestEquipmentId}">
+                                    <input type="hidden" class="form-control" id="mpNoVe" name="mpNoVe" value="${whShipping.mpNo}">
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel1">Reset</button>
-                                        <button type="submit" class="btn btn-primary">Save</button>
+                                        <button type="submit" id="submit1" name="submit1" class="btn btn-primary">Verify</button>
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>
@@ -146,7 +147,7 @@
                                 <form id="bs_form" class="form-horizontal" role="form" action="${contextPath}/wh/whShipping/updateScanBs" method="post">
                                     <input type="hidden" name="id" value="${whShipping.id}" />
                                     <input type="hidden" name="status" value="${whShipping.status}" />
-                                    <input type="hidden" name="id" value="${bsActiveTab}" />
+                                    <input type="hidden" name="tab" value="${bsActiveTab}" />
                                     <div class="form-group">
                                         <label for=" hardwareBarcode2" class="col-lg-4 control-label">Barcode Sticker(MP No) *</label>
                                         <div class="col-lg-5">
@@ -154,15 +155,11 @@
                                         </div>
                                     </div>
                                     <div id = "alert_placeholder"></div>
-                                    <div class="form-group" hidden>
-                                        <label for="mpNoV" class="col-lg-4 control-label">${IdLabel} *</label>
-                                        <div class="col-lg-8">
-                                            <input type="text" class="form-control" id="mpNoV" name="mpNoV" value="${whShipping.mpNo}">
-                                        </div>
-                                    </div>
+                                    <input type="hidden" class="form-control" id="mpNoV" name="mpNoV" value="${whShipping.mpNo}">
+                                    <input type="hidden" class="form-control" id="hardwareIdVe" name="hardwareIdVe" value="${whShipping.hardwareBarcode1}">
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel2">Reset</button>
-                                        <button type="submit" class="btn btn-primary">Verify</button>
+                                        <button type="submit" id="submit2" name="submit2" class="btn btn-primary">Verify</button>
                                     </div>
                                     <div class="clearfix"></div>
 
@@ -182,6 +179,24 @@
     <s:layout-component name="page_js_inline">
         <script>
             $(document).ready(function () {
+
+                var element = $('#mpNoVe');
+                if (element.val() === "") {
+                    $("#submit1").attr("disabled", true);
+                    $("#hardwareBarcode1").attr("readonly", true);
+                }
+                
+                var element = $('#hardwareIdVe');
+                if (element.val() === "") {
+                    $("#submit2").attr("disabled", true);
+                    $("#hardwareBarcode2").attr("readonly", true);
+                }
+
+                jQuery.extend(jQuery.validator.messages, {
+                    required: "This field is required.",
+                    equalTo: "Value is not match! Please re-scan.",
+                    email: "Please enter a valid email.",
+                });
 
                 var idVerify = $('#hardwareBarcode1').val();
                 var idOri = $('#hardwareIdV').val();
@@ -218,7 +233,8 @@
                 var validator1 = $("#tt_form").validate({
                     rules: {
                         hardwareBarcode1: {
-                            required: true
+                            required: true,
+                            equalTo: "#hardwareIdV"
                         }
                     }
                 });
@@ -226,7 +242,8 @@
                 var validator2 = $("#bs_form").validate({
                     rules: {
                         hardwareBarcode2: {
-                            required: true
+                            required: true,
+                            equalTo: "#mpNoV"
                         }
                     }
                 });
@@ -237,14 +254,10 @@
                 $(".cancel1").click(function () {
                     validator1.resetForm();
                 });
-                $(".cancel1").click(function () {
+                $(".cancel2").click(function () {
                     validator2.resetForm();
                 });
             });
-            //            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            //                var target = e.target.attributes.href.value;
-            //                $(target + ' input').focus();
-            //            })
 
         </script>
     </s:layout-component>

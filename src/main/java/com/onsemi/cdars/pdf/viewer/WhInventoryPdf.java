@@ -35,7 +35,7 @@ public class WhInventoryPdf extends AbstractITextPdfViewPotrait {
 
         PdfPTable table = new PdfPTable(2);
         table.setWidthPercentage(100.0f);
-        table.setWidths(new float[]{3.0f, 4.0f});
+        table.setWidths(new float[]{2.0f, 4.0f});
         table.setSpacingBefore(20);
 
         Font fontHeader = fontOpenSans(9f, Font.BOLD);

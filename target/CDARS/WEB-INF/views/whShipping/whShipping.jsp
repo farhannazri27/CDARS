@@ -81,7 +81,6 @@
                                                     </span>
                                                 </a>
                                                 <c:if test="${whShipping.status == 'No Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match'}">
-                                                    </a>
                                                     <a href="${contextPath}/wh/whShipping/viewBarcodeSticker/${whShipping.id}" class="table-link" title="Barcode Sticker">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
