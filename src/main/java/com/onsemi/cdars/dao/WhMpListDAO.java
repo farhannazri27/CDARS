@@ -191,6 +191,45 @@ public class WhMpListDAO {
         }
         return whMpListList;
     }
+    
+    public List<WhMpList> getWhMpListListDateDisplay() {
+        String sql = "SELECT *,DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date FROM cdars_wh_mp_list ORDER BY id ASC";
+        List<WhMpList> whMpListList = new ArrayList<WhMpList>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhMpList whMpList;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whMpList = new WhMpList();
+                whMpList.setId(rs.getString("id"));
+                whMpList.setWhShipId(rs.getString("wh_ship_id"));
+                whMpList.setMpNo(rs.getString("mp_no"));
+                whMpList.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whMpList.setHardwareId(rs.getString("hardware_id"));
+                whMpList.setHardwareType(rs.getString("hardware_type"));
+                whMpList.setQuantity(rs.getString("quantity"));
+                whMpList.setRequestedBy(rs.getString("requested_by"));
+                whMpList.setRequestedDate(rs.getString("requested_date"));
+                whMpList.setCreatedDate(rs.getString("created_date"));
+                whMpList.setCreatedBy(rs.getString("created_by"));
+                whMpList.setViewMpExpiryDate(rs.getString("view_mp_expiry_date"));
+                whMpListList.add(whMpList);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whMpListList;
+    }
 
     public QueryResult deleteAllWhMpList() {
         QueryResult queryResult = new QueryResult();

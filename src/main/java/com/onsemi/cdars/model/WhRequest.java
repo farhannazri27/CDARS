@@ -3,12 +3,16 @@ package com.onsemi.cdars.model;
 public class WhRequest {
 
     private String id;
+    private String inventoryId;
     private String requestType;
     private String equipmentType;
     private String equipmentId;
     private String quantity;
-    private String type;
+    private String mpNo;
+    private String mpExpiryDate;
+    private String location;
     private String requestedBy;
+    private String requestorEmail;
     private String requestedDate;
     private String finalApprovedStatus;
     private String finalApprovedBy;
@@ -32,6 +36,14 @@ public class WhRequest {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(String inventoryId) {
+        this.inventoryId = inventoryId;
     }
 
     public String getRequestType() {
@@ -178,14 +190,6 @@ public class WhRequest {
         this.quantity = quantity;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getRemarksApprover() {
         return remarksApprover;
     }
@@ -193,6 +197,37 @@ public class WhRequest {
     public void setRemarksApprover(String remarksApprover) {
         this.remarksApprover = remarksApprover;
     }
-    
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getRequestorEmail() {
+        return requestorEmail;
+    }
+
+    public void setRequestorEmail(String requestorEmail) {
+        this.requestorEmail = requestorEmail;
+    }
+
+    public String getMpNo() {
+        return mpNo;
+    }
+
+    public void setMpNo(String mpNo) {
+        this.mpNo = mpNo;
+    }
+
+    public String getMpExpiryDate() {
+        return mpExpiryDate;
+    }
+
+    public void setMpExpiryDate(String mpExpiryDate) {
+        this.mpExpiryDate = mpExpiryDate;
+    }
 
 }

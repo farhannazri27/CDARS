@@ -15,24 +15,21 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  *
  * @author fg79cj
  */
-public class StpsRequest {
-    
-     @RequestMapping(value = "/getitembyparam", method = RequestMethod.GET)
-    public String getItemByParam(
-            Model model,
-            HttpServletRequest request
+public class SptsClass {
+
+    public List<LinkedHashMap<String, String>> getSptsItemByParam(
+            String itemType,
+            String itemStatus
     ) throws IOException {
         JSONObject params = new JSONObject();
-        params.put("itemName", "SO8FL 15032A Stencil");
-        params.put("itemType", "Stencil");
-        params.put("itemStatus", "0");
+//        params.put("itemName", "SO8FL 15032A Stencil");
+        params.put("itemType", itemType);
+        params.put("itemStatus", itemStatus);
         JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
         List<LinkedHashMap<String, String>> itemList = new ArrayList();
         for (int i = 0; i < getItemByParam.length(); i++) {
@@ -43,8 +40,7 @@ public class StpsRequest {
             });
             itemList.add(item);
         }
-        model.addAttribute("itemList", itemList);
-        return "spts/getitemall";
+        return itemList;
     }
-    
+
 }

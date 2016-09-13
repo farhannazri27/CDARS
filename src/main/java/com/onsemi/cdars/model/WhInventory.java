@@ -3,7 +3,7 @@ package com.onsemi.cdars.model;
 public class WhInventory {
 
     private String id;
-    private String inventoryId;
+    private String requestId;
     private String mpNo;
     private String mpExpiryDate;
     private String equipmentType;
@@ -14,7 +14,8 @@ public class WhInventory {
     private String remarks;
     private String verifiedDate;
     private String inventoryDate;
-    private String invetoryRack;
+    private String inventoryLocation;
+    private String inventoryRack;
     private String inventorySlot;
     private String inventoryBy;
     private String status;
@@ -24,6 +25,7 @@ public class WhInventory {
     private String viewMpExpiryDate;
     private String viewInventoryDate;
     private String viewVerifiedDate;
+    private String selected;
 
     public String getId() {
         return id;
@@ -33,12 +35,12 @@ public class WhInventory {
         this.id = id;
     }
 
-    public String getInventoryId() {
-        return inventoryId;
+    public String getRequestId() {
+        return requestId;
     }
 
-    public void setInventoryId(String inventoryId) {
-        this.inventoryId = inventoryId;
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public String getMpNo() {
@@ -121,12 +123,12 @@ public class WhInventory {
         this.inventoryDate = inventoryDate;
     }
 
-    public String getInvetoryRack() {
-        return invetoryRack;
+    public String getInventoryLocation() {
+        return inventoryLocation;
     }
 
-    public void setInvetoryRack(String invetoryRack) {
-        this.invetoryRack = invetoryRack;
+    public void setInventoryLocation(String inventoryLocation) {
+        this.inventoryLocation = inventoryLocation;
     }
 
     public String getInventorySlot() {
@@ -185,11 +187,11 @@ public class WhInventory {
         this.viewMpExpiryDate = viewMpExpiryDate;
     }
 
-    public String getviewInventoryDate() {
+    public String getViewInventoryDate() {
         return viewInventoryDate;
     }
 
-    public void setviewInventoryDate(String viewInventoryDate) {
+    public void setViewInventoryDate(String viewInventoryDate) {
         this.viewInventoryDate = viewInventoryDate;
     }
 
@@ -201,4 +203,21 @@ public class WhInventory {
         this.viewVerifiedDate = viewVerifiedDate;
     }
 
+    public String getInventoryRack() {
+        return inventoryRack;
+    }
+
+    public void setInventoryRack(String inventoryRack) {
+        this.inventoryRack = inventoryRack;
+    }
+
+    public String getSelected() {
+        return selected;
+    }
+
+    public void setSelected(String selected) {
+        this.selected = selected;
+    }
+    
+    
 }

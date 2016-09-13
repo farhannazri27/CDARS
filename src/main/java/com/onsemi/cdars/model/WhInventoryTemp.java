@@ -2,7 +2,7 @@ package com.onsemi.cdars.model;
 
 public class WhInventoryTemp {
 
-    private String inventoryId;
+    private String requestId;
     private String mpNo;
     private String mpExpiryDate;
     private String equipmentType;
@@ -13,12 +13,11 @@ public class WhInventoryTemp {
     private String remarks;
     private String verifiedDate;
     private String inventoryDate;
-    private String invetoryRack;
-    private String inventorySlot;
+    private String inventoryLocation;
     private String inventoryBy;
     private String status;
 
-    public WhInventoryTemp(String inventoryId,
+    public WhInventoryTemp(String requestId,
             String mpNo,
             String mpExpiryDate,
             String equipmentType,
@@ -29,13 +28,12 @@ public class WhInventoryTemp {
             String remarks,
             String verifiedDate,
             String inventoryDate,
-            String invetoryRack,
-            String inventorySlot,
+            String inventoryLocation,
             String inventoryBy,
             String status) {
 
         super();
-        this.inventoryId = inventoryId;
+        this.requestId = requestId;
         this.mpNo = mpNo;
         this.mpExpiryDate = mpExpiryDate;
         this.equipmentType = equipmentType;
@@ -46,19 +44,18 @@ public class WhInventoryTemp {
         this.remarks = remarks;
         this.verifiedDate = verifiedDate;
         this.inventoryDate = inventoryDate;
-        this.invetoryRack = invetoryRack;
-        this.inventorySlot = inventorySlot;
+        this.inventoryLocation = inventoryLocation;
         this.inventoryBy = inventoryBy;
         this.status = status;
 
     }
 
-    public String getInventoryId() {
-        return inventoryId;
+    public String getRequestId() {
+        return requestId;
     }
 
-    public void setInventoryId(String inventoryId) {
-        this.inventoryId = inventoryId;
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public String getMpNo() {
@@ -141,20 +138,12 @@ public class WhInventoryTemp {
         this.inventoryDate = inventoryDate;
     }
 
-    public String getInvetoryRack() {
-        return invetoryRack;
+    public String getInventoryLocation() {
+        return inventoryLocation;
     }
 
-    public void setInvetoryRack(String invetoryRack) {
-        this.invetoryRack = invetoryRack;
-    }
-
-    public String getInventorySlot() {
-        return inventorySlot;
-    }
-
-    public void setInventorySlot(String inventorySlot) {
-        this.inventorySlot = inventorySlot;
+    public void setInventoryLocation(String inventoryLocation) {
+        this.inventoryLocation = inventoryLocation;
     }
 
     public String getInventoryBy() {

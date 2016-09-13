@@ -48,19 +48,13 @@
                             <div class="form-group">
                                 <label for="mpExpiryDate" class="col-lg-4 control-label">Material Pass Expiry Date </label>
                                 <div class="col-lg-4">
-                                    <input type="text" class="form-control" id="requestedDate" name="mpExpiryDate" value="${whRetrieval.mpExpiryDate}" readonly>
+                                    <input type="text" class="form-control" id="requestedDate" name="mpExpiryDate" value="${whRetrieval.viewMpExpiryDate}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="rack" class="col-lg-4 control-label">Rack </label>
+                                <label for="location" class="col-lg-4 control-label">Slot </label>
                                 <div class="col-lg-3">
-                                    <input type="text" class="form-control" id="requestedDate" name="rack" value="${whRetrieval.rack}" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="slot" class="col-lg-4 control-label">Slot </label>
-                                <div class="col-lg-3">
-                                    <input type="text" class="form-control" id="requestedDate" name="slot" value="${whRetrieval.slot}" readonly>
+                                    <input type="text" class="form-control" id="location" name="location" value="${whRetrieval.location}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -104,12 +98,7 @@
                                     <input type="hidden" name="id" value="${whRetrieval.id}" />
                                     <input type="hidden" name="status" value="${whRetrieval.status}" />
                                     <input type="hidden" name="tab" value="${bsActiveTab}" />
-                                    <div class="form-group" hidden>
-                                        <label for="mpNoV" class="col-lg-4 control-label">${IdLabel} *</label>
-                                        <div class="col-lg-8">
-                                            <input type="text" class="form-control" id="mpNoV" name="mpNoV" value="${whRetrieval.mpNo}">
-                                        </div>
-                                    </div>
+                                    <input type="hidden" id="mpNoV" name="mpNoV" value="${whRetrieval.mpNo}">
                                     <div class="form-group">
                                         <label for=" barcodeVerification" class="col-lg-4 control-label">Barcode Sticker(MP No) *</label>
                                         <div class="col-lg-5">
@@ -120,7 +109,7 @@
 
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel2">Reset</button>
-                                        <button type="submit" class="btn btn-primary">Verify</button>
+                                        <button type="submit" id="submit2" name="submit2" class="btn btn-primary">Verify</button>
                                     </div>
                                     <div class="clearfix"></div>
 
@@ -147,10 +136,11 @@
                                             <input type="text" class="form-control" id="ttVerification" name="ttVerification" autofocus="autofocus" placeholder="Please scan trip ticket" value="${whRetrieval.ttVerification}">
                                         </div>
                                     </div>
-                                    <input type="hidden" class="form-control" id="hardwareIdV" name="hardwareIdV" value="${whRetrieval.hardwareId}">
+                                    <input type="hidden" id="hardwareIdV" name="hardwareIdV" value="${whRetrieval.hardwareId}">
+                                    <input type="hidden" id="barcodeVe" name="barcodeVe" value="${whRetrieval.barcodeVerification}">  
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel1">Reset</button>
-                                        <button type="submit" class="btn btn-primary">Verify</button>
+                                        <button type="submit" id="submit1" name="submit1" class="btn btn-primary">Verify</button>
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>
@@ -169,6 +159,25 @@
     <s:layout-component name="page_js_inline">
         <script>
             $(document).ready(function () {
+
+                var element1 = $('#barcodeVerification');
+                var element2 = $('#mpNoV');
+                if (element1.val() === element2.val()) {
+                    $("#submit2").attr("disabled", true);
+                    $("#barcodeVerification").attr("readonly", true);
+                }
+
+                var element3 = $('#barcodeVe');
+                var element4 = $('#ttVerification');
+                var element5 = $('#hardwareIdV');
+                if (element3.val() === "") {
+                    $("#submit1").attr("disabled", true);
+                    $("#ttVerification").attr("readonly", true);
+                }
+                if (element4.val() === element5.val()) {
+                    $("#submit1").attr("disabled", true);
+                    $("#ttVerification").attr("readonly", true);
+                }
 
                 jQuery.extend(jQuery.validator.messages, {
                     required: "This field is required.",

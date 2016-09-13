@@ -30,9 +30,9 @@ public class WhInventoryDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO cdars_wh_inventory (inventory_id, mp_no, mp_expiry_date, equipment_type, equipment_id, quantity, requested_by, requested_date, remarks, verified_date, inventory_date, invetory_rack, inventory_slot, inventory_by, status, received_date, flag, location) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?)", Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO cdars_wh_inventory (request_id, mp_no, mp_expiry_date, equipment_type, equipment_id, quantity, requested_by, requested_date, remarks, verified_date, inventory_date, inventory_location, inventory_by, status, received_date, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)", Statement.RETURN_GENERATED_KEYS
             );
-            ps.setString(1, whInventory.getInventoryId());
+            ps.setString(1, whInventory.getRequestId());
             ps.setString(2, whInventory.getMpNo());
             ps.setString(3, whInventory.getMpExpiryDate());
             ps.setString(4, whInventory.getEquipmentType());
@@ -43,12 +43,10 @@ public class WhInventoryDAO {
             ps.setString(9, whInventory.getRemarks());
             ps.setString(10, whInventory.getVerifiedDate());
             ps.setString(11, whInventory.getInventoryDate());
-            ps.setString(12, whInventory.getInvetoryRack());
-            ps.setString(13, whInventory.getInventorySlot());
-            ps.setString(14, whInventory.getInventoryBy());
-            ps.setString(15, whInventory.getStatus());
-            ps.setString(16, whInventory.getFlag());
-            ps.setString(17, whInventory.getLocation());
+            ps.setString(12, whInventory.getInventoryLocation());
+            ps.setString(13, whInventory.getInventoryBy());
+            ps.setString(14, whInventory.getStatus());
+            ps.setString(15, whInventory.getFlag());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -75,9 +73,9 @@ public class WhInventoryDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_inventory SET inventory_id = ?, mp_no = ?, mp_expiry_date= ?, equipment_type = ?, equipment_id = ?, quantity = ?, requested_by = ?, requested_date = ?, remarks = ?, verified_date = ?, inventory_date = ?, invetory_rack = ?, inventory_slot = ?, inventory_by = ?, status = ?, received_date = ?, flag = ?, location = ? WHERE id = ?"
+                    "UPDATE cdars_wh_inventory SET request_id = ?, mp_no = ?, mp_expiry_date= ?, equipment_type = ?, equipment_id = ?, quantity = ?, requested_by = ?, requested_date = ?, remarks = ?, verified_date = ?, inventory_date = ?, inventory_location = ?, inventory_by = ?, status = ?, received_date = ?, flag = ? WHERE id = ?"
             );
-            ps.setString(1, whInventory.getInventoryId());
+            ps.setString(1, whInventory.getRequestId());
             ps.setString(2, whInventory.getMpNo());
             ps.setString(3, whInventory.getMpExpiryDate());
             ps.setString(4, whInventory.getEquipmentType());
@@ -88,14 +86,12 @@ public class WhInventoryDAO {
             ps.setString(9, whInventory.getRemarks());
             ps.setString(10, whInventory.getVerifiedDate());
             ps.setString(11, whInventory.getInventoryDate());
-            ps.setString(12, whInventory.getInvetoryRack());
-            ps.setString(13, whInventory.getInventorySlot());
-            ps.setString(14, whInventory.getInventoryBy());
-            ps.setString(15, whInventory.getStatus());
-            ps.setString(16, whInventory.getReceivedDate());
-            ps.setString(17, whInventory.getFlag());
-            ps.setString(18, whInventory.getLocation());
-            ps.setString(19, whInventory.getId());
+            ps.setString(12, whInventory.getInventoryLocation());
+            ps.setString(13, whInventory.getInventoryBy());
+            ps.setString(14, whInventory.getStatus());
+            ps.setString(15, whInventory.getReceivedDate());
+            ps.setString(16, whInventory.getFlag());
+            ps.setString(17, whInventory.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -117,15 +113,40 @@ public class WhInventoryDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_inventory SET inventory_id = ?, inventory_date = ?, invetory_rack = ?, inventory_slot = ?, inventory_by = ?,  received_date = NOW(), flag = ? WHERE id = ?"
+                    "UPDATE cdars_wh_inventory SET request_id = ?, inventory_date = ?, inventory_location = ?, inventory_by = ?,  received_date = NOW(), flag = ? WHERE id = ?"
             );
-            ps.setString(1, whInventory.getInventoryId());
+            ps.setString(1, whInventory.getRequestId());
             ps.setString(2, whInventory.getInventoryDate());
-            ps.setString(3, whInventory.getInvetoryRack());
-            ps.setString(4, whInventory.getInventorySlot());
-            ps.setString(5, whInventory.getInventoryBy());
-            ps.setString(6, whInventory.getFlag());
-            ps.setString(7, whInventory.getId());
+            ps.setString(3, whInventory.getInventoryLocation());
+            ps.setString(4, whInventory.getInventoryBy());
+            ps.setString(5, whInventory.getFlag());
+            ps.setString(6, whInventory.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhInventoryFlag(WhInventory whInventory) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_inventory SET request_id = ?, flag = ? WHERE id = ?"
+            );
+            ps.setString(1, whInventory.getRequestId());
+            ps.setString(2, whInventory.getFlag());
+            ps.setString(3, whInventory.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -175,7 +196,7 @@ public class WhInventoryDAO {
             while (rs.next()) {
                 whInventory = new WhInventory();
                 whInventory.setId(rs.getString("id"));
-                whInventory.setInventoryId(rs.getString("inventory_id"));
+                whInventory.setRequestId(rs.getString("request_id"));
                 whInventory.setMpNo(rs.getString("mp_no"));
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
@@ -186,13 +207,53 @@ public class WhInventoryDAO {
                 whInventory.setRemarks(rs.getString("remarks"));
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
-                whInventory.setInvetoryRack(rs.getString("invetory_rack"));
-                whInventory.setInventorySlot(rs.getString("inventory_slot"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
                 whInventory.setFlag(rs.getString("flag"));
-                whInventory.setLocation(rs.getString("location"));
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whInventory;
+    }
+
+    public WhInventory getWhInventoryActive(String whInventoryId) {
+        String sql = "SELECT * FROM cdars_wh_inventory WHERE id = '" + whInventoryId + "' AND flag = '0'";
+        WhInventory whInventory = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whInventory = new WhInventory();
+                whInventory.setId(rs.getString("id"));
+                whInventory.setRequestId(rs.getString("request_id"));
+                whInventory.setMpNo(rs.getString("mp_no"));
+                whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whInventory.setEquipmentType(rs.getString("equipment_type"));
+                whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setQuantity(rs.getString("quantity"));
+                whInventory.setRequestedBy(rs.getString("requested_by"));
+                whInventory.setRequestedDate(rs.getString("requested_date"));
+                whInventory.setRemarks(rs.getString("remarks"));
+                whInventory.setVerifiedDate(rs.getString("verified_date"));
+                whInventory.setInventoryDate(rs.getString("inventory_date"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryBy(rs.getString("inventory_by"));
+                whInventory.setStatus(rs.getString("status"));
+                whInventory.setReceivedDate(rs.getString("received_date"));
+                whInventory.setFlag(rs.getString("flag"));
             }
             rs.close();
             ps.close();
@@ -211,7 +272,7 @@ public class WhInventoryDAO {
     }
 
     public WhInventory getWhInventoryForWithDateDisplay(String whInventoryId) {
-        String sql = "SELECT *, DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date, DATE_FORMAT(verified_date,'%d %M %Y') AS view_verified_date, DATE_FORMAT(inventory_date,'%d %M %Y') AS view_inventory_date FROM cdars_wh_inventory WHERE id = '" + whInventoryId + "'";
+        String sql = "SELECT *, DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date, DATE_FORMAT(verified_date,'%d %M %Y %h:%i %p') AS view_verified_date, DATE_FORMAT(inventory_date,'%d %M %Y %h:%i %p') AS view_inventory_date FROM cdars_wh_inventory WHERE id = '" + whInventoryId + "'";
         WhInventory whInventory = null;
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -219,7 +280,7 @@ public class WhInventoryDAO {
             while (rs.next()) {
                 whInventory = new WhInventory();
                 whInventory.setId(rs.getString("id"));
-                whInventory.setInventoryId(rs.getString("inventory_id"));
+                whInventory.setRequestId(rs.getString("request_id"));
                 whInventory.setMpNo(rs.getString("mp_no"));
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
@@ -230,18 +291,58 @@ public class WhInventoryDAO {
                 whInventory.setRemarks(rs.getString("remarks"));
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
-                whInventory.setInvetoryRack(rs.getString("invetory_rack"));
-                whInventory.setInventorySlot(rs.getString("inventory_slot"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
                 whInventory.setFlag(rs.getString("flag"));
-                whInventory.setLocation(rs.getString("location"));
 
                 //view date
                 whInventory.setViewMpExpiryDate(rs.getString("view_mp_expiry_date"));
-                whInventory.setviewInventoryDate(rs.getString("view_inventory_date"));
+                whInventory.setViewInventoryDate(rs.getString("view_inventory_date"));
                 whInventory.setViewVerifiedDate(rs.getString("view_verified_date"));
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whInventory;
+    }
+
+    public WhInventory getWhInventoryByRequestId(String requestId) {
+        String sql = "SELECT * FROM cdars_wh_inventory WHERE request_id = '" + requestId + "'";
+        WhInventory whInventory = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whInventory = new WhInventory();
+                whInventory.setId(rs.getString("id"));
+                whInventory.setRequestId(rs.getString("request_id"));
+                whInventory.setMpNo(rs.getString("mp_no"));
+                whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whInventory.setEquipmentType(rs.getString("equipment_type"));
+                whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setQuantity(rs.getString("quantity"));
+                whInventory.setRequestedBy(rs.getString("requested_by"));
+                whInventory.setRequestedDate(rs.getString("requested_date"));
+                whInventory.setRemarks(rs.getString("remarks"));
+                whInventory.setVerifiedDate(rs.getString("verified_date"));
+                whInventory.setInventoryDate(rs.getString("inventory_date"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryBy(rs.getString("inventory_by"));
+                whInventory.setStatus(rs.getString("status"));
+                whInventory.setReceivedDate(rs.getString("received_date"));
+                whInventory.setFlag(rs.getString("flag"));
             }
             rs.close();
             ps.close();
@@ -269,7 +370,7 @@ public class WhInventoryDAO {
             while (rs.next()) {
                 whInventory = new WhInventory();
                 whInventory.setId(rs.getString("id"));
-                whInventory.setInventoryId(rs.getString("inventory_id"));
+                whInventory.setRequestId(rs.getString("request_id"));
                 whInventory.setMpNo(rs.getString("mp_no"));
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
@@ -280,13 +381,235 @@ public class WhInventoryDAO {
                 whInventory.setRemarks(rs.getString("remarks"));
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
-                whInventory.setInvetoryRack(rs.getString("invetory_rack"));
-                whInventory.setInventorySlot(rs.getString("inventory_slot"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
                 whInventory.setFlag(rs.getString("flag"));
-                whInventory.setLocation(rs.getString("location"));
+                whInventoryList.add(whInventory);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whInventoryList;
+    }
+
+    public List<WhInventory> getWhInventoryActiveList() {
+        String sql = "SELECT * FROM cdars_wh_inventory WHERE flag = '0' ORDER BY id DESC";
+        List<WhInventory> whInventoryList = new ArrayList<WhInventory>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhInventory whInventory;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whInventory = new WhInventory();
+                whInventory.setId(rs.getString("id"));
+                whInventory.setRequestId(rs.getString("request_id"));
+                whInventory.setMpNo(rs.getString("mp_no"));
+                whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whInventory.setEquipmentType(rs.getString("equipment_type"));
+                whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setQuantity(rs.getString("quantity"));
+                whInventory.setRequestedBy(rs.getString("requested_by"));
+                whInventory.setRequestedDate(rs.getString("requested_date"));
+                whInventory.setRemarks(rs.getString("remarks"));
+                whInventory.setVerifiedDate(rs.getString("verified_date"));
+                whInventory.setInventoryDate(rs.getString("inventory_date"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryBy(rs.getString("inventory_by"));
+                whInventory.setStatus(rs.getString("status"));
+                whInventory.setReceivedDate(rs.getString("received_date"));
+                whInventory.setFlag(rs.getString("flag"));
+                whInventoryList.add(whInventory);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whInventoryList;
+    }
+
+    public List<WhInventory> getWhInventoryMbActiveList(String type) {
+        String sql = "SELECT *, IF(equipment_type=\"" + type + "\",\"selected=''\",\"\") AS selected FROM cdars_wh_inventory WHERE flag = '0' AND equipment_type = 'Motherboard' ORDER BY id DESC";
+        List<WhInventory> whInventoryList = new ArrayList<WhInventory>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhInventory whInventory;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whInventory = new WhInventory();
+                whInventory.setId(rs.getString("id"));
+                whInventory.setRequestId(rs.getString("request_id"));
+                whInventory.setMpNo(rs.getString("mp_no"));
+                whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whInventory.setEquipmentType(rs.getString("equipment_type"));
+                whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setQuantity(rs.getString("quantity"));
+                whInventory.setRequestedBy(rs.getString("requested_by"));
+                whInventory.setRequestedDate(rs.getString("requested_date"));
+                whInventory.setRemarks(rs.getString("remarks"));
+                whInventory.setVerifiedDate(rs.getString("verified_date"));
+                whInventory.setInventoryDate(rs.getString("inventory_date"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryBy(rs.getString("inventory_by"));
+                whInventory.setStatus(rs.getString("status"));
+                whInventory.setReceivedDate(rs.getString("received_date"));
+                whInventory.setFlag(rs.getString("flag"));
+                whInventory.setSelected(rs.getString("selected"));
+                whInventoryList.add(whInventory);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whInventoryList;
+    }
+
+    public List<WhInventory> getWhInventoryStencilActiveList(String type) {
+        String sql = "SELECT *, IF(equipment_type=\"" + type + "\",\"selected=''\",\"\") AS selected FROM cdars_wh_inventory WHERE flag = '0' AND equipment_type = 'Stencil' ORDER BY id DESC";
+        List<WhInventory> whInventoryList = new ArrayList<WhInventory>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhInventory whInventory;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whInventory = new WhInventory();
+                whInventory.setId(rs.getString("id"));
+                whInventory.setRequestId(rs.getString("request_id"));
+                whInventory.setMpNo(rs.getString("mp_no"));
+                whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whInventory.setEquipmentType(rs.getString("equipment_type"));
+                whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setQuantity(rs.getString("quantity"));
+                whInventory.setRequestedBy(rs.getString("requested_by"));
+                whInventory.setRequestedDate(rs.getString("requested_date"));
+                whInventory.setRemarks(rs.getString("remarks"));
+                whInventory.setVerifiedDate(rs.getString("verified_date"));
+                whInventory.setInventoryDate(rs.getString("inventory_date"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryBy(rs.getString("inventory_by"));
+                whInventory.setStatus(rs.getString("status"));
+                whInventory.setReceivedDate(rs.getString("received_date"));
+                whInventory.setFlag(rs.getString("flag"));
+                whInventory.setSelected(rs.getString("selected"));
+                whInventoryList.add(whInventory);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whInventoryList;
+    }
+
+    public List<WhInventory> getWhInventoryTrayActiveList(String type) {
+        String sql = "SELECT *, IF(equipment_type=\"" + type + "\",\"selected=''\",\"\") AS selected FROM cdars_wh_inventory WHERE flag = '0' AND equipment_type = 'Tray' ORDER BY id DESC";
+        List<WhInventory> whInventoryList = new ArrayList<WhInventory>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhInventory whInventory;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whInventory = new WhInventory();
+                whInventory.setId(rs.getString("id"));
+                whInventory.setRequestId(rs.getString("request_id"));
+                whInventory.setMpNo(rs.getString("mp_no"));
+                whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whInventory.setEquipmentType(rs.getString("equipment_type"));
+                whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setQuantity(rs.getString("quantity"));
+                whInventory.setRequestedBy(rs.getString("requested_by"));
+                whInventory.setRequestedDate(rs.getString("requested_date"));
+                whInventory.setRemarks(rs.getString("remarks"));
+                whInventory.setVerifiedDate(rs.getString("verified_date"));
+                whInventory.setInventoryDate(rs.getString("inventory_date"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryBy(rs.getString("inventory_by"));
+                whInventory.setStatus(rs.getString("status"));
+                whInventory.setReceivedDate(rs.getString("received_date"));
+                whInventory.setFlag(rs.getString("flag"));
+                whInventory.setSelected(rs.getString("selected"));
+                whInventoryList.add(whInventory);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whInventoryList;
+    }
+
+    public List<WhInventory> getWhInventoryPCBActiveList(String type) {
+        String sql = "SELECT *, IF(equipment_type=\"" + type + "\",\"selected=''\",\"\") AS selected FROM cdars_wh_inventory WHERE flag = '0' AND equipment_type = 'PCB' ORDER BY id DESC";
+        List<WhInventory> whInventoryList = new ArrayList<WhInventory>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhInventory whInventory;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whInventory = new WhInventory();
+                whInventory.setId(rs.getString("id"));
+                whInventory.setRequestId(rs.getString("request_id"));
+                whInventory.setMpNo(rs.getString("mp_no"));
+                whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whInventory.setEquipmentType(rs.getString("equipment_type"));
+                whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setQuantity(rs.getString("quantity"));
+                whInventory.setRequestedBy(rs.getString("requested_by"));
+                whInventory.setRequestedDate(rs.getString("requested_date"));
+                whInventory.setRemarks(rs.getString("remarks"));
+                whInventory.setVerifiedDate(rs.getString("verified_date"));
+                whInventory.setInventoryDate(rs.getString("inventory_date"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryBy(rs.getString("inventory_by"));
+                whInventory.setStatus(rs.getString("status"));
+                whInventory.setReceivedDate(rs.getString("received_date"));
+                whInventory.setFlag(rs.getString("flag"));
+                whInventory.setSelected(rs.getString("selected"));
                 whInventoryList.add(whInventory);
             }
             rs.close();
@@ -306,8 +629,8 @@ public class WhInventoryDAO {
     }
 
     public List<WhInventory> getWhInventoryListWithDateDisplay() {
-        String sql = "SELECT *, DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date, DATE_FORMAT(verified_date,'%d %M %Y') AS view_verified_date, "
-                + "DATE_FORMAT(inventory_date,'%d %M %Y') AS view_inventory_date FROM cdars_wh_inventory "
+        String sql = "SELECT *, DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date, DATE_FORMAT(verified_date,'%d %M %Y %h:%i %p') AS view_verified_date, "
+                + "DATE_FORMAT(inventory_date,'%d %M %Y %h:%i %p') AS view_inventory_date FROM cdars_wh_inventory "
                 + "WHERE flag = '0' ORDER BY id DESC";
         List<WhInventory> whInventoryList = new ArrayList<WhInventory>();
         try {
@@ -317,7 +640,7 @@ public class WhInventoryDAO {
             while (rs.next()) {
                 whInventory = new WhInventory();
                 whInventory.setId(rs.getString("id"));
-                whInventory.setInventoryId(rs.getString("inventory_id"));
+                whInventory.setRequestId(rs.getString("request_id"));
                 whInventory.setMpNo(rs.getString("mp_no"));
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
@@ -328,17 +651,15 @@ public class WhInventoryDAO {
                 whInventory.setRemarks(rs.getString("remarks"));
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
-                whInventory.setInvetoryRack(rs.getString("invetory_rack"));
-                whInventory.setInventorySlot(rs.getString("inventory_slot"));
+                whInventory.setInventoryLocation(rs.getString("inventory_location"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
                 whInventory.setFlag(rs.getString("flag"));
-                whInventory.setLocation(rs.getString("location"));
 
                 //view date
                 whInventory.setViewMpExpiryDate(rs.getString("view_mp_expiry_date"));
-                whInventory.setviewInventoryDate(rs.getString("view_inventory_date"));
+                whInventory.setViewInventoryDate(rs.getString("view_inventory_date"));
                 whInventory.setViewVerifiedDate(rs.getString("view_verified_date"));
                 whInventoryList.add(whInventory);
             }
@@ -358,12 +679,12 @@ public class WhInventoryDAO {
         return whInventoryList;
     }
 
-    public Integer getCountInventoryiIdSlotRack(String inventoryId, String slot, String rack) {
+    public Integer getCountInventoryiIdAndLocation(String requestId, String location) {
 //        QueryResult queryResult = new QueryResult();
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT COUNT(*) AS count FROM cdars_wh_inventory WHERE inventory_id = '" + inventoryId + "' AND inventory_slot = '" + slot + "' AND invetory_rack = '" + rack + "'"
+                    "SELECT COUNT(*) AS count FROM cdars_wh_inventory WHERE request_id = '" + requestId + "' AND inventory_location = '" + location + "'"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -386,12 +707,12 @@ public class WhInventoryDAO {
         return count;
     }
 
-    public Integer getCountInventoryiId(String inventoryId) {
+    public Integer getCountInventoryiId(String requestId) {
 //        QueryResult queryResult = new QueryResult();
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT COUNT(*) AS count FROM cdars_wh_inventory WHERE inventory_id = '" + inventoryId + "'"
+                    "SELECT COUNT(*) AS count FROM cdars_wh_inventory WHERE request_id = '" + requestId + "'"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -414,12 +735,12 @@ public class WhInventoryDAO {
         return count;
     }
 
-    public String getId(String inventoryId) {
+    public String getId(String requestId) {
 //        QueryResult queryResult = new QueryResult();
         String id = "";
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT id AS id FROM cdars_wh_inventory WHERE inventory_id = '" + inventoryId + "'"
+                    "SELECT id AS id FROM cdars_wh_inventory WHERE request_id = '" + requestId + "'"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

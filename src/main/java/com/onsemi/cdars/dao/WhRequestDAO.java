@@ -30,18 +30,22 @@ public class WhRequestDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO cdars_wh_request (request_type, equipment_type, equipment_id, quantity, type, requested_by, requested_date, remarks, created_by, created_date, status, flag) VALUES (?,?,?,?,?,?,NOW(),?,?,NOW(),?,?)", Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO cdars_wh_request (inventory_id, request_type, equipment_type, equipment_id, mp_no, mp_expiry_date, quantity, location, requested_by, requestor_email, requested_date, remarks, created_by, created_date, status, flag) VALUES (?,?,?,?,?,?,?,?,?,?,NOW(),?,?,NOW(),?,?)", Statement.RETURN_GENERATED_KEYS
             );
-            ps.setString(1, whRequest.getRequestType());
-            ps.setString(2, whRequest.getEquipmentType());
-            ps.setString(3, whRequest.getEquipmentId());
-            ps.setString(4, whRequest.getQuantity());
-            ps.setString(5, whRequest.getType());
-            ps.setString(6, whRequest.getRequestedBy());
-            ps.setString(7, whRequest.getRemarks());
-            ps.setString(8, whRequest.getCreatedBy());
-            ps.setString(9, whRequest.getStatus());
-            ps.setString(10, whRequest.getFlag());
+            ps.setString(1, whRequest.getInventoryId());
+            ps.setString(2, whRequest.getRequestType());
+            ps.setString(3, whRequest.getEquipmentType());
+            ps.setString(4, whRequest.getEquipmentId());
+            ps.setString(5, whRequest.getMpNo());
+            ps.setString(6, whRequest.getMpExpiryDate());
+            ps.setString(7, whRequest.getQuantity());
+            ps.setString(8, whRequest.getLocation());
+            ps.setString(9, whRequest.getRequestedBy());
+            ps.setString(10, whRequest.getRequestorEmail());
+            ps.setString(11, whRequest.getRemarks());
+            ps.setString(12, whRequest.getCreatedBy());
+            ps.setString(13, whRequest.getStatus());
+            ps.setString(14, whRequest.getFlag());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -68,17 +72,20 @@ public class WhRequestDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_request SET request_type = ?, equipment_type = ?, equipment_id = ?, quantity = ?, type = ?, remarks = ?, modified_by = ?, modified_date = NOW(), flag = ? WHERE id = ?"
+                    "UPDATE cdars_wh_request SET inventory_id = ?, request_type = ?, equipment_type = ?, equipment_id = ?, mp_no = ?, mp_expiry_date = ?, quantity = ?, location = ?, remarks = ?, modified_by = ?, modified_date = NOW(), flag = ? WHERE id = ?"
             );
-            ps.setString(1, whRequest.getRequestType());
-            ps.setString(2, whRequest.getEquipmentType());
-            ps.setString(3, whRequest.getEquipmentId());
-            ps.setString(4, whRequest.getQuantity());
-            ps.setString(5, whRequest.getType());
-            ps.setString(6, whRequest.getRemarks());
-            ps.setString(7, whRequest.getModifiedBy());
-            ps.setString(8, whRequest.getFlag());
-            ps.setString(9, whRequest.getId());
+            ps.setString(1, whRequest.getInventoryId());
+            ps.setString(2, whRequest.getRequestType());
+            ps.setString(3, whRequest.getEquipmentType());
+            ps.setString(4, whRequest.getEquipmentId());
+            ps.setString(5, whRequest.getMpNo());
+            ps.setString(6, whRequest.getMpExpiryDate());
+            ps.setString(7, whRequest.getQuantity());
+            ps.setString(8, whRequest.getLocation());
+            ps.setString(9, whRequest.getRemarks());
+            ps.setString(10, whRequest.getModifiedBy());
+            ps.setString(11, whRequest.getFlag());
+            ps.setString(12, whRequest.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -120,7 +127,7 @@ public class WhRequestDAO {
     }
 
     public WhRequest getWhRequest(String whRequestId) {
-        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y') AS requested_date_view FROM cdars_wh_request WHERE id = '" + whRequestId + "'";
+        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y %h:%i %p') AS requested_date_view FROM cdars_wh_request WHERE id = '" + whRequestId + "'";
         WhRequest whRequest = null;
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -128,12 +135,16 @@ public class WhRequestDAO {
             while (rs.next()) {
                 whRequest = new WhRequest();
                 whRequest.setId(rs.getString("id"));
+                whRequest.setInventoryId(rs.getString("inventory_id"));
                 whRequest.setRequestType(rs.getString("request_type"));
                 whRequest.setEquipmentType(rs.getString("equipment_type"));
                 whRequest.setEquipmentId(rs.getString("equipment_id"));
-                whRequest.setType(rs.getString("type"));
+                whRequest.setMpNo(rs.getString("mp_no"));
+                whRequest.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whRequest.setLocation(rs.getString("location"));
                 whRequest.setQuantity(rs.getString("quantity"));
                 whRequest.setRequestedBy(rs.getString("requested_by"));
+                whRequest.setRequestorEmail(rs.getString("requestor_email"));
                 whRequest.setRequestedDate(rs.getString("requested_date"));
                 whRequest.setRequestedDateView(rs.getString("requested_date_view"));
                 whRequest.setFinalApprovedStatus(rs.getString("final_approved_status"));
@@ -165,7 +176,7 @@ public class WhRequestDAO {
     }
 
     public List<WhRequest> getWhRequestList() {
-        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y') AS requested_date_view FROM cdars_wh_request ORDER BY id DESC";
+        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y %h:%i %p') AS requested_date_view FROM cdars_wh_request ORDER BY id DESC";
         List<WhRequest> whRequestList = new ArrayList<WhRequest>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -174,12 +185,16 @@ public class WhRequestDAO {
             while (rs.next()) {
                 whRequest = new WhRequest();
                 whRequest.setId(rs.getString("id"));
+                whRequest.setInventoryId(rs.getString("inventory_id"));
                 whRequest.setRequestType(rs.getString("request_type"));
                 whRequest.setEquipmentType(rs.getString("equipment_type"));
                 whRequest.setEquipmentId(rs.getString("equipment_id"));
-                whRequest.setType(rs.getString("type"));
+                whRequest.setMpNo(rs.getString("mp_no"));
+                whRequest.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whRequest.setLocation(rs.getString("location"));
                 whRequest.setQuantity(rs.getString("quantity"));
                 whRequest.setRequestedBy(rs.getString("requested_by"));
+                whRequest.setRequestorEmail(rs.getString("requestor_email"));
                 whRequest.setRequestedDate(rs.getString("requested_date"));
                 whRequest.setRequestedDateView(rs.getString("requested_date_view"));
                 whRequest.setFinalApprovedStatus(rs.getString("final_approved_status"));
@@ -210,9 +225,9 @@ public class WhRequestDAO {
         }
         return whRequestList;
     }
-    
+
     public List<WhRequest> getWhRequestListWithoutRetrievalAndStatusApproved() {
-        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y') AS requested_date_view FROM cdars_wh_request WHERE request_type = 'Ship' AND status <> 'Approved' ORDER BY id DESC";
+        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y %h:%i %p') AS requested_date_view FROM cdars_wh_request WHERE request_type = 'Ship' AND status <> 'Approved' ORDER BY id DESC";
         List<WhRequest> whRequestList = new ArrayList<WhRequest>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -221,12 +236,16 @@ public class WhRequestDAO {
             while (rs.next()) {
                 whRequest = new WhRequest();
                 whRequest.setId(rs.getString("id"));
+                whRequest.setInventoryId(rs.getString("inventory_id"));
                 whRequest.setRequestType(rs.getString("request_type"));
                 whRequest.setEquipmentType(rs.getString("equipment_type"));
                 whRequest.setEquipmentId(rs.getString("equipment_id"));
-                whRequest.setType(rs.getString("type"));
+                whRequest.setMpNo(rs.getString("mp_no"));
+                whRequest.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whRequest.setLocation(rs.getString("location"));
                 whRequest.setQuantity(rs.getString("quantity"));
                 whRequest.setRequestedBy(rs.getString("requested_by"));
+                whRequest.setRequestorEmail(rs.getString("requestor_email"));
                 whRequest.setRequestedDate(rs.getString("requested_date"));
                 whRequest.setRequestedDateView(rs.getString("requested_date_view"));
                 whRequest.setFinalApprovedStatus(rs.getString("final_approved_status"));
@@ -259,7 +278,7 @@ public class WhRequestDAO {
     }
 
     public List<WhRequest> getWhRequestListForShipping() {
-        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y') AS requested_date_view FROM cdars_wh_request WHERE status = \"Approved\" ORDER BY id DESC";
+        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y %h:%i %p') AS requested_date_view FROM cdars_wh_request WHERE status = \"Approved\" ORDER BY id DESC";
         List<WhRequest> whRequestList = new ArrayList<WhRequest>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -268,10 +287,15 @@ public class WhRequestDAO {
             while (rs.next()) {
                 whRequest = new WhRequest();
                 whRequest.setId(rs.getString("id"));
+                whRequest.setInventoryId(rs.getString("inventory_id"));
                 whRequest.setRequestType(rs.getString("request_type"));
                 whRequest.setEquipmentType(rs.getString("equipment_type"));
                 whRequest.setEquipmentId(rs.getString("equipment_id"));
+                whRequest.setMpNo(rs.getString("mp_no"));
+                whRequest.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whRequest.setLocation(rs.getString("location"));
                 whRequest.setRequestedBy(rs.getString("requested_by"));
+                whRequest.setRequestorEmail(rs.getString("requestor_email"));
                 whRequest.setRequestedDate(rs.getString("requested_date"));
                 whRequest.setRequestedDateView(rs.getString("requested_date_view"));
                 whRequest.setFinalApprovedBy(rs.getString("final_approved_by"));
@@ -300,8 +324,8 @@ public class WhRequestDAO {
         }
         return whRequestList;
     }
-    
-     public QueryResult updateWhRequestForApproval(WhRequest whRequest) {
+
+    public QueryResult updateWhRequestForApproval(WhRequest whRequest) {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(

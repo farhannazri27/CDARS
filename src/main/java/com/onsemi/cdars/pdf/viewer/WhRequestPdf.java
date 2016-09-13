@@ -94,26 +94,10 @@ public class WhRequestPdf extends AbstractITextPdfViewPotrait {
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whRequest.getEquipmentId(), fontContent));
             table.addCell(cellContent);
-
-            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
-            table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whRequest.getQuantity(), fontContent));
-            table.addCell(cellContent);
-
         } else if ("PCB".equals(whRequest.getEquipmentType())) {
             cellHeader.setPhrase(new Phrase("PCB Name", fontHeader));
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whRequest.getEquipmentId(), fontContent));
-            table.addCell(cellContent);
-
-            cellHeader.setPhrase(new Phrase("Type", fontHeader));
-            table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whRequest.getType(), fontContent));
-            table.addCell(cellContent);
-
-            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
-            table.addCell(cellHeader);
-            cellContent.setPhrase(new Phrase(whRequest.getQuantity(), fontContent));
             table.addCell(cellContent);
         } else {
             cellHeader.setPhrase(new Phrase("Equipment ID", fontHeader));
@@ -121,6 +105,16 @@ public class WhRequestPdf extends AbstractITextPdfViewPotrait {
             cellContent.setPhrase(new Phrase(whRequest.getEquipmentId(), fontContent));
             table.addCell(cellContent);
         }
+
+        cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+        table.addCell(cellHeader);
+        cellContent.setPhrase(new Phrase(whRequest.getQuantity(), fontContent));
+        table.addCell(cellContent);
+
+        cellHeader.setPhrase(new Phrase("Location", fontHeader));
+        table.addCell(cellHeader);
+        cellContent.setPhrase(new Phrase(whRequest.getLocation(), fontContent));
+        table.addCell(cellContent);
 
         cellHeader.setPhrase(new Phrase("Requested By", fontHeader));
         table.addCell(cellHeader);
@@ -143,7 +137,6 @@ public class WhRequestPdf extends AbstractITextPdfViewPotrait {
         table.addCell(cellContent);
 
         doc.add(table);
-        
 
     }
 }

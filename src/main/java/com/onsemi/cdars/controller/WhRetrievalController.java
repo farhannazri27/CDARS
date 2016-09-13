@@ -1,5 +1,7 @@
 package com.onsemi.cdars.controller;
 
+import com.onsemi.cdars.dao.WhInventoryDAO;
+import com.onsemi.cdars.dao.WhRequestDAO;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -8,7 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.model.WhRetrieval;
 import com.onsemi.cdars.model.UserSession;
+import com.onsemi.cdars.model.WhInventory;
+import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.tools.QueryResult;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +41,14 @@ public class WhRetrievalController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WhRetrievalController.class);
     String[] args = {};
+
+    //Delimiters which has to be in the CSV file
+    private static final String COMMA_DELIMITER = ",";
+    private static final String LINE_SEPARATOR = "\n";
+
+    //File header
+    private static final String HEADER = "request_id,hardware_type,hardware_id,quantity,location,status";
+    private static final String HEADERArray = "id, request_type, hardware_type, hardware_id, type, quantity, requested_by, requested_date, remarks";
 
     @Autowired
     private MessageSource messageSource;
@@ -75,8 +92,8 @@ public class WhRetrievalController {
             String IdLabel = "Hardware ID";
             model.addAttribute("IdLabel", IdLabel);
         }
-        
-         //for check which tab should active
+
+        //for check which tab should active
         if ("Barcode Verified".equals(whRetrieval.getStatus()) || "Closed".equals(whRetrieval.getStatus())) {
             String ttActive = "active";
             String ttActiveTab = "in active";
@@ -102,8 +119,8 @@ public class WhRetrievalController {
         model.addAttribute("whRetrieval", whRetrieval);
         return "whRetrieval/edit";
     }
-    
-     @RequestMapping(value = "/updateScanBs", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/updateScanBs", method = RequestMethod.POST)
     public String updateScanBs(
             Model model,
             Locale locale,
@@ -131,7 +148,7 @@ public class WhRetrievalController {
         }
         return "redirect:/wh/whRetrieval/edit/" + id;
     }
-    
+
     @RequestMapping(value = "/updateScanTt", method = RequestMethod.POST)
     public String updateScanTt(
             Model model,
@@ -148,13 +165,114 @@ public class WhRetrievalController {
         whRetrieval.setTtVerification(ttVerification);
         whRetrieval.setTtVerifiedBy(userSession.getFullname());
         whRetrieval.setStatus("Closed");
-        whRetrieval.setFlag("0");
+        whRetrieval.setFlag("1");
         WhRetrievalDAO whRetrievalDAO = new WhRetrievalDAO();
         QueryResult queryResult = whRetrievalDAO.updateTt(whRetrieval);
         args = new String[1];
         args[0] = ttVerification;
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+            String username = System.getProperty("user.name");
+            //SEND EMAIL
+            File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieval_status.csv");
+
+            if (file.exists()) {
+
+                LOGGER.info("tiada header");
+                FileWriter fileWriter = null;
+                try {
+                    fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieval_status.csv", true);
+                    //New Line after the header
+                    fileWriter.append(LINE_SEPARATOR);
+
+                    WhRetrievalDAO whdao = new WhRetrievalDAO();
+                    WhRetrieval wh = whdao.getWhRetrieval(id);
+
+                    fileWriter.append(wh.getRequestId());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getHardwareType());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getHardwareId());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getHardwareQty());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getLocation());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getStatus());
+                    fileWriter.append(COMMA_DELIMITER);
+                    System.out.println("append to CSV file Succeed!!!");
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                } finally {
+                    try {
+                        fileWriter.close();
+                    } catch (IOException ie) {
+                        System.out.println("Error occured while closing the fileWriter");
+                        ie.printStackTrace();
+                    }
+                }
+            } else {
+                FileWriter fileWriter = null;
+                try {
+                    fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieval_status.csv");
+                    LOGGER.info("no file yet");
+                    //Adding the header
+                    fileWriter.append(HEADER);
+
+                    //New Line after the header
+                    fileWriter.append(LINE_SEPARATOR);
+
+                    WhRetrievalDAO whdao = new WhRetrievalDAO();
+                    WhRetrieval wh = whdao.getWhRetrieval(id);
+
+                    fileWriter.append(wh.getRequestId());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getHardwareType());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getHardwareId());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getHardwareQty());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getLocation());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getStatus());
+                    fileWriter.append(COMMA_DELIMITER);
+                    System.out.println("Write new to CSV file Succeed!!!");
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                } finally {
+                    try {
+                        fileWriter.close();
+                    } catch (IOException ie) {
+                        System.out.println("Error occured while closing the fileWriter");
+                        ie.printStackTrace();
+                    }
+                }
+            }
+
+            //update inventory - change flag to 1 (hide from list)
+            WhRetrievalDAO whdao = new WhRetrievalDAO();
+            WhRetrieval wh = whdao.getWhRetrieval(id);
+            
+            WhRequestDAO requestd = new WhRequestDAO();
+            WhRequest request = requestd.getWhRequest(wh.getRequestId());
+
+            WhInventoryDAO inventoryD = new WhInventoryDAO();
+            WhInventory inventory = inventoryD.getWhInventory(request.getInventoryId());
+
+            WhInventory update = new WhInventory();
+            update.setId(inventory.getId());
+            update.setRequestId(inventory.getRequestId());
+            update.setFlag("1");
+            WhInventoryDAO updateDAO = new WhInventoryDAO();
+            QueryResult updateq = updateDAO.updateWhInventoryFlag(update);
+            if (updateq.getResult() == 1) {
+                LOGGER.info("update inventory done");
+            } else {
+                LOGGER.info("update inventory failed");
+            }
+
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
         }

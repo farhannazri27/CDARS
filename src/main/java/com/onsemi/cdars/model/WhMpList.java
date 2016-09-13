@@ -13,6 +13,7 @@ public class WhMpList {
      private String requestedDate;
     private String createdDate;
     private String createdBy;
+    private String viewMpExpiryDate;
 
     public String getId() {
         return id;
@@ -101,5 +102,15 @@ public class WhMpList {
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
+
+    public String getViewMpExpiryDate() {
+        return viewMpExpiryDate;
+    }
+
+    public void setViewMpExpiryDate(String viewMpExpiryDate) {
+        this.viewMpExpiryDate = viewMpExpiryDate;
+    }
+    
+    
 
 }

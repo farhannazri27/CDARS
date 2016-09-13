@@ -49,9 +49,9 @@
                                         <th><span>Hardware Type</span></th>
                                         <th><span>Hardware ID</span></th>
                                         <th><span>Quantity</span></th>
+                                        <th><span>Material Pass No</span></th>
                                         <th><span>Requested By</span></th>
                                         <th><span>Requested Date</span></th>
-                                        <th><span>Material Pass No</span></th>
                                         <th><span>Status</span></th>
                                         <th><span>Manage</span></th>
                                     </tr>
@@ -63,9 +63,9 @@
                                             <td><c:out value="${whShipping.requestEquipmentType}"/></td>
                                             <td id="modal_delete_info_${whShipping.id}"><c:out value="${whShipping.requestEquipmentId}"/></td>
                                             <td><c:out value="${whShipping.requestQuantity}"/></td>
+                                            <td><c:out value="${whShipping.mpNo}"/></td>
                                             <td><c:out value="${whShipping.requestRequestedBy}"/></td>
                                             <td><c:out value="${whShipping.requestViewRequestedDate}"/></td>
-                                            <td><c:out value="${whShipping.mpNo}"/></td>
                                             <td><c:out value="${whShipping.status}"/></td>
                                             <td align="left">
                                                 <a href="${contextPath}/wh/whShipping/edit/${whShipping.id}" class="table-link" title="Edit">
@@ -80,7 +80,7 @@
                                                         <i class="fa fa-ticket fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <c:if test="${whShipping.status == 'No Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match'}">
+                                                <c:if test="${whShipping.status == 'No Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Ship'}">
                                                     <a href="${contextPath}/wh/whShipping/viewBarcodeSticker/${whShipping.id}" class="table-link" title="Barcode Sticker">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>

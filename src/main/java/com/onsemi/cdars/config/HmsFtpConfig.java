@@ -37,7 +37,7 @@ public class HmsFtpConfig {
 //    @Scheduled(fixedRate = 60000)
 //    hold for now
 //    @Scheduled(cron = "0 5 * * * *") //every hour after 5 minute every day
-    @Scheduled(cron = "0 */2 * * * *") //every 2 minutes
+    @Scheduled(cron = "0 */1 * * * *") //every 2 minutes
     public void DownloadCsv() {
 
         //utk inventory
@@ -50,10 +50,12 @@ public class HmsFtpConfig {
              *
              */
 
-            File file = new File("C:\\Users\\fg79cj\\Documents\\inventory\\hms_inventory.csv");
+//            File file = new File("C:\\Users\\fg79cj\\Documents\\inventory\\hms_inventory.csv");
+            String username = System.getProperty("user.name");
+            File file = new File("C:\\Users\\" + username + "\\Documents\\HMS\\hms_inventory.csv");
 
             if (file.exists()) {
-                csvReader = new CSVReader(new FileReader("C:\\Users\\fg79cj\\Documents\\inventory\\hms_inventory.csv"), ',', '"', 1);
+                csvReader = new CSVReader(new FileReader("C:\\Users\\" + username + "\\Documents\\HMS\\hms_inventory.csv"), ',', '"', 1);
 
                 //employeeDetails stores the values current line
                 String[] inventory = null;
@@ -69,7 +71,7 @@ public class HmsFtpConfig {
                             inventory[7], inventory[8],
                             inventory[9], inventory[10],
                             inventory[11], inventory[12],
-                            inventory[13], inventory[14]);
+                            inventory[13]);
                     empList.add(emp);
                 }
 
@@ -78,23 +80,22 @@ public class HmsFtpConfig {
 
                     // check id exist or not
                     WhInventoryDAO checkidDao = new WhInventoryDAO();
-                    int countinventoryid = checkidDao.getCountInventoryiId(e.getInventoryId());
+                    int countinventoryid = checkidDao.getCountInventoryiId(e.getRequestId());
                     if (countinventoryid > 0) {
 
                         //check if exist, same data or not
                         WhInventoryDAO inDao = new WhInventoryDAO();
-                        int countdata = inDao.getCountInventoryiIdSlotRack(e.getInventoryId(), e.getInventorySlot(), e.getInvetoryRack());
+                        int countdata = inDao.getCountInventoryiIdAndLocation(e.getRequestId(), e.getInventoryLocation());
                         if (countdata == 0) {
                             WhInventoryDAO countid = new WhInventoryDAO();
-                            String id = countid.getId(e.getInventoryId());
+                            String id = countid.getId(e.getRequestId());
                             WhInventory updateftp = new WhInventory();
 
                             updateftp.setId(id);
-                            updateftp.setInventoryId(e.getInventoryId());
+                            updateftp.setRequestId(e.getRequestId());
                             updateftp.setInventoryDate(e.getInventoryDate());
                             updateftp.setInventoryBy(e.getInventoryBy());
-                            updateftp.setInventorySlot(e.getInventorySlot());
-                            updateftp.setInvetoryRack(e.getInvetoryRack());
+                            updateftp.setInventoryLocation(e.getInventoryLocation());
                             updateftp.setFlag("0");
                             WhInventoryDAO updateDao = new WhInventoryDAO();
                             QueryResult update = updateDao.updateWhInventoryLocation(updateftp);
@@ -108,7 +109,7 @@ public class HmsFtpConfig {
                     } else {
                         WhInventoryDAO insertDao = new WhInventoryDAO();
                         WhInventory insertftp = new WhInventory();
-                        insertftp.setInventoryId(e.getInventoryId());
+                        insertftp.setRequestId(e.getRequestId());
                         insertftp.setMpNo(e.getMpNo());
                         insertftp.setMpExpiryDate(e.getMpExpiryDate());
                         insertftp.setEquipmentType(e.getEquipmentType());
@@ -120,8 +121,7 @@ public class HmsFtpConfig {
                         insertftp.setVerifiedDate(e.getVerifiedDate());
                         insertftp.setInventoryDate(e.getInventoryDate());
                         insertftp.setInventoryBy(e.getInventoryBy());
-                        insertftp.setInventorySlot(e.getInventorySlot());
-                        insertftp.setInvetoryRack(e.getInvetoryRack());
+                        insertftp.setInventoryLocation(e.getInventoryLocation());
                         insertftp.setStatus(e.getStatus());
                         insertftp.setFlag("0");
                         QueryResult add = insertDao.insertWhInventory(insertftp);
@@ -139,11 +139,13 @@ public class HmsFtpConfig {
             }
 
             //for retrieval from sg gadut
-            File fileRetrieval = new File("C:\\Users\\fg79cj\\Documents\\HMS\\hms_shipping.csv");
+//            String username = System.getProperty("user.name");
+            File fileRetrieval = new File("C:\\Users\\" + username + "\\Documents\\HMS\\hms_shipping.csv");
+//            File fileRetrieval = new File("C:\\Users\\fg79cj\\Documents\\HMS\\hms_shipping.csv");
 
             if (fileRetrieval.exists()) {
 
-                CSVReader csvReaderForRetrieval = new CSVReader(new FileReader("C:\\Users\\fg79cj\\Documents\\HMS\\hms_shipping.csv"), ',', '"', 1);
+                CSVReader csvReaderForRetrieval = new CSVReader(new FileReader("C:\\Users\\" + username + "\\Documents\\HMS\\hms_shipping.csv"), ',', '"', 1);
 
                 String[] retrieval = null;
 

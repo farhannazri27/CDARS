@@ -13,8 +13,6 @@ import com.onsemi.cdars.tools.QueryResult;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +45,14 @@ public class WhMpListController {
     private static final String COMMA_DELIMITER = ",";
     private static final String LINE_SEPARATOR = "\n";
     private static final String HEADER = "id,hardware_type,hardware_id,quantity,material pass number,material pass expiry date,requested_by,"
-            + "requested_date,remarks";
+            + "requestor_email,requested_date,remarks,shipping_date";
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String whMpList(
             Model model
     ) {
         WhMpListDAO whMpListDAO = new WhMpListDAO();
-        List<WhMpList> whMpListList = whMpListDAO.getWhMpListList();
+        List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplay();
         model.addAttribute("whMpListList", whMpListList);
         return "whMpList/whMpList";
     }
@@ -104,18 +102,20 @@ public class WhMpListController {
                     model.addAttribute("whMpList", whMpList);
                     return "whMpList/add";
                 } else {
-                    File file = new File("C:\\cdars_shipping.csv");
+                    String username = System.getProperty("user.name");
+                    File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
 
                     if (file.exists()) {
                         //create csv file
                         LOGGER.info("tiada header");
                         FileWriter fileWriter = null;
                         try {
-                            fileWriter = new FileWriter("C:\\cdars_shipping.csv", true);
+                            fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv", true);
                             //New Line after the header
                             fileWriter.append(LINE_SEPARATOR);
 
-                            fileWriter.append(queryResult.getGeneratedKey());
+//                            fileWriter.append(queryResult.getGeneratedKey());
+                            fileWriter.append(whship.getRequestId());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestEquipmentType());
                             fileWriter.append(COMMA_DELIMITER);
@@ -129,9 +129,13 @@ public class WhMpListController {
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestRequestedBy());
                             fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestRequestorEmail());
+                            fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestRequestedDate());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRemarks());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getCreatedDate());
                             fileWriter.append(COMMA_DELIMITER);
                             System.out.println("append to CSV file Succeed!!!");
                         } catch (Exception ee) {
@@ -147,7 +151,7 @@ public class WhMpListController {
                     } else {
                         FileWriter fileWriter = null;
                         try {
-                            fileWriter = new FileWriter("C:\\cdars_shipping.csv");
+                            fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
                             LOGGER.info("no file yet");
                             //Adding the header
                             fileWriter.append(HEADER);
@@ -155,7 +159,7 @@ public class WhMpListController {
                             //New Line after the header
                             fileWriter.append(LINE_SEPARATOR);
 
-                            fileWriter.append(queryResult.getGeneratedKey());
+                            fileWriter.append(whship.getRequestId());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestEquipmentType());
                             fileWriter.append(COMMA_DELIMITER);
@@ -169,9 +173,13 @@ public class WhMpListController {
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestRequestedBy());
                             fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getRequestRequestorEmail());
+                            fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestRequestedDate());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRemarks());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getCreatedDate());
                             fileWriter.append(COMMA_DELIMITER);
                             System.out.println("Write new to CSV file Succeed!!!");
                         } catch (Exception ee) {
@@ -186,6 +194,7 @@ public class WhMpListController {
                         }
                     }
 
+//                    hold until testing 7/9/16
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname(userSession.getFullname());
@@ -198,16 +207,35 @@ public class WhMpListController {
                             to,
                             //                         "farhannazri27@yahoo.com",
                             // attachment file
-                            new File("C:\\cdars_shipping.csv"),
+                            new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv"),
                             //                    subject
                             "New Hardware Shipping from CDARS",
                             //                    msg
-                            "New hardware will be ship to storage factory. Please go to this link "
-                            + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">CDARS</a>"
-                            + " to check the shipping list."
+                            "New hardware will be ship to storage factory. "
+                    //                                    + "Please go to this link "
+                    //                            + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">CDARS</a>"
+                    //                            + " to check the shipping list."
                     );
+
+                    //update status at shipping list to "Ship"
+                    WhShippingDAO shipD = new WhShippingDAO();
+                    WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
+
+                    WhShipping shipUpdate = new WhShipping();
+                    shipUpdate.setId(ship.getId());
+                    shipUpdate.setRequestId(ship.getRequestId());
+                    shipUpdate.setStatus("Ship");
+                    WhShippingDAO shipDD = new WhShippingDAO();
+                    QueryResult u = shipDD.updateWhShippingStatus(shipUpdate);
+                    if (u.getResult() == 1) {
+                        LOGGER.info("Status Ship updated");
+                    } else {
+                        LOGGER.info("Status Ship updated failed");
+                    }
+
                     redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.save.success", args, locale));
 //			return "redirect:/whMpList/edit/" + queryResult.getGeneratedKey();
+//                    return "redirect:/wh/whMpList/add"; 
                     return "whMpList/add";
                 }
             } else {

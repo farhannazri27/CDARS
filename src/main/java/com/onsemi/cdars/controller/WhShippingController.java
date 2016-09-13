@@ -93,7 +93,7 @@ public class WhShippingController {
             model.addAttribute("mpActive", mpActive);
             model.addAttribute("mpActiveTab", mpActiveTab);
         }
-        if ("No Scan Trip Ticket Yet".equals(whShipping.getStatus())) {
+        if ("Not Scan Trip Ticket Yet".equals(whShipping.getStatus())) {
             String ttActive = "active";
             String ttActiveTab = "in active";
             model.addAttribute("ttActive", ttActive);
@@ -104,7 +104,7 @@ public class WhShippingController {
             model.addAttribute("ttActive", ttActive);
             model.addAttribute("ttActiveTab", ttActiveTab);
         }
-        if ("Verified".equals(whShipping.getStatus()) || "Trip Ticket and Barcode Sticker Not Match".equals(whShipping.getStatus()) || "No Scan Barcode Sticker Yet".equals(whShipping.getStatus())) {
+        if ("Verified".equals(whShipping.getStatus()) || "Trip Ticket and Barcode Sticker Not Match".equals(whShipping.getStatus()) || "Not Scan Barcode Sticker Yet".equals(whShipping.getStatus()) || "Ship".equals(whShipping.getStatus())) {
             String bsActive = "active";
             String bsActiveTab = "in active";
             model.addAttribute("bsActive", bsActive);
@@ -240,6 +240,7 @@ public class WhShippingController {
         args[0] = hardwareBarcode2;
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+                      return "redirect:/wh/whShipping";
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
         }

@@ -59,7 +59,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			Locale locale,
 			RedirectAttributes redirectAttrs,
 			@ModelAttribute UserSession userSession,
-			@RequestParam(required = false) String inventoryId,
+			@RequestParam(required = false) String requestId,
 			@RequestParam(required = false) String mpNo,
 			@RequestParam(required = false) String equipmentType,
 			@RequestParam(required = false) String equipmentId,
@@ -69,8 +69,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			@RequestParam(required = false) String remarks,
 			@RequestParam(required = false) String verifiedDate,
 			@RequestParam(required = false) String inventoryDate,
-			@RequestParam(required = false) String invetoryRack,
-			@RequestParam(required = false) String inventorySlot,
+			@RequestParam(required = false) String inventoryLocation,
 			@RequestParam(required = false) String inventoryBy,
 			@RequestParam(required = false) String status,
 			@RequestParam(required = false) String receivedDate,
@@ -78,7 +77,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			@RequestParam(required = false) String location
 	) {
 		WhInventory whInventory = new WhInventory();
-		whInventory.setInventoryId(inventoryId);
+		whInventory.setRequestId(requestId);
 		whInventory.setMpNo(mpNo);
 		whInventory.setEquipmentType(equipmentType);
 		whInventory.setEquipmentId(equipmentId);
@@ -88,8 +87,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		whInventory.setRemarks(remarks);
 		whInventory.setVerifiedDate(verifiedDate);
 		whInventory.setInventoryDate(inventoryDate);
-		whInventory.setInvetoryRack(invetoryRack);
-		whInventory.setInventorySlot(inventorySlot);
+		whInventory.setInventoryLocation(inventoryLocation);
 		whInventory.setInventoryBy(inventoryBy);
 		whInventory.setStatus(status);
 		whInventory.setReceivedDate(receivedDate);
@@ -98,7 +96,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		WhInventoryDAO whInventoryDAO = new WhInventoryDAO();
 		QueryResult queryResult = whInventoryDAO.insertWhInventory(whInventory);
 		args = new String[1];
-		args[0] = inventoryId + " - " + mpNo;
+		args[0] = requestId + " - " + mpNo;
 		if (queryResult.getGeneratedKey().equals("0")) {
 			model.addAttribute("error", messageSource.getMessage("general.label.save.error", args, locale));
 			model.addAttribute("whInventory", whInventory);
@@ -127,7 +125,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			RedirectAttributes redirectAttrs,
 			@ModelAttribute UserSession userSession,
 			@RequestParam(required = false) String id,
-			@RequestParam(required = false) String inventoryId,
+			@RequestParam(required = false) String requestId,
 			@RequestParam(required = false) String mpNo,
 			@RequestParam(required = false) String equipmentType,
 			@RequestParam(required = false) String equipmentId,
@@ -137,8 +135,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			@RequestParam(required = false) String remarks,
 			@RequestParam(required = false) String verifiedDate,
 			@RequestParam(required = false) String inventoryDate,
-			@RequestParam(required = false) String invetoryRack,
-			@RequestParam(required = false) String inventorySlot,
+			@RequestParam(required = false) String inventoryLocation,
 			@RequestParam(required = false) String inventoryBy,
 			@RequestParam(required = false) String status,
 			@RequestParam(required = false) String receivedDate,
@@ -147,7 +144,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 	) {
 		WhInventory whInventory = new WhInventory();
 		whInventory.setId(id);
-		whInventory.setInventoryId(inventoryId);
+		whInventory.setRequestId(requestId);
 		whInventory.setMpNo(mpNo);
 		whInventory.setEquipmentType(equipmentType);
 		whInventory.setEquipmentId(equipmentId);
@@ -157,8 +154,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		whInventory.setRemarks(remarks);
 		whInventory.setVerifiedDate(verifiedDate);
 		whInventory.setInventoryDate(inventoryDate);
-		whInventory.setInvetoryRack(invetoryRack);
-		whInventory.setInventorySlot(inventorySlot);
+		whInventory.setInventoryLocation(inventoryLocation);
 		whInventory.setInventoryBy(inventoryBy);
 		whInventory.setStatus(status);
 		whInventory.setReceivedDate(receivedDate);
@@ -167,7 +163,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		WhInventoryDAO whInventoryDAO = new WhInventoryDAO();
 		QueryResult queryResult = whInventoryDAO.updateWhInventory(whInventory);
 		args = new String[1];
-		args[0] = inventoryId + " - " + mpNo;
+		args[0] = requestId + " - " + mpNo;
 		if (queryResult.getResult() == 1) {
 			redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
 		} else {
@@ -188,7 +184,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		whInventoryDAO = new WhInventoryDAO();
 		QueryResult queryResult = whInventoryDAO.deleteWhInventory(whInventoryId);
 		args = new String[1];
-		args[0] = whInventory.getInventoryId() + " - " + whInventory.getMpNo();
+		args[0] = whInventory.getRequestId() + " - " + whInventory.getMpNo();
 		if (queryResult.getResult() == 1) {
 			redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.delete.success", args, locale));
 		} else {
@@ -207,7 +203,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		String backUrl = servletContext.getContextPath() + "/wh/whInventory";
 		model.addAttribute("pdfUrl", pdfUrl);
 		model.addAttribute("backUrl", backUrl);
-		model.addAttribute("pageTitle", "general.label.whInventory");
+		model.addAttribute("pageTitle", "Inventory");
 		return "pdf/viewer";
 	}
 

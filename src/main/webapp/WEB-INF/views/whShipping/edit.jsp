@@ -98,7 +98,7 @@
                                     </div>
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel">Reset</button>
-                                        <button type="submit" class="btn btn-primary">Save & Print Trip Ticket</button>
+                                        <button type="submit" id="submit" name="submit" class="btn btn-primary">Save & Print Trip Ticket</button>
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>
@@ -125,6 +125,7 @@
                                         </div>
                                     </div>
                                     <input type="hidden" class="form-control" id="hardwareIdV" name="hardwareIdV" value="${whShipping.requestEquipmentId}">
+                                    <input type="hidden" class="form-control" id="hardwareId2" name="hardwareId2" value="${whShipping.hardwareBarcode1}">
                                     <input type="hidden" class="form-control" id="mpNoVe" name="mpNoVe" value="${whShipping.mpNo}">
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel1">Reset</button>
@@ -156,6 +157,7 @@
                                     </div>
                                     <div id = "alert_placeholder"></div>
                                     <input type="hidden" class="form-control" id="mpNoV" name="mpNoV" value="${whShipping.mpNo}">
+                                    <input type="hidden" class="form-control" id="mpNo2" name="mpNo2" value="${whShipping.hardwareBarcode2}">
                                     <input type="hidden" class="form-control" id="hardwareIdVe" name="hardwareIdVe" value="${whShipping.hardwareBarcode1}">
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel2">Reset</button>
@@ -180,17 +182,40 @@
         <script>
             $(document).ready(function () {
 
-                var element = $('#mpNoVe');
-                if (element.val() === "") {
+                var element = $('#mpNo');
+                var element1 = $('#mpNoVe');
+                var element2 = $('#hardwareIdVe');
+                var element3 = $('#hardwareIdV')
+                var element4 = $('#hardwareBarcode1');
+                var element5 = $('#mpNo2')
+                var element6 = $('#hardwareBarcode2');
+
+                if (element.val() !== "" && element.val() === element5.val()) {
+                    $("#submit").attr("disabled", true);
+                    $("#mpNo").attr("readonly", true);
+                    $("#mpExpiryDate").attr("readonly", true);
+                }
+
+                if (element1.val() === "") {
                     $("#submit1").attr("disabled", true);
                     $("#hardwareBarcode1").attr("readonly", true);
                 }
-                
-                var element = $('#hardwareIdVe');
-                if (element.val() === "") {
+
+                if (element3.val() === element4.val()) {
+                    $("#submit1").attr("disabled", true);
+                    $("#hardwareBarcode1").attr("readonly", true);
+                }
+
+                if (element2.val() === "") {
                     $("#submit2").attr("disabled", true);
                     $("#hardwareBarcode2").attr("readonly", true);
                 }
+
+                if (element6.val() === element1.val()) {
+                    $("#submit2").attr("disabled", true);
+                    $("#hardwareBarcode2").attr("readonly", true);
+                }
+
 
                 jQuery.extend(jQuery.validator.messages, {
                     required: "This field is required.",

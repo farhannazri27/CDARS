@@ -107,6 +107,58 @@ public class WhShippingDAO {
         return queryResult;
     }
 
+    public QueryResult updateWhShippingStatus(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getStatus());
+            ps.setString(3, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+    
+     public QueryResult updateWhShippingFlag(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, flag = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getFlag());
+            ps.setString(3, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
     public QueryResult updateWhShippingMp(WhShipping whShipping) {
         QueryResult queryResult = new QueryResult();
         try {
@@ -255,7 +307,7 @@ public class WhShippingDAO {
     }
 
     public WhShipping getWhShippingMergeWithRequest(String whShippingId) {
-        String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.type AS type, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
+        String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
                 + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id AND sh.id = '" + whShippingId + "'";
         WhShipping whShipping = null;
         try {
@@ -285,7 +337,6 @@ public class WhShippingDAO {
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
                 whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
                 whShipping.setRequestQuantity(rs.getString("quantity"));
-                whShipping.setRequestType(rs.getString("type"));
                 whShipping.setRequestRequestedBy(rs.getString("requested_by"));
                 whShipping.setRequestRequestedDate(rs.getString("requested_date"));
                 whShipping.setRequestViewRequestedDate(rs.getString("view_requested_date"));
@@ -351,7 +402,7 @@ public class WhShippingDAO {
     }
 
     public List<WhShipping> getWhShippingListMergeWithRequest() {
-        String sql = "SELECT sh.*,re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.type AS type, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
+        String sql = "SELECT sh.*,re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
                 + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id ORDER BY id DESC";
         List<WhShipping> whShippingList = new ArrayList<WhShipping>();
         try {
@@ -382,7 +433,6 @@ public class WhShippingDAO {
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
                 whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
                 whShipping.setRequestQuantity(rs.getString("quantity"));
-                whShipping.setRequestType(rs.getString("type"));
                 whShipping.setRequestRequestedBy(rs.getString("requested_by"));
                 whShipping.setRequestRequestedDate(rs.getString("requested_date"));
                 whShipping.setRequestViewRequestedDate(rs.getString("view_requested_date"));
@@ -406,7 +456,10 @@ public class WhShippingDAO {
     }
 
     public WhShipping getWhShippingMergeWithRequestByMpNo(String mpNo) {
-        String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.type AS type, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
+        String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, "
+                + "re.equipment_id AS equipment_id, re.quantity AS quantity, re.requested_by AS requested_by, "
+                + "re.requestor_email AS requestor_email, "
+                + "re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y %h:%i %p') AS view_requested_date "
                 + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id AND sh.mp_no = '" + mpNo + "'";
         WhShipping whShipping = null;
         try {
@@ -436,8 +489,8 @@ public class WhShippingDAO {
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
                 whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
                 whShipping.setRequestQuantity(rs.getString("quantity"));
-                whShipping.setRequestType(rs.getString("type"));
                 whShipping.setRequestRequestedBy(rs.getString("requested_by"));
+                whShipping.setRequestRequestorEmail(rs.getString("requestor_email"));
                 whShipping.setRequestRequestedDate(rs.getString("requested_date"));
                 whShipping.setRequestViewRequestedDate(rs.getString("view_requested_date"));
             }

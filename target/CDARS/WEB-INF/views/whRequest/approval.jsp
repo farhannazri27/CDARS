@@ -40,12 +40,6 @@
                                     <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.equipmentId}" readonly>
                                 </div>
                             </div>
-                            <div class="form-group" id="typediv" hidden>
-                                <label for="type" class="col-lg-4 control-label">Type </label>
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" id="type" name="type" placeholder="Type" value="${whRequest.type}" readonly>
-                                </div>
-                            </div>    
                             <div class="form-group" id="quantitydiv" hidden>
                                 <label for="quantity" class="col-lg-4 control-label">Quantity *</label>
                                 <div class="col-lg-2">
@@ -130,6 +124,9 @@
                 var validator = $("#approval_hardwarequest_form").validate({
                     rules: {
                         finalApprovedStatus: {
+                            required: true
+                        },
+                        remarksApprover: {
                             required: true
                         }
                     }

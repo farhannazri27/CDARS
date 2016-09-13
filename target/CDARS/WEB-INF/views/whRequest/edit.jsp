@@ -25,7 +25,7 @@
                             <div class="form-group">
                                 <label for="requestType" class="col-lg-4 control-label">Request For *</label>
                                 <div class="col-lg-3">
-                                    <select id="requestType" name="requestType" class="form-control">
+                                    <select id="requestType" name="requestType" class="form-control" readonly>
                                         <option value=""></option>
                                         <c:forEach items="${requestType}" var="group">
                                             <option value="${group.name}" ${group.selected}>${group.name}</option>
@@ -36,7 +36,7 @@
                             <div class="form-group">
                                 <label for="equipmentType" class="col-lg-4 control-label">Hardware Category *</label>
                                 <div class="col-lg-5">
-                                    <select id="equipmentType" name="equipmentType" class="form-control">
+                                    <select id="equipmentType" name="equipmentType" class="form-control" readonly>
                                         <option value=""></option>
                                         <c:forEach items="${equipmentType}" var="group">
                                             <option value="${group.name}" ${group.selected}>${group.name}</option>
@@ -46,57 +46,62 @@
                             </div>
                             <div class="form-group" id="listdiv">
                                 <label for="equipmentId" class="col-lg-4 control-label">Equipment ID * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentId" name="equipmentId" class="form-control">
-                                        <option value="" selected=""></option>
+                                <div class="col-lg-8">                                  
+                                    <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.equipmentId}" readonly>
+                                 <!--<select id="equipmentId" name="equipmentId" class="form-control" value="${whRequest.equipmentId}">-->
+                                    <option value="" selected=""></option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group" id="mblistdiv" >
-                                <label for="equipmentIdMb" class="col-lg-4 control-label">Motherboard ID * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentIdMb" name="equipmentIdMb" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${mb}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group" id="stencillistdiv" >
-                                <label for="equipmentIdStencil" class="col-lg-4 control-label">Stencil ID * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentIdStencil" name="equipmentIdStencil" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${stencil}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group" id="traylistdiv" >
-                                <label for="equipmentIdTray" class="col-lg-4 control-label">Tray Type * </label>
-                                <div class="col-lg-8">                                      
-                                    <select id="equipmentIdTray" name="equipmentIdTray" class="form-control">
-                                        <option value=""></option>
-                                        <c:forEach items="${tray}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group" id="pcblistdiv" hidden>
-                                <label for="equipmentIdPcb" class="col-lg-4 control-label">PCB Name * </label>
-                                <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="equipmentIdPcb" name="equipmentIdPcb" placeholder="PCB Name" value="${whRequest.equipmentId}">
-                                </div>
-                            </div>
-                            <div class="form-group" id="typediv" hidden>
-                                <label for="type" class="col-lg-4 control-label">Type </label>
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" id="type" name="type" placeholder="Type" value="${whRequest.type}">
-                                </div>
-                            </div>    
+                            <!--                            <div class="form-group" id="listdiv">
+                                                            <label for="equipmentId" class="col-lg-4 control-label">Equipment ID * </label>
+                                                            <div class="col-lg-8">                                      
+                                                                <select id="equipmentId" name="equipmentId" class="form-control" value="${whRequest.equipmentId}">
+                                                                    <option value="" selected=""></option>
+                                                                </select>
+                                                            </div>
+                                                        </div>-->
+                            <!-- 8/9/16 hide kejap list down sbb ad bug bila kuar kan-->
+
+                            <!--                            <div class="form-group" id="mblistdiv" >
+                                                            <label for="equipmentIdMb" class="col-lg-4 control-label">Motherboard ID * </label>
+                                                            <div class="col-lg-8">                                      
+                                                                <select id="equipmentIdMb" name="equipmentIdMb" class="form-control">
+                                                                    <option value=""></option>
+                            <c:forEach items="${mb}" var="group">
+                                <option value="${group.name}" ${group.selected}>${group.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="stencillistdiv" >
+                    <label for="equipmentIdStencil" class="col-lg-4 control-label">Stencil ID * </label>
+                    <div class="col-lg-8">                                      
+                        <select id="equipmentIdStencil" name="equipmentIdStencil" class="form-control">
+                            <option value=""></option>
+                            <c:forEach items="${stencil}" var="group">
+                                <option value="${group.name}" ${group.selected}>${group.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="traylistdiv" >
+                    <label for="equipmentIdTray" class="col-lg-4 control-label">Tray Type * </label>
+                    <div class="col-lg-8">                                      
+                        <select id="equipmentIdTray" name="equipmentIdTray" class="form-control">
+                            <option value=""></option>
+                            <c:forEach items="${tray}" var="group">
+                                <option value="${group.name}" ${group.selected}>${group.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="pcblistdiv" hidden>
+                    <label for="equipmentIdPcb" class="col-lg-4 control-label">PCB Name * </label>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control" id="equipmentIdPcb" name="equipmentIdPcb" placeholder="PCB Name" value="${whRequest.equipmentId}">
+                    </div>
+                </div>-->
                             <div class="form-group" id="quantitydiv" hidden>
                                 <label for="quantity" class="col-lg-4 control-label">Quantity *</label>
                                 <div class="col-lg-2">
@@ -149,7 +154,7 @@
                 var element = $('#equipmentType');
                 if (element.val() === "Motherboard") {
                     $("#mblistdiv").show();
-                    $("#listdiv").hide();
+//                    $("#listdiv").hide();
                     $("#stencillistdiv").hide();
                     $("#traylistdiv").hide();
                     $("#pcblistdiv").hide();
@@ -162,7 +167,7 @@
                     $("#type").val("");
                 } else if (element.val() === "Stencil") {
                     $("#stencillistdiv").show();
-                    $("#listdiv").hide();
+//                    $("#listdiv").hide();
                     $("#mblistdiv").hide();
                     $("#traylistdiv").hide();
                     $("#pcblistdiv").hide();
@@ -176,7 +181,7 @@
                 } else if (element.val() === "Tray") {
                     $("#traylistdiv").show();
                     $("#quantitydiv").show();
-                    $("#listdiv").hide();
+//                    $("#listdiv").hide();
                     $("#stencillistdiv").hide();
                     $("#mblistdiv").hide();
                     $("#pcblistdiv").hide();
@@ -189,7 +194,7 @@
                     $("#pcblistdiv").show();
                     $("#typediv").hide();
                     $("#quantitydiv").show();
-                    $("#listdiv").hide();
+//                    $("#listdiv").hide();
                     $("#stencillistdiv").hide();
                     $("#mblistdiv").hide();
                     $("#traylistdiv").hide();

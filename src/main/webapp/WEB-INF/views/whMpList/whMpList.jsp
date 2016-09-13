@@ -28,8 +28,8 @@
                             </div>
                         </div>
                         <!--<div class="alert_placeholder col-lg-4" >-->
-                        <div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            *Please delete all data after print the shipping material pass number list.
+                        <div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <b>*Please delete all data after print the shipping material pass number list.</b>
                         </div>    
                         <hr/>
                         <div class="clearfix">
@@ -56,6 +56,7 @@
                                     <tr>
                                         <th><span>No</span></th>
                                         <th><span>Material Pass Number</span></th>
+                                        <th><span>Material Pass Expiry Date</span></th>
                                         <th><span>Hardware Type</span></th>
                                         <th><span>Hardware ID</span></th>
                                         <th><span>Quantity</span></th>
@@ -66,6 +67,7 @@
                                         <tr>
                                             <td><c:out value="${whMpListLoop.index+1}"/></td>
                                             <td><c:out value="${whMpList.mpNo}"/></td>
+                                            <td><c:out value="${whMpList.viewMpExpiryDate}"/></td>
                                             <td><c:out value="${whMpList.hardwareType}"/></td>
                                             <td><c:out value="${whMpList.hardwareId}"/></td>
                                             <td><c:out value="${whMpList.quantity}"/></td>
@@ -92,7 +94,7 @@
                                             "order": [],
                                             "aoColumnDefs": [
                                                 {"bSortable": false, "aTargets": [0]},
-                                                {"bSortable": false, "aTargets": [4]}
+                                                {"bSortable": false, "aTargets": [5]}
                                             ],
                                             "sDom": "tp"
                                         });
@@ -104,19 +106,19 @@
                                                     "sExtends": "copy",
                                                     "sButtonText": "Copy",
                                                     "sTitle": exportTitle,
-                                                    "mColumns": [0, 1, 2, 3, 4]
+                                                    "mColumns": [0, 1, 2, 3, 4, 5]
                                                 },
                                                 {
                                                     "sExtends": "xls",
                                                     "sButtonText": "Excel",
                                                     "sTitle": exportTitle,
-                                                    "mColumns": [0, 1, 2, 3, 4]
+                                                    "mColumns": [0, 1, 2, 3, 4, 5]
                                                 },
                                                 {
                                                     "sExtends": "pdf",
                                                     "sButtonText": "PDF",
                                                     "sTitle": exportTitle,
-                                                    "mColumns": [0, 1, 2, 3, 4]
+                                                    "mColumns": [0, 1, 2, 3, 4, 5]
                                                 },
                                                 {
                                                     "sExtends": "print",
