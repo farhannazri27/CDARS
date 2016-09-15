@@ -125,15 +125,24 @@
                     rules: {
                         finalApprovedStatus: {
                             required: true
-                        },
-                        remarksApprover: {
-                            required: true
                         }
+//                        ,
+//                        remarksApprover: {
+//                            required: true
+//                        }
                     }
                 });
                 $(".cancel").click(function () {
                     validator.resetForm();
                 });
+            });
+
+            $('#finalApprovedStatus').on('change', function () {
+                if ($(this).val() === "Not Approved") {
+                    $("#remarksApprover").attr("required", true);
+                }else{
+                    $("#remarksApprover").attr("required", false);
+                }
             });
 
 

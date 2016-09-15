@@ -52,7 +52,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="location" class="col-lg-4 control-label">Slot </label>
+                                <label for="location" class="col-lg-4 control-label">Location </label>
                                 <div class="col-lg-3">
                                     <input type="text" class="form-control" id="location" name="location" value="${whRetrieval.location}" readonly>
                                 </div>
