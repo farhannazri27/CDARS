@@ -21,6 +21,9 @@ import org.springframework.ui.Model;
  * @author fg79cj
  */
 public class SptsClass {
+    
+    //status has 2 type = status(movement) and itemstatus
+    //check status(movement) = 1 : good
 
     public List<LinkedHashMap<String, String>> getSptsItemByParam(
             String itemType,

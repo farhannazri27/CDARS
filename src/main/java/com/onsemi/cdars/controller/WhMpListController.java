@@ -235,8 +235,8 @@ public class WhMpListController {
 
                     redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.save.success", args, locale));
 //			return "redirect:/whMpList/edit/" + queryResult.getGeneratedKey();
-//                    return "redirect:/wh/whMpList/add"; 
-                    return "whMpList/add";
+                    return "redirect:/wh/whShipping/whMpList/add"; 
+//                    return "whMpList/add";
                 }
             } else {
                 String messageError = "Material Pass Number " + mpNo + " already added to the list!";
