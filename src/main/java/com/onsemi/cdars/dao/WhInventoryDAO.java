@@ -30,23 +30,35 @@ public class WhInventoryDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO cdars_wh_inventory (request_id, mp_no, mp_expiry_date, equipment_type, equipment_id, quantity, requested_by, requested_date, remarks, verified_date, inventory_date, inventory_location, inventory_by, status, received_date, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)", Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO cdars_wh_inventory (request_id, mp_no, mp_expiry_date, equipment_type, equipment_id, "
+                    + "pcb_a, pcb_a_qty, pcb_b, pcb_b_qty, pcb_c, pcb_c_qty, pcb_ctr, pcb_ctr_qty, "
+                    + "quantity, requested_by, requested_date, remarks, verified_date, inventory_date, inventory_rack, inventory_shelf,"
+                    + " inventory_by, status, received_date, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whInventory.getRequestId());
             ps.setString(2, whInventory.getMpNo());
             ps.setString(3, whInventory.getMpExpiryDate());
             ps.setString(4, whInventory.getEquipmentType());
             ps.setString(5, whInventory.getEquipmentId());
-            ps.setString(6, whInventory.getQuantity());
-            ps.setString(7, whInventory.getRequestedBy());
-            ps.setString(8, whInventory.getRequestedDate());
-            ps.setString(9, whInventory.getRemarks());
-            ps.setString(10, whInventory.getVerifiedDate());
-            ps.setString(11, whInventory.getInventoryDate());
-            ps.setString(12, whInventory.getInventoryLocation());
-            ps.setString(13, whInventory.getInventoryBy());
-            ps.setString(14, whInventory.getStatus());
-            ps.setString(15, whInventory.getFlag());
+            ps.setString(6, whInventory.getPcbA());
+            ps.setString(7, whInventory.getPcbAQty());
+            ps.setString(8, whInventory.getPcbB());
+            ps.setString(9, whInventory.getPcbBQty());
+            ps.setString(10, whInventory.getPcbC());
+            ps.setString(11, whInventory.getPcbCQty());
+            ps.setString(12, whInventory.getPcbCtr());
+            ps.setString(13, whInventory.getPcbCtrQty());
+            ps.setString(14, whInventory.getQuantity());
+            ps.setString(15, whInventory.getRequestedBy());
+            ps.setString(16, whInventory.getRequestedDate());
+            ps.setString(17, whInventory.getRemarks());
+            ps.setString(18, whInventory.getVerifiedDate());
+            ps.setString(19, whInventory.getInventoryDate());
+            ps.setString(20, whInventory.getInventoryRack());
+            ps.setString(21, whInventory.getInventoryShelf());
+            ps.setString(22, whInventory.getInventoryBy());
+            ps.setString(23, whInventory.getStatus());
+            ps.setString(24, whInventory.getFlag());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -113,14 +125,15 @@ public class WhInventoryDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_inventory SET request_id = ?, inventory_date = ?, inventory_location = ?, inventory_by = ?,  received_date = NOW(), flag = ? WHERE id = ?"
+                    "UPDATE cdars_wh_inventory SET request_id = ?, inventory_date = ?, inventory_rack = ?, inventory_shelf = ?, inventory_by = ?,  received_date = NOW(), flag = ? WHERE id = ?"
             );
             ps.setString(1, whInventory.getRequestId());
             ps.setString(2, whInventory.getInventoryDate());
-            ps.setString(3, whInventory.getInventoryLocation());
-            ps.setString(4, whInventory.getInventoryBy());
-            ps.setString(5, whInventory.getFlag());
-            ps.setString(6, whInventory.getId());
+            ps.setString(3, whInventory.getInventoryRack());
+            ps.setString(4, whInventory.getInventoryShelf());
+            ps.setString(5, whInventory.getInventoryBy());
+            ps.setString(6, whInventory.getFlag());
+            ps.setString(7, whInventory.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -201,6 +214,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -243,6 +264,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -285,6 +314,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -332,6 +369,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -375,6 +420,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -419,6 +472,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -598,6 +659,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -645,6 +714,14 @@ public class WhInventoryDAO {
                 whInventory.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whInventory.setEquipmentType(rs.getString("equipment_type"));
                 whInventory.setEquipmentId(rs.getString("equipment_id"));
+                whInventory.setPcbA(rs.getString("pcb_a"));
+                whInventory.setPcbAQty(rs.getString("pcb_a_qty"));
+                whInventory.setPcbB(rs.getString("pcb_b"));
+                whInventory.setPcbBQty(rs.getString("pcb_b_qty"));
+                whInventory.setPcbC(rs.getString("pcb_c"));
+                whInventory.setPcbCQty(rs.getString("pcb_c_qty"));
+                whInventory.setPcbCtr(rs.getString("pcb_ctr"));
+                whInventory.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whInventory.setQuantity(rs.getString("quantity"));
                 whInventory.setRequestedBy(rs.getString("requested_by"));
                 whInventory.setRequestedDate(rs.getString("requested_date"));
@@ -679,12 +756,12 @@ public class WhInventoryDAO {
         return whInventoryList;
     }
 
-    public Integer getCountInventoryiIdAndLocation(String requestId, String location) {
+    public Integer getCountInventoryiIdAndLocation(String requestId, String rack, String shelf) {
 //        QueryResult queryResult = new QueryResult();
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT COUNT(*) AS count FROM cdars_wh_inventory WHERE request_id = '" + requestId + "' AND inventory_location = '" + location + "'"
+                    "SELECT COUNT(*) AS count FROM cdars_wh_inventory WHERE request_id = '" + requestId + "' AND inventory_rack = '" + rack + "' AND inventory_shelf = '" + shelf + "'"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

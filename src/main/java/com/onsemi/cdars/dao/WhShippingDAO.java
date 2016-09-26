@@ -30,23 +30,22 @@ public class WhShippingDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO cdars_wh_shipping (request_id, box_id, mp_no, mp_expiry_date, hardware_barcode_1, date_scan_1, hardware_barcode_2, date_scan_2, shipping_date, status, remarks, flag, created_by, created_date, modified_by, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?)", Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO cdars_wh_shipping (request_id, mp_no, mp_expiry_date, hardware_barcode_1, date_scan_1, hardware_barcode_2, date_scan_2, shipping_date, status, remarks, flag, created_by, created_date, modified_by, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whShipping.getRequestId());
-            ps.setString(2, whShipping.getBoxId());
-            ps.setString(3, whShipping.getMpNo());
-            ps.setString(4, whShipping.getMpExpiryDate());
-            ps.setString(5, whShipping.getHardwareBarcode1());
-            ps.setString(6, whShipping.getDateScan1());
-            ps.setString(7, whShipping.getHardwareBarcode2());
-            ps.setString(8, whShipping.getDateScan2());
-            ps.setString(9, whShipping.getShippingDate());
-            ps.setString(10, whShipping.getStatus());
-            ps.setString(11, whShipping.getRemarks());
-            ps.setString(12, whShipping.getFlag());
-            ps.setString(13, whShipping.getCreatedBy());
-            ps.setString(14, whShipping.getModifiedBy());
-            ps.setString(15, whShipping.getModifiedDate());
+            ps.setString(2, whShipping.getMpNo());
+            ps.setString(3, whShipping.getMpExpiryDate());
+            ps.setString(4, whShipping.getHardwareBarcode1());
+            ps.setString(5, whShipping.getDateScan1());
+            ps.setString(6, whShipping.getHardwareBarcode2());
+            ps.setString(7, whShipping.getDateScan2());
+            ps.setString(8, whShipping.getShippingDate());
+            ps.setString(9, whShipping.getStatus());
+            ps.setString(10, whShipping.getRemarks());
+            ps.setString(11, whShipping.getFlag());
+            ps.setString(12, whShipping.getCreatedBy());
+            ps.setString(13, whShipping.getModifiedBy());
+            ps.setString(14, whShipping.getModifiedDate());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -73,23 +72,22 @@ public class WhShippingDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_shipping SET request_id = ?, box_id = ?, mp_no = ?, mp_expiry_date = ?, hardware_barcode_1 = ?, date_scan_1 = ?, hardware_barcode_2 = ?, date_scan_2 = ?, shipping_date = ?, status = ?, remarks = ?, flag = ?, created_by = ?, modified_by = ?, modified_date = NOW() WHERE id = ?"
+                    "UPDATE cdars_wh_shipping SET request_id = ?, mp_no = ?, mp_expiry_date = ?, hardware_barcode_1 = ?, date_scan_1 = ?, hardware_barcode_2 = ?, date_scan_2 = ?, shipping_date = ?, status = ?, remarks = ?, flag = ?, created_by = ?, modified_by = ?, modified_date = NOW() WHERE id = ?"
             );
             ps.setString(1, whShipping.getRequestId());
-            ps.setString(2, whShipping.getBoxId());
-            ps.setString(3, whShipping.getMpNo());
-            ps.setString(4, whShipping.getMpExpiryDate());
-            ps.setString(5, whShipping.getHardwareBarcode1());
-            ps.setString(6, whShipping.getDateScan1());
-            ps.setString(7, whShipping.getHardwareBarcode2());
-            ps.setString(8, whShipping.getDateScan2());
-            ps.setString(9, whShipping.getShippingDate());
-            ps.setString(10, whShipping.getStatus());
-            ps.setString(11, whShipping.getRemarks());
-            ps.setString(12, whShipping.getFlag());
-            ps.setString(13, whShipping.getCreatedBy());;
-            ps.setString(14, whShipping.getModifiedBy());
-            ps.setString(15, whShipping.getId());
+            ps.setString(2, whShipping.getMpNo());
+            ps.setString(3, whShipping.getMpExpiryDate());
+            ps.setString(4, whShipping.getHardwareBarcode1());
+            ps.setString(5, whShipping.getDateScan1());
+            ps.setString(6, whShipping.getHardwareBarcode2());
+            ps.setString(7, whShipping.getDateScan2());
+            ps.setString(8, whShipping.getShippingDate());
+            ps.setString(9, whShipping.getStatus());
+            ps.setString(10, whShipping.getRemarks());
+            ps.setString(11, whShipping.getFlag());
+            ps.setString(12, whShipping.getCreatedBy());;
+            ps.setString(13, whShipping.getModifiedBy());
+            ps.setString(14, whShipping.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -132,8 +130,8 @@ public class WhShippingDAO {
         }
         return queryResult;
     }
-    
-     public QueryResult updateWhShippingFlag(WhShipping whShipping) {
+
+    public QueryResult updateWhShippingFlag(WhShipping whShipping) {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
@@ -274,7 +272,6 @@ public class WhShippingDAO {
                 whShipping = new WhShipping();
                 whShipping.setId(rs.getString("id"));
                 whShipping.setRequestId(rs.getString("request_id"));
-                whShipping.setBoxId(rs.getString("box_id"));
                 whShipping.setMpNo(rs.getString("mp_no"));
                 whShipping.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whShipping.setHardwareBarcode1(rs.getString("hardware_barcode_1"));
@@ -307,7 +304,9 @@ public class WhShippingDAO {
     }
 
     public WhShipping getWhShippingMergeWithRequest(String whShippingId) {
-        String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
+        String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, "
+                + "re.pcb_a AS pcb_a, re.pcb_a_qty AS pcb_a_qty, re.pcb_b AS pcb_b, re.pcb_b_qty AS pcb_b_qty, re.pcb_c AS pcb_c, re.pcb_c_qty AS pcb_c_qty,re.pcb_ctr AS pcb_ctr, re.pcb_ctr_qty AS pcb_ctr_qty,"
+                + "re.equipment_id AS equipment_id, re.quantity AS quantity, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
                 + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id AND sh.id = '" + whShippingId + "'";
         WhShipping whShipping = null;
         try {
@@ -317,7 +316,6 @@ public class WhShippingDAO {
                 whShipping = new WhShipping();
                 whShipping.setId(rs.getString("id"));
                 whShipping.setRequestId(rs.getString("request_id"));
-                whShipping.setBoxId(rs.getString("box_id"));
                 whShipping.setMpNo(rs.getString("mp_no"));
                 whShipping.setMpExpiryDate(rs.getString("new_mp_expiry_date"));
                 whShipping.setHardwareBarcode1(rs.getString("hardware_barcode_1"));
@@ -336,6 +334,14 @@ public class WhShippingDAO {
                 //utk display data from table wh_request
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
                 whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
+                 whShipping.setPcbA(rs.getString("pcb_a"));
+                whShipping.setPcbAQty(rs.getString("pcb_a_qty"));
+                whShipping.setPcbB(rs.getString("pcb_b"));
+                whShipping.setPcbBQty(rs.getString("pcb_b_qty"));
+                whShipping.setPcbC(rs.getString("pcb_c"));
+                whShipping.setPcbCQty(rs.getString("pcb_c_qty"));
+                whShipping.setPcbCtr(rs.getString("pcb_ctr"));
+                whShipping.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whShipping.setRequestQuantity(rs.getString("quantity"));
                 whShipping.setRequestRequestedBy(rs.getString("requested_by"));
                 whShipping.setRequestRequestedDate(rs.getString("requested_date"));
@@ -368,7 +374,6 @@ public class WhShippingDAO {
                 whShipping = new WhShipping();
                 whShipping.setId(rs.getString("id"));
                 whShipping.setRequestId(rs.getString("request_id"));
-                whShipping.setBoxId(rs.getString("box_id"));
                 whShipping.setMpNo(rs.getString("mp_no"));
                 whShipping.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whShipping.setHardwareBarcode1(rs.getString("hardware_barcode_1"));
@@ -402,7 +407,9 @@ public class WhShippingDAO {
     }
 
     public List<WhShipping> getWhShippingListMergeWithRequest() {
-        String sql = "SELECT sh.*,re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.quantity AS quantity, re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
+        String sql = "SELECT sh.*,re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, "
+                + "re.pcb_a AS pcb_a, re.pcb_a_qty AS pcb_a_qty, re.pcb_b AS pcb_b, re.pcb_b_qty AS pcb_b_qty, re.pcb_c AS pcb_c, re.pcb_c_qty AS pcb_c_qty,re.pcb_ctr AS pcb_ctr, re.pcb_ctr_qty AS pcb_ctr_qty, "
+                + "re.quantity AS quantity,re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
                 + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id ORDER BY id DESC";
         List<WhShipping> whShippingList = new ArrayList<WhShipping>();
         try {
@@ -413,7 +420,6 @@ public class WhShippingDAO {
                 whShipping = new WhShipping();
                 whShipping.setId(rs.getString("id"));
                 whShipping.setRequestId(rs.getString("request_id"));
-                whShipping.setBoxId(rs.getString("box_id"));
                 whShipping.setMpNo(rs.getString("mp_no"));
                 whShipping.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whShipping.setHardwareBarcode1(rs.getString("hardware_barcode_1"));
@@ -432,6 +438,14 @@ public class WhShippingDAO {
                 //utk display data from table wh_request
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
                 whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
+                whShipping.setPcbA(rs.getString("pcb_a"));
+                whShipping.setPcbAQty(rs.getString("pcb_a_qty"));
+                whShipping.setPcbB(rs.getString("pcb_b"));
+                whShipping.setPcbBQty(rs.getString("pcb_b_qty"));
+                whShipping.setPcbC(rs.getString("pcb_c"));
+                whShipping.setPcbCQty(rs.getString("pcb_c_qty"));
+                whShipping.setPcbCtr(rs.getString("pcb_ctr"));
+                whShipping.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whShipping.setRequestQuantity(rs.getString("quantity"));
                 whShipping.setRequestRequestedBy(rs.getString("requested_by"));
                 whShipping.setRequestRequestedDate(rs.getString("requested_date"));
@@ -457,6 +471,7 @@ public class WhShippingDAO {
 
     public WhShipping getWhShippingMergeWithRequestByMpNo(String mpNo) {
         String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, "
+                + "re.pcb_a AS pcb_a, re.pcb_a_qty AS pcb_a_qty, re.pcb_b AS pcb_b, re.pcb_b_qty AS pcb_b_qty, re.pcb_c AS pcb_c, re.pcb_c_qty AS pcb_c_qty,re.pcb_ctr AS pcb_ctr, re.pcb_ctr_qty AS pcb_ctr_qty,"
                 + "re.equipment_id AS equipment_id, re.quantity AS quantity, re.requested_by AS requested_by, "
                 + "re.requestor_email AS requestor_email, "
                 + "re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y %h:%i %p') AS view_requested_date "
@@ -469,7 +484,6 @@ public class WhShippingDAO {
                 whShipping = new WhShipping();
                 whShipping.setId(rs.getString("id"));
                 whShipping.setRequestId(rs.getString("request_id"));
-                whShipping.setBoxId(rs.getString("box_id"));
                 whShipping.setMpNo(rs.getString("mp_no"));
                 whShipping.setMpExpiryDate(rs.getString("new_mp_expiry_date"));
                 whShipping.setHardwareBarcode1(rs.getString("hardware_barcode_1"));
@@ -488,6 +502,14 @@ public class WhShippingDAO {
                 //utk display data from table wh_request
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
                 whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
+                whShipping.setPcbA(rs.getString("pcb_a"));
+                whShipping.setPcbAQty(rs.getString("pcb_a_qty"));
+                whShipping.setPcbB(rs.getString("pcb_b"));
+                whShipping.setPcbBQty(rs.getString("pcb_b_qty"));
+                whShipping.setPcbC(rs.getString("pcb_c"));
+                whShipping.setPcbCQty(rs.getString("pcb_c_qty"));
+                whShipping.setPcbCtr(rs.getString("pcb_ctr"));
+                whShipping.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whShipping.setRequestQuantity(rs.getString("quantity"));
                 whShipping.setRequestRequestedBy(rs.getString("requested_by"));
                 whShipping.setRequestRequestorEmail(rs.getString("requestor_email"));

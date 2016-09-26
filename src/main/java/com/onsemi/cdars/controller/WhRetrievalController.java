@@ -16,8 +16,6 @@ import com.onsemi.cdars.tools.QueryResult;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,10 +56,14 @@ public class WhRetrievalController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String whRetrieval(
-            Model model
+            Model model, @ModelAttribute UserSession userSession
     ) {
         WhRetrievalDAO whRetrievalDAO = new WhRetrievalDAO();
         List<WhRetrieval> whRetrievalList = whRetrievalDAO.getWhRetrievalListWithDateDisplayWithoutStatusClosed();
+
+        String groupId = userSession.getGroup();
+
+        model.addAttribute("groupId", groupId);
         model.addAttribute("whRetrievalList", whRetrievalList);
         return "whRetrieval/whRetrieval";
     }
@@ -254,7 +256,7 @@ public class WhRetrievalController {
             //update inventory - change flag to 1 (hide from list)
             WhRetrievalDAO whdao = new WhRetrievalDAO();
             WhRetrieval wh = whdao.getWhRetrieval(id);
-            
+
             WhRequestDAO requestd = new WhRequestDAO();
             WhRequest request = requestd.getWhRequest(wh.getRequestId());
 
@@ -293,7 +295,7 @@ public class WhRetrievalController {
             @RequestParam(required = false) String mpNo,
             @RequestParam(required = false) String mpExpiryDate,
             @RequestParam(required = false) String location,
-            @RequestParam(required = false) String slot,
+            @RequestParam(required = false) String shelf,
             @RequestParam(required = false) String rack,
             @RequestParam(required = false) String requestedBy,
             @RequestParam(required = false) String requestedDate,
@@ -315,7 +317,7 @@ public class WhRetrievalController {
         whRetrieval.setMpNo(mpNo);
         whRetrieval.setMpExpiryDate(mpExpiryDate);
         whRetrieval.setLocation(location);
-        whRetrieval.setSlot(slot);
+        whRetrieval.setShelf(shelf);
         whRetrieval.setRack(rack);
         whRetrieval.setRequestedBy(requestedBy);
         whRetrieval.setRequestedDate(requestedDate);

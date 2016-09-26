@@ -1,8 +1,7 @@
 package com.onsemi.cdars.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onsemi.cdars.dao.ParameterDetailsDAO;
+import com.onsemi.cdars.dao.PcbLimitDAO;
 import com.onsemi.cdars.dao.WhInventoryDAO;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,6 +12,7 @@ import com.onsemi.cdars.dao.WhRequestDAO;
 import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.dao.WhShippingDAO;
 import com.onsemi.cdars.model.ParameterDetails;
+import com.onsemi.cdars.model.PcbLimit;
 import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhInventory;
@@ -20,16 +20,12 @@ import com.onsemi.cdars.model.WhRetrieval;
 import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
-import com.onsemi.cdars.tools.SPTSWebService;
 import com.onsemi.cdars.tools.SptsClass;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +54,9 @@ public class WhRequestController {
     private static final String LINE_SEPARATOR = "\n";
 
     //File header
-    private static final String HEADER = "id,hardware_type,hardware_id,quantity,material pass number,material pass expiry date,inventory location,requested_by,requested_email,requested_date,remarks";
-    private static final String HEADERArray = "id, request_type, hardware_type, hardware_id, type, quantity, requested_by, requested_date, remarks";
+//    private static final String HEADER = "id,hardware_type,hardware_id,quantity,material pass number,material pass expiry date,inventory location,requested_by,requested_email,requested_date,remarks";
+    private static final String HEADER = "id,hardware_type,hardware_id,pcb a,pcb a qty,pcb b,pcb b qty, pcb c,pcb c qty, pcb ctr,pcb ctr qty,"
+            + "quantity,material pass number,material pass expiry date,rack,shelf,requested_by,requested_email,requested_date,remarks";
 
     @Autowired
     private MessageSource messageSource;
@@ -91,10 +88,6 @@ public class WhRequestController {
         sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> equipmentType = sDAO.getGroupParameterDetailList("", "002");
 
-//        sDAO = new ParameterDetailsDAO();
-//        List<ParameterDetails> mb = sDAO.getGroupParameterDetailList("", "011");
-//        sDAO = new ParameterDetailsDAO();
-//        List<ParameterDetails> stencil = sDAO.getGroupParameterDetailList("", "012");
         sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> tray = sDAO.getGroupParameterDetailList("", "013");
 
@@ -110,28 +103,35 @@ public class WhRequestController {
         inventory = new WhInventoryDAO();
         List<WhInventory> inventoryListPCB = inventory.getWhInventoryPCBActiveList("");
 
+        PcbLimitDAO pcbDao = new PcbLimitDAO();
+        List< PcbLimit> pcbType = pcbDao.getPcbLimitList2("");
+
         SptsClass sten = new SptsClass();
-        List<LinkedHashMap<String, String>> stencil = sten.getSptsItemByParam("Stencil", "0");
+        List<LinkedHashMap<String, String>> stencil = sten.getSptsItemByParam("Stencil", "0", "1");
 
         SptsClass bib = new SptsClass();
-        List<LinkedHashMap<String, String>> itemListbib = bib.getSptsItemByParam("BIB", "0");
-        
-//        JSONObject params = new JSONObject();
-////        params.put("itemName", "SO8FL 15032A Stencil");
-//        params.put("itemType", "Stencil");
-//        params.put("itemStatus", "0");
-//        JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
-//        List<LinkedHashMap<String, String>> itemList = new ArrayList();
-//        for (int i = 0; i < getItemByParam.length(); i++) {
-//            JSONObject jsonObject = getItemByParam.getJSONObject(i);
-//            LinkedHashMap<String, String> item;
-//            ObjectMapper mapper = new ObjectMapper();
-//            item = mapper.readValue(jsonObject.toString(), new TypeReference<LinkedHashMap<String, String>>() {
-//            });
-//            itemList.add(item);
-//        }
+        List<LinkedHashMap<String, String>> itemListbib = bib.getSptsItemByParam("BIB", "0", "1");
+
+        SptsClass pcb = new SptsClass();
+        List<LinkedHashMap<String, String>> itemListpcbQualA = pcb.getSptsItemByParamForPcb("PCB%", "0", "1", "%QUAL A");
+
+        pcb = new SptsClass();
+        List<LinkedHashMap<String, String>> itemListpcbQualB = pcb.getSptsItemByParamForPcb("PCB%", "0", "1", "%QUAL B");
+
+        pcb = new SptsClass();
+        List<LinkedHashMap<String, String>> itemListpcbQualC = pcb.getSptsItemByParamForPcb("PCB%", "0", "1", "%QUAL C");
+
+        pcb = new SptsClass();
+        List<LinkedHashMap<String, String>> itemListpcbCtr = pcb.getSptsItemByParamForPcb("PCB%", "0", "1", "%CONTROL");
+
         model.addAttribute("StencilItemList", stencil);
         model.addAttribute("bibItemList", itemListbib);
+        model.addAttribute("pcbItemListA", itemListpcbQualA);
+        model.addAttribute("pcbItemListB", itemListpcbQualB);
+        model.addAttribute("pcbItemListC", itemListpcbQualC);
+        model.addAttribute("pcbItemListCtr", itemListpcbCtr);
+
+        model.addAttribute("pcbType", pcbType);
 
         String username = userSession.getFullname();
         model.addAttribute("requestType", requestType);
@@ -140,8 +140,6 @@ public class WhRequestController {
         model.addAttribute("inventoryListTray", inventoryListTray);
         model.addAttribute("inventoryListStencil", inventoryListStencil);
         model.addAttribute("inventoryListPCB", inventoryListPCB);
-//        model.addAttribute("mb", mb);
-//        model.addAttribute("stencil", stencil);
         model.addAttribute("tray", tray);
         model.addAttribute("username", username);
         return "whRequest/add";
@@ -156,11 +154,20 @@ public class WhRequestController {
             @ModelAttribute UserSession userSession,
             @RequestParam(required = false) String requestType,
             @RequestParam(required = false) String equipmentType,
+            @RequestParam(required = false) String pcbType,
             @RequestParam(required = false) String inventoryIdMb,
             @RequestParam(required = false) String inventoryIdStencil,
             @RequestParam(required = false) String inventoryIdTray,
             @RequestParam(required = false) String inventoryIdPcb,
             @RequestParam(required = false) String equipmentId,
+            @RequestParam(required = false) String equipmentIdpcbA,
+            @RequestParam(required = false) String pcbAQty,
+            @RequestParam(required = false) String equipmentIdpcbB,
+            @RequestParam(required = false) String pcbBQty,
+            @RequestParam(required = false) String equipmentIdpcbC,
+            @RequestParam(required = false) String pcbCQty,
+            @RequestParam(required = false) String equipmentIdpcbCtr,
+            @RequestParam(required = false) String pcbCtrQty,
             @RequestParam(required = false) String equipmentIdMb,
             @RequestParam(required = false) String equipmentIdTray,
             @RequestParam(required = false) String equipmentIdStencil,
@@ -177,22 +184,52 @@ public class WhRequestController {
             whRequest.setStatus("Waiting for Approval");
             if ("Motherboard".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdMb);
+                whRequest.setQuantity("1");
             } else if ("Stencil".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdStencil);
+                whRequest.setQuantity("1");
             } else if ("Tray".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdTray);
+                whRequest.setQuantity(quantity);
             } else if ("PCB".equals(equipmentType)) {
-                whRequest.setEquipmentId(equipmentIdPcb);
+
+                String pcbName = equipmentIdpcbA.substring(0, 6);
+                whRequest.setEquipmentId(pcbName);
+                whRequest.setPcbType(pcbType);
+                whRequest.setPcbA(equipmentIdpcbA);
+                whRequest.setPcbAQty(pcbAQty);
+                whRequest.setPcbB(equipmentIdpcbB);
+                whRequest.setPcbBQty(pcbBQty);
+                whRequest.setPcbC(equipmentIdpcbC);
+                whRequest.setPcbCQty(pcbCQty);
+                whRequest.setPcbCtr(equipmentIdpcbCtr);
+                whRequest.setPcbCtrQty(pcbCtrQty);
+
+                Integer totalQty = Integer.valueOf(pcbAQty) + Integer.valueOf(pcbBQty) + Integer.valueOf(pcbCQty) + Integer.valueOf(pcbCtrQty);
+                whRequest.setQuantity(totalQty.toString());
+
+                PcbLimitDAO pcbDao = new PcbLimitDAO();
+                PcbLimit pcb = pcbDao.getPcbLimitByType(pcbType);
+                if (totalQty > Integer.valueOf(pcb.getQuantity())) {
+                    redirectAttrs.addFlashAttribute("error", "Total of PCB quantity exceeded the PCB limit.Please re-check.");
+//                    model.addAttribute("error", "Total of PCB quantity exceeded the PCB limit.Please re-check.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "whRequest/add";
+                    return "redirect:/wh/whRequest/add";
+                }
+
+                String qualB = equipmentIdpcbB.substring(0, 6);
+                String qualC = equipmentIdpcbC.substring(0, 6);
+                String qualCtr = equipmentIdpcbCtr.substring(0, 6);
+
+                if ((pcbName == null ? qualB != null : !pcbName.equals(qualB)) || !pcbName.equals(qualC) || !pcbName.equals(qualCtr)) {
+                    redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
+//                    model.addAttribute("error", "Pcb ID is not tally. Please re-check.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "whRequest/add";
+                    return "redirect:/wh/whRequest/add";
+                }
             }
-//            if (!equipmentIdMb.equals("")) {
-//                whRequest.setEquipmentId(equipmentIdMb);
-//            } else if (!equipmentIdStencil.equals("")) {
-//                whRequest.setEquipmentId(equipmentIdStencil);
-//            } else if (!equipmentIdTray.equals("")) {
-//                whRequest.setEquipmentId(equipmentIdTray);
-//            } else if (!equipmentIdPcb.equals("")) {
-//                whRequest.setEquipmentId(equipmentIdPcb);
-//            }
         } else {
             whRequest.setStatus("Requested");
             if ("Motherboard".equals(equipmentType)) {
@@ -203,7 +240,10 @@ public class WhRequestController {
                 whRequest.setEquipmentId(inventory.getEquipmentId());
                 whRequest.setMpNo(inventory.getMpNo());
                 whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
-                whRequest.setLocation(inventory.getInventoryLocation());
+//                whRequest.setLocation(inventory.getInventoryLocation());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
 
             } else if ("Stencil".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdStencil);
@@ -213,7 +253,9 @@ public class WhRequestController {
                 whRequest.setEquipmentId(inventory.getEquipmentId());
                 whRequest.setMpNo(inventory.getMpNo());
                 whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
-                whRequest.setLocation(inventory.getInventoryLocation());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
 
             } else if ("Tray".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdTray);
@@ -223,45 +265,42 @@ public class WhRequestController {
                 whRequest.setEquipmentId(inventory.getEquipmentId());
                 whRequest.setMpNo(inventory.getMpNo());
                 whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
-                whRequest.setLocation(inventory.getInventoryLocation());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+
             } else if ("PCB".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdPcb);
 
                 WhInventoryDAO inventoryD = new WhInventoryDAO();
                 WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdPcb);
                 whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setPcbA(inventory.getPcbA());
+                whRequest.setPcbAQty(inventory.getPcbAQty());
+                whRequest.setPcbB(inventory.getPcbB());
+                whRequest.setPcbBQty(inventory.getPcbBQty());
+                whRequest.setPcbC(inventory.getPcbC());
+                whRequest.setPcbCQty(inventory.getPcbCQty());
+                whRequest.setPcbCtr(inventory.getPcbCtr());
+                whRequest.setPcbCtrQty(inventory.getPcbCtrQty());
                 whRequest.setMpNo(inventory.getMpNo());
                 whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
-                whRequest.setLocation(inventory.getInventoryLocation());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
             }
-//            if (!inventoryIdMb.equals("")) {
-//                whRequest.setInventoryId(inventoryIdMb);
-//
-//               
-//            } else if (!inventoryIdStencil.equals("")) {
-//                whRequest.setInventoryId(inventoryIdStencil);
-//            } else if (!inventoryIdTray.equals("")) {
-//                whRequest.setInventoryId(inventoryIdTray);
-//            } else if (!inventoryIdPcb.equals("")) {
-//                whRequest.setInventoryId(inventoryIdPcb);
-//            }
         }
-//        whRequest.setInventoryId(inventoryId);
 
-        if (!quantity.equals("")) {
-            whRequest.setQuantity(quantity);
-        } else {
-            whRequest.setQuantity("1");
-        }
+//        if (!quantity.equals("")) {
+//            whRequest.setQuantity(quantity);
+//        } else {
+//            whRequest.setQuantity("1");
+//        }
         whRequest.setRequestedBy(userSession.getFullname());
         whRequest.setRequestorEmail(userSession.getEmail());
         whRequest.setRemarks(remarks);
         whRequest.setCreatedBy(userSession.getId());
-//        if ("Retrieve".equals(requestType)) {
-//            whRequest.setStatus("Requested");
-//        } else {
-//            whRequest.setStatus("Waiting for Approval");
-//        }
+
         whRequest.setFlag("0");
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         QueryResult queryResult = whRequestDAO.insertWhRequest(whRequest);
@@ -307,6 +346,14 @@ public class WhRequestController {
                 whRetrieval.setRequestId(queryResult.getGeneratedKey());
                 whRetrieval.setHardwareType(whrequest.getEquipmentType());
                 whRetrieval.setHardwareId(whrequest.getEquipmentId());
+                whRetrieval.setPcbA(whrequest.getPcbA());
+                whRetrieval.setPcbAQty(whrequest.getPcbAQty());
+                whRetrieval.setPcbB(whrequest.getPcbB());
+                whRetrieval.setPcbBQty(whrequest.getPcbBQty());
+                whRetrieval.setPcbC(whrequest.getPcbC());
+                whRetrieval.setPcbCQty(whrequest.getPcbCQty());
+                whRetrieval.setPcbCtr(whrequest.getPcbCtr());
+                whRetrieval.setPcbCtrQty(whrequest.getPcbCtrQty());
                 whRetrieval.setHardwareQty(whrequest.getQuantity());
                 whRetrieval.setLocation(whrequest.getLocation());
                 whRetrieval.setMpNo(whrequest.getMpNo());
@@ -345,13 +392,31 @@ public class WhRequestController {
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getEquipmentId());
                         fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbA());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbAQty());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbB());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbBQty());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbC());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbCQty());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbCtr());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbCtrQty());
+                        fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getQuantity());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getMpNo());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getMpExpiryDate());
                         fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getLocation());
+                        fileWriter.append(wh.getRack());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getShelf());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getRequestedBy());
                         fileWriter.append(COMMA_DELIMITER);
@@ -392,13 +457,31 @@ public class WhRequestController {
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getEquipmentId());
                         fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbA());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbAQty());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbB());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbBQty());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbC());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbCQty());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbCtr());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getPcbCtrQty());
+                        fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getQuantity());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getMpNo());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getMpExpiryDate());
                         fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getLocation());
+                        fileWriter.append(wh.getRack());
+                        fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append(wh.getShelf());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getRequestedBy());
                         fileWriter.append(COMMA_DELIMITER);
@@ -441,10 +524,10 @@ public class WhRequestController {
                         //                    msg
                         "New Hardware Request has been added to CDARS"
                 );
-                return "redirect:/wh/whRetrieval/";
+                return "redirect:/wh/whRetrieval";
             }
 //            return "redirect:/wh/whRequest/edit/" + queryResult.getGeneratedKey();
-            return "redirect:/wh/whRequest/";
+            return "redirect:/wh/whRequest";
         }
 
     }

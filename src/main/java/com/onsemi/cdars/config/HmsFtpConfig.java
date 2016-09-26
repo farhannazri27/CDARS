@@ -71,7 +71,11 @@ public class HmsFtpConfig {
                             inventory[7], inventory[8],
                             inventory[9], inventory[10],
                             inventory[11], inventory[12],
-                            inventory[13]);
+                            inventory[13], inventory[14],
+                            inventory[15], inventory[16],
+                            inventory[17], inventory[18],
+                            inventory[19], inventory[20],
+                            inventory[21], inventory[22]);
                     empList.add(emp);
                 }
 
@@ -85,7 +89,7 @@ public class HmsFtpConfig {
 
                         //check if exist, same data or not
                         WhInventoryDAO inDao = new WhInventoryDAO();
-                        int countdata = inDao.getCountInventoryiIdAndLocation(e.getRequestId(), e.getInventoryLocation());
+                        int countdata = inDao.getCountInventoryiIdAndLocation(e.getRequestId(), e.getInventoryRack(), e.getInventoryShelf());
                         if (countdata == 0) {
                             WhInventoryDAO countid = new WhInventoryDAO();
                             String id = countid.getId(e.getRequestId());
@@ -95,7 +99,9 @@ public class HmsFtpConfig {
                             updateftp.setRequestId(e.getRequestId());
                             updateftp.setInventoryDate(e.getInventoryDate());
                             updateftp.setInventoryBy(e.getInventoryBy());
-                            updateftp.setInventoryLocation(e.getInventoryLocation());
+//                            updateftp.setInventoryLocation(e.getInventoryLocation());
+                            updateftp.setInventoryRack(e.getInventoryRack());
+                            updateftp.setInventoryShelf(e.getInventoryShelf());
                             updateftp.setFlag("0");
                             WhInventoryDAO updateDao = new WhInventoryDAO();
                             QueryResult update = updateDao.updateWhInventoryLocation(updateftp);
@@ -114,6 +120,14 @@ public class HmsFtpConfig {
                         insertftp.setMpExpiryDate(e.getMpExpiryDate());
                         insertftp.setEquipmentType(e.getEquipmentType());
                         insertftp.setEquipmentId(e.getEquipmentId());
+                        insertftp.setPcbA(e.getPcbA());
+                        insertftp.setPcbAQty(e.getPcbAQty());
+                        insertftp.setPcbB(e.getPcbB());
+                        insertftp.setPcbBQty(e.getPcbBQty());
+                        insertftp.setPcbC(e.getPcbC());
+                        insertftp.setPcbCQty(e.getPcbCQty());
+                        insertftp.setPcbCtr(e.getPcbCtr());
+                        insertftp.setPcbCtrQty(e.getPcbCtrQty());
                         insertftp.setQuantity(e.getQuantity());
                         insertftp.setRequestedBy(e.getRequestedBy());
                         insertftp.setRequestedDate(e.getRequestedDate());
@@ -121,7 +135,8 @@ public class HmsFtpConfig {
                         insertftp.setVerifiedDate(e.getVerifiedDate());
                         insertftp.setInventoryDate(e.getInventoryDate());
                         insertftp.setInventoryBy(e.getInventoryBy());
-                        insertftp.setInventoryLocation(e.getInventoryLocation());
+                        insertftp.setInventoryRack(e.getInventoryRack());
+                        insertftp.setInventoryShelf(e.getInventoryShelf());
                         insertftp.setStatus(e.getStatus());
                         insertftp.setFlag("0");
                         QueryResult add = insertDao.insertWhInventory(insertftp);

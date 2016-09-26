@@ -141,6 +141,39 @@ public class PcbLimitDAO {
         }
         return pcbLimit;
     }
+    
+    public PcbLimit getPcbLimitByType(String pcbType) {
+        String sql = "SELECT * FROM cdars_pcb_limit WHERE pcb_type = '" + pcbType + "'";
+        PcbLimit pcbLimit = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                pcbLimit = new PcbLimit();
+                pcbLimit.setId(rs.getString("id"));
+                pcbLimit.setPcbType(rs.getString("pcb_type"));
+                pcbLimit.setQuantity(rs.getString("quantity"));
+                pcbLimit.setRemarks(rs.getString("remarks"));
+                pcbLimit.setCreatedBy(rs.getString("created_by"));
+                pcbLimit.setCreatedDate(rs.getString("created_date"));
+                pcbLimit.setModifiedBy(rs.getString("modified_by"));
+                pcbLimit.setModifiedDate(rs.getString("modified_date"));
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return pcbLimit;
+    }
 
     public List<PcbLimit> getPcbLimitList() {
         String sql = "SELECT * FROM cdars_pcb_limit ORDER BY id ASC";
@@ -159,6 +192,42 @@ public class PcbLimitDAO {
                 pcbLimit.setCreatedDate(rs.getString("created_date"));
                 pcbLimit.setModifiedBy(rs.getString("modified_by"));
                 pcbLimit.setModifiedDate(rs.getString("modified_date"));
+                pcbLimitList.add(pcbLimit);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return pcbLimitList;
+    }
+
+    public List<PcbLimit> getPcbLimitList2(String type) {
+        String sql = "SELECT *, IF(pcb_type=\"" + type + "\",\"selected=''\",\"\") AS selected FROM cdars_pcb_limit ORDER BY id ASC";
+        List<PcbLimit> pcbLimitList = new ArrayList<PcbLimit>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            PcbLimit pcbLimit;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                pcbLimit = new PcbLimit();
+                pcbLimit.setId(rs.getString("id"));
+                pcbLimit.setPcbType(rs.getString("pcb_type"));
+                pcbLimit.setQuantity(rs.getString("quantity"));
+                pcbLimit.setRemarks(rs.getString("remarks"));
+                pcbLimit.setCreatedBy(rs.getString("created_by"));
+                pcbLimit.setCreatedDate(rs.getString("created_date"));
+                pcbLimit.setModifiedBy(rs.getString("modified_by"));
+                pcbLimit.setModifiedDate(rs.getString("modified_date"));
+                pcbLimit.setSelected(rs.getString("selected"));
                 pcbLimitList.add(pcbLimit);
             }
             rs.close();
@@ -203,7 +272,7 @@ public class PcbLimitDAO {
         }
         return count;
     }
-    
+
     public Integer getCountPcbType(String pcbType) {
         Integer count = null;
         try {

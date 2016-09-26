@@ -106,9 +106,9 @@ public class WhRetrievalPdf extends AbstractITextPdfViewPotrait {
         cellContent.setPhrase(new Phrase(whRetrieval.getRack(), fontContent));
         table.addCell(cellContent);
         
-         cellHeader.setPhrase(new Phrase("Slot", fontHeader));
+         cellHeader.setPhrase(new Phrase("Shelf", fontHeader));
         table.addCell(cellHeader);
-        cellContent.setPhrase(new Phrase(whRetrieval.getSlot(), fontContent));
+        cellContent.setPhrase(new Phrase(whRetrieval.getShelf(), fontContent));
         table.addCell(cellContent);
         
         cellHeader.setPhrase(new Phrase("Requested By", fontHeader));

@@ -44,7 +44,7 @@ public class WhMpListController {
     //Delimiters which has to be in the CSV file
     private static final String COMMA_DELIMITER = ",";
     private static final String LINE_SEPARATOR = "\n";
-    private static final String HEADER = "id,hardware_type,hardware_id,quantity,material pass number,material pass expiry date,requested_by,"
+    private static final String HEADER = "id,hardware_type,hardware_id,pcb_a,pcb_a_qty,pcb_b,pcb_b_qty,pcb_c,pcb_c_qty,pcb_ctr,pcb_ctr_qty,quantity,material pass number,material pass expiry date,requested_by,"
             + "requestor_email,requested_date,remarks,shipping_date";
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -87,8 +87,8 @@ public class WhMpListController {
                 whMpList.setWhShipId(whship.getId());
                 whMpList.setMpNo(mpNo);
                 whMpList.setMpExpiryDate(whship.getMpExpiryDate());
-                whMpList.setHardwareId(whship.getRequestEquipmentId());
                 whMpList.setHardwareType(whship.getRequestEquipmentType());
+                whMpList.setHardwareId(whship.getRequestEquipmentId());
                 whMpList.setQuantity(whship.getRequestQuantity());
                 whMpList.setRequestedBy(whship.getRequestRequestedBy());
                 whMpList.setRequestedDate(whship.getRequestRequestedDate());
@@ -120,6 +120,22 @@ public class WhMpListController {
                             fileWriter.append(whship.getRequestEquipmentType());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestEquipmentId());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbA());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbAQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbB());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbBQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbC());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbCQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbCtr());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbCtrQty());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestQuantity());
                             fileWriter.append(COMMA_DELIMITER);
@@ -164,6 +180,22 @@ public class WhMpListController {
                             fileWriter.append(whship.getRequestEquipmentType());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestEquipmentId());
+                            fileWriter.append(COMMA_DELIMITER);
+                             fileWriter.append(whship.getPcbA());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbAQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbB());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbBQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbC());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbCQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbCtr());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(whship.getPcbCtrQty());
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getRequestQuantity());
                             fileWriter.append(COMMA_DELIMITER);
@@ -235,7 +267,7 @@ public class WhMpListController {
 
                     redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.save.success", args, locale));
 //			return "redirect:/whMpList/edit/" + queryResult.getGeneratedKey();
-                    return "redirect:/wh/whShipping/whMpList/add"; 
+                    return "redirect:/wh/whShipping/whMpList/add";
 //                    return "whMpList/add";
                 }
             } else {

@@ -30,22 +30,33 @@ public class WhRetrievalDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO cdars_wh_retrieval (request_id, hardware_type, hardware_id, hardware_qty, mp_no, mp_expiry_date, location, slot, rack, requested_by, requested_date, remarks, status, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO cdars_wh_retrieval (request_id, hardware_type, hardware_id, "
+                    + "pcb_a, pcb_a_qty, pcb_b, pcb_b_qty, pcb_c, pcb_c_qty, pcb_ctr, pcb_ctr_qty,"
+                    + "hardware_qty, mp_no, mp_expiry_date, location, shelf, rack, requested_by, "
+                    + "requested_date, remarks, status, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whRetrieval.getRequestId());
             ps.setString(2, whRetrieval.getHardwareType());
             ps.setString(3, whRetrieval.getHardwareId());
-            ps.setString(4, whRetrieval.getHardwareQty());
-            ps.setString(5, whRetrieval.getMpNo());
-            ps.setString(6, whRetrieval.getMpExpiryDate());
-            ps.setString(7, whRetrieval.getLocation());
-            ps.setString(8, whRetrieval.getSlot());
-            ps.setString(9, whRetrieval.getRack());
-            ps.setString(10, whRetrieval.getRequestedBy());
-            ps.setString(11, whRetrieval.getRequestedDate());
-            ps.setString(12, whRetrieval.getRemarks());
-            ps.setString(13, whRetrieval.getStatus());
-            ps.setString(14, whRetrieval.getFlag());
+            ps.setString(4, whRetrieval.getPcbA());
+            ps.setString(5, whRetrieval.getPcbAQty());
+            ps.setString(6, whRetrieval.getPcbB());
+            ps.setString(7, whRetrieval.getPcbBQty());
+            ps.setString(8, whRetrieval.getPcbC());
+            ps.setString(9, whRetrieval.getPcbCQty());
+            ps.setString(10, whRetrieval.getPcbCtr());
+            ps.setString(11, whRetrieval.getPcbCtrQty());
+            ps.setString(12, whRetrieval.getHardwareQty());
+            ps.setString(13, whRetrieval.getMpNo());
+            ps.setString(14, whRetrieval.getMpExpiryDate());
+            ps.setString(15, whRetrieval.getLocation());
+            ps.setString(16, whRetrieval.getShelf());
+            ps.setString(17, whRetrieval.getRack());
+            ps.setString(18, whRetrieval.getRequestedBy());
+            ps.setString(19, whRetrieval.getRequestedDate());
+            ps.setString(20, whRetrieval.getRemarks());
+            ps.setString(21, whRetrieval.getStatus());
+            ps.setString(22, whRetrieval.getFlag());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -72,7 +83,7 @@ public class WhRetrievalDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_retrieval SET request_id = ?, hardware_type = ?, hardware_id = ?, hardware_qty = ?, mp_no = ?, mp_expiry_date = ?, location = ?, slot = ?, rack = ?, requested_by = ?, requested_date = ?, remarks = ?, status = ?, flag = ? WHERE id = ?"
+                    "UPDATE cdars_wh_retrieval SET request_id = ?, hardware_type = ?, hardware_id = ?, hardware_qty = ?, mp_no = ?, mp_expiry_date = ?, location = ?, shelf = ?, rack = ?, requested_by = ?, requested_date = ?, remarks = ?, status = ?, flag = ? WHERE id = ?"
             );
             ps.setString(1, whRetrieval.getRequestId());
             ps.setString(2, whRetrieval.getHardwareType());
@@ -81,7 +92,7 @@ public class WhRetrievalDAO {
             ps.setString(5, whRetrieval.getMpNo());
             ps.setString(6, whRetrieval.getMpExpiryDate());
             ps.setString(7, whRetrieval.getLocation());
-            ps.setString(8, whRetrieval.getSlot());
+            ps.setString(8, whRetrieval.getShelf());
             ps.setString(9, whRetrieval.getRack());
             ps.setString(10, whRetrieval.getRequestedBy());
             ps.setString(11, whRetrieval.getRequestedDate());
@@ -229,11 +240,19 @@ public class WhRetrievalDAO {
                 whRetrieval.setRequestId(rs.getString("request_id"));
                 whRetrieval.setHardwareType(rs.getString("hardware_type"));
                 whRetrieval.setHardwareId(rs.getString("hardware_id"));
+                whRetrieval.setPcbA(rs.getString("pcb_a"));
+                whRetrieval.setPcbAQty(rs.getString("pcb_a_qty"));
+                whRetrieval.setPcbB(rs.getString("pcb_b"));
+                whRetrieval.setPcbBQty(rs.getString("pcb_b_qty"));
+                whRetrieval.setPcbC(rs.getString("pcb_c"));
+                whRetrieval.setPcbCQty(rs.getString("pcb_c_qty"));
+                whRetrieval.setPcbCtr(rs.getString("pcb_ctr"));
+                whRetrieval.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whRetrieval.setHardwareQty(rs.getString("hardware_qty"));
                 whRetrieval.setMpNo(rs.getString("mp_no"));
                 whRetrieval.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whRetrieval.setLocation(rs.getString("location"));
-                whRetrieval.setSlot(rs.getString("slot"));
+                whRetrieval.setShelf(rs.getString("shelf"));
                 whRetrieval.setRack(rs.getString("rack"));
                 whRetrieval.setRequestedBy(rs.getString("requested_by"));
                 whRetrieval.setRequestedDate(rs.getString("requested_date"));
@@ -289,11 +308,19 @@ public class WhRetrievalDAO {
                 whRetrieval.setRequestId(rs.getString("request_id"));
                 whRetrieval.setHardwareType(rs.getString("hardware_type"));
                 whRetrieval.setHardwareId(rs.getString("hardware_id"));
+                whRetrieval.setPcbA(rs.getString("pcb_a"));
+                whRetrieval.setPcbAQty(rs.getString("pcb_a_qty"));
+                whRetrieval.setPcbB(rs.getString("pcb_b"));
+                whRetrieval.setPcbBQty(rs.getString("pcb_b_qty"));
+                whRetrieval.setPcbC(rs.getString("pcb_c"));
+                whRetrieval.setPcbCQty(rs.getString("pcb_c_qty"));
+                whRetrieval.setPcbCtr(rs.getString("pcb_ctr"));
+                whRetrieval.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whRetrieval.setHardwareQty(rs.getString("hardware_qty"));
                 whRetrieval.setMpNo(rs.getString("mp_no"));
                 whRetrieval.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whRetrieval.setLocation(rs.getString("location"));
-                whRetrieval.setSlot(rs.getString("slot"));
+                whRetrieval.setShelf(rs.getString("shelf"));
                 whRetrieval.setRack(rs.getString("rack"));
                 whRetrieval.setRequestedBy(rs.getString("requested_by"));
                 whRetrieval.setRequestedDate(rs.getString("requested_date"));
@@ -350,11 +377,19 @@ public class WhRetrievalDAO {
                 whRetrieval.setRequestId(rs.getString("request_id"));
                 whRetrieval.setHardwareType(rs.getString("hardware_type"));
                 whRetrieval.setHardwareId(rs.getString("hardware_id"));
+                whRetrieval.setPcbA(rs.getString("pcb_a"));
+                whRetrieval.setPcbAQty(rs.getString("pcb_a_qty"));
+                whRetrieval.setPcbB(rs.getString("pcb_b"));
+                whRetrieval.setPcbBQty(rs.getString("pcb_b_qty"));
+                whRetrieval.setPcbC(rs.getString("pcb_c"));
+                whRetrieval.setPcbCQty(rs.getString("pcb_c_qty"));
+                whRetrieval.setPcbCtr(rs.getString("pcb_ctr"));
+                whRetrieval.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whRetrieval.setHardwareQty(rs.getString("hardware_qty"));
                 whRetrieval.setMpNo(rs.getString("mp_no"));
                 whRetrieval.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whRetrieval.setLocation(rs.getString("location"));
-                whRetrieval.setSlot(rs.getString("slot"));
+                whRetrieval.setShelf(rs.getString("shelf"));
                 whRetrieval.setRack(rs.getString("rack"));
                 whRetrieval.setRequestedBy(rs.getString("requested_by"));
                 whRetrieval.setRequestedDate(rs.getString("requested_date"));
@@ -411,11 +446,19 @@ public class WhRetrievalDAO {
                 whRetrieval.setRequestId(rs.getString("request_id"));
                 whRetrieval.setHardwareType(rs.getString("hardware_type"));
                 whRetrieval.setHardwareId(rs.getString("hardware_id"));
+                whRetrieval.setPcbA(rs.getString("pcb_a"));
+                whRetrieval.setPcbAQty(rs.getString("pcb_a_qty"));
+                whRetrieval.setPcbB(rs.getString("pcb_b"));
+                whRetrieval.setPcbBQty(rs.getString("pcb_b_qty"));
+                whRetrieval.setPcbC(rs.getString("pcb_c"));
+                whRetrieval.setPcbCQty(rs.getString("pcb_c_qty"));
+                whRetrieval.setPcbCtr(rs.getString("pcb_ctr"));
+                whRetrieval.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whRetrieval.setHardwareQty(rs.getString("hardware_qty"));
                 whRetrieval.setMpNo(rs.getString("mp_no"));
                 whRetrieval.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whRetrieval.setLocation(rs.getString("location"));
-                whRetrieval.setSlot(rs.getString("slot"));
+                whRetrieval.setShelf(rs.getString("shelf"));
                 whRetrieval.setRack(rs.getString("rack"));
                 whRetrieval.setRequestedBy(rs.getString("requested_by"));
                 whRetrieval.setRequestedDate(rs.getString("requested_date"));
@@ -459,7 +502,7 @@ public class WhRetrievalDAO {
         }
         return whRetrievalList;
     }
-    
+
     public List<WhRetrieval> getWhRetrievalListWithDateDisplayWithoutStatusClosed() {
         String sql = "SELECT *,"
                 + "DATE_FORMAT(requested_date,'%d %M %Y %h:%i %p') AS view_requested_date, "
@@ -481,11 +524,19 @@ public class WhRetrievalDAO {
                 whRetrieval.setRequestId(rs.getString("request_id"));
                 whRetrieval.setHardwareType(rs.getString("hardware_type"));
                 whRetrieval.setHardwareId(rs.getString("hardware_id"));
+                whRetrieval.setPcbA(rs.getString("pcb_a"));
+                whRetrieval.setPcbAQty(rs.getString("pcb_a_qty"));
+                whRetrieval.setPcbB(rs.getString("pcb_b"));
+                whRetrieval.setPcbBQty(rs.getString("pcb_b_qty"));
+                whRetrieval.setPcbC(rs.getString("pcb_c"));
+                whRetrieval.setPcbCQty(rs.getString("pcb_c_qty"));
+                whRetrieval.setPcbCtr(rs.getString("pcb_ctr"));
+                whRetrieval.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
                 whRetrieval.setHardwareQty(rs.getString("hardware_qty"));
                 whRetrieval.setMpNo(rs.getString("mp_no"));
                 whRetrieval.setMpExpiryDate(rs.getString("mp_expiry_date"));
                 whRetrieval.setLocation(rs.getString("location"));
-                whRetrieval.setSlot(rs.getString("slot"));
+                whRetrieval.setShelf(rs.getString("shelf"));
                 whRetrieval.setRack(rs.getString("rack"));
                 whRetrieval.setRequestedBy(rs.getString("requested_by"));
                 whRetrieval.setRequestedDate(rs.getString("requested_date"));

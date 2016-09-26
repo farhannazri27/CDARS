@@ -8,7 +8,8 @@
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-            <title>HMS - Rel Lab</title>
+            <!--<title>HMS - Rel Lab</title>-->
+            <title>CDARS</title>
 
             <!-- bootstrap -->
             <link href="${contextPath}/resources/private/css/bootstrap/bootstrap.css" rel="stylesheet" />
@@ -96,7 +97,8 @@
             <header class="navbar" id="header-navbar">
                 <div class="container">
                     <a href="${contextPath}/" id="logo" class="navbar-brand col-md-6 col-sm-6 col-xs-12">
-                        <span>Hardware Management System (HMS) - Rel Lab</span>
+                        <!--<span>Hardware Management System (HMS) - Rel Lab</span>-->
+                        <span>Contamination Database and Reaction System (CDARS)</span>
                     </a>
 
                     <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button">

@@ -21,18 +21,44 @@ import org.springframework.ui.Model;
  * @author fg79cj
  */
 public class SptsClass {
-    
+
     //status has 2 type = status(movement) and itemstatus
     //check status(movement) = 1 : good
-
     public List<LinkedHashMap<String, String>> getSptsItemByParam(
             String itemType,
-            String itemStatus
+            String itemStatus,
+            String status
     ) throws IOException {
         JSONObject params = new JSONObject();
 //        params.put("itemName", "SO8FL 15032A Stencil");
         params.put("itemType", itemType);
         params.put("itemStatus", itemStatus);
+        params.put("status", status);
+        JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+        List<LinkedHashMap<String, String>> itemList = new ArrayList();
+        for (int i = 0; i < getItemByParam.length(); i++) {
+            JSONObject jsonObject = getItemByParam.getJSONObject(i);
+            LinkedHashMap<String, String> item;
+            ObjectMapper mapper = new ObjectMapper();
+            item = mapper.readValue(jsonObject.toString(), new TypeReference<LinkedHashMap<String, String>>() {
+            });
+            itemList.add(item);
+        }
+        return itemList;
+    }
+
+    public List<LinkedHashMap<String, String>> getSptsItemByParamForPcb(
+            String itemType,
+            String itemStatus,
+            String status,
+            String itemID
+    ) throws IOException {
+        JSONObject params = new JSONObject();
+//        params.put("itemName", "SO8FL 15032A Stencil");
+        params.put("itemType", itemType);
+        params.put("itemStatus", itemStatus);
+        params.put("status", status);
+        params.put("itemID", itemID);
         JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
         List<LinkedHashMap<String, String>> itemList = new ArrayList();
         for (int i = 0; i < getItemByParam.length(); i++) {

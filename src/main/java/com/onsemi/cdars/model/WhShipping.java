@@ -30,6 +30,14 @@ public class WhShipping {
     private String requestRequestorEmail;
     private String requestRequestedDate;
     private String requestViewRequestedDate;
+    private String pcbA;
+    private String pcbAQty;
+    private String pcbB;
+    private String pcbBQty;
+    private String pcbC;
+    private String pcbCQty;
+    private String pcbCtr;
+    private String pcbCtrQty;
 
     public String getId() {
         return id;
@@ -237,6 +245,70 @@ public class WhShipping {
 
     public void setRequestRequestorEmail(String requestRequestorEmail) {
         this.requestRequestorEmail = requestRequestorEmail;
+    }
+
+    public String getPcbA() {
+        return pcbA;
+    }
+
+    public void setPcbA(String pcbA) {
+        this.pcbA = pcbA;
+    }
+
+    public String getPcbAQty() {
+        return pcbAQty;
+    }
+
+    public void setPcbAQty(String pcbAQty) {
+        this.pcbAQty = pcbAQty;
+    }
+
+    public String getPcbB() {
+        return pcbB;
+    }
+
+    public void setPcbB(String pcbB) {
+        this.pcbB = pcbB;
+    }
+
+    public String getPcbBQty() {
+        return pcbBQty;
+    }
+
+    public void setPcbBQty(String pcbBQty) {
+        this.pcbBQty = pcbBQty;
+    }
+
+    public String getPcbC() {
+        return pcbC;
+    }
+
+    public void setPcbC(String pcbC) {
+        this.pcbC = pcbC;
+    }
+
+    public String getPcbCQty() {
+        return pcbCQty;
+    }
+
+    public void setPcbCQty(String pcbCQty) {
+        this.pcbCQty = pcbCQty;
+    }
+
+    public String getPcbCtr() {
+        return pcbCtr;
+    }
+
+    public void setPcbCtr(String pcbCtr) {
+        this.pcbCtr = pcbCtr;
+    }
+
+    public String getPcbCtrQty() {
+        return pcbCtrQty;
+    }
+
+    public void setPcbCtrQty(String pcbCtrQty) {
+        this.pcbCtrQty = pcbCtrQty;
     }
 
 }
