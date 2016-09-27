@@ -33,7 +33,7 @@ public class WhInventoryDAO {
                     "INSERT INTO cdars_wh_inventory (request_id, mp_no, mp_expiry_date, equipment_type, equipment_id, "
                     + "pcb_a, pcb_a_qty, pcb_b, pcb_b_qty, pcb_c, pcb_c_qty, pcb_ctr, pcb_ctr_qty, "
                     + "quantity, requested_by, requested_date, remarks, verified_date, inventory_date, inventory_rack, inventory_shelf,"
-                    + " inventory_by, status, received_date, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)", Statement.RETURN_GENERATED_KEYS
+                    + " inventory_by, status, received_date, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whInventory.getRequestId());
             ps.setString(2, whInventory.getMpNo());
@@ -229,6 +229,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -279,6 +281,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -329,6 +333,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -384,6 +390,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -435,6 +443,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -487,6 +497,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -531,6 +543,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -576,6 +590,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -621,6 +637,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -674,6 +692,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));
@@ -729,6 +749,8 @@ public class WhInventoryDAO {
                 whInventory.setVerifiedDate(rs.getString("verified_date"));
                 whInventory.setInventoryDate(rs.getString("inventory_date"));
                 whInventory.setInventoryLocation(rs.getString("inventory_location"));
+                whInventory.setInventoryRack(rs.getString("inventory_rack"));
+                whInventory.setInventoryShelf(rs.getString("inventory_shelf"));
                 whInventory.setInventoryBy(rs.getString("inventory_by"));
                 whInventory.setStatus(rs.getString("status"));
                 whInventory.setReceivedDate(rs.getString("received_date"));

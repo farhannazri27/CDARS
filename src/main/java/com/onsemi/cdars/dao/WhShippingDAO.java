@@ -303,6 +303,47 @@ public class WhShippingDAO {
         return whShipping;
     }
 
+    public WhShipping getWhShippingNyRequestId(String requestId) {
+        String sql = "SELECT * FROM cdars_wh_shipping WHERE request_id = '" + requestId + "'";
+        WhShipping whShipping = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whShipping = new WhShipping();
+                whShipping.setId(rs.getString("id"));
+                whShipping.setRequestId(rs.getString("request_id"));
+                whShipping.setMpNo(rs.getString("mp_no"));
+                whShipping.setMpExpiryDate(rs.getString("mp_expiry_date"));
+                whShipping.setHardwareBarcode1(rs.getString("hardware_barcode_1"));
+                whShipping.setDateScan1(rs.getString("date_scan_1"));
+                whShipping.setHardwareBarcode2(rs.getString("hardware_barcode_2"));
+                whShipping.setDateScan2(rs.getString("date_scan_2"));
+                whShipping.setShippingDate(rs.getString("shipping_date"));
+                whShipping.setStatus(rs.getString("status"));
+                whShipping.setRemarks(rs.getString("remarks"));
+                whShipping.setFlag(rs.getString("flag"));
+                whShipping.setCreatedBy(rs.getString("created_by"));
+                whShipping.setCreatedDate(rs.getString("created_date"));
+                whShipping.setModifiedBy(rs.getString("modified_by"));
+                whShipping.setModifiedDate(rs.getString("modified_date"));
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whShipping;
+    }
+
     public WhShipping getWhShippingMergeWithRequest(String whShippingId) {
         String sql = "SELECT sh.*, DATE_FORMAT(sh.mp_expiry_date,'%Y-%m-%d') AS new_mp_expiry_date, re.equipment_type AS equipment_type, "
                 + "re.pcb_a AS pcb_a, re.pcb_a_qty AS pcb_a_qty, re.pcb_b AS pcb_b, re.pcb_b_qty AS pcb_b_qty, re.pcb_c AS pcb_c, re.pcb_c_qty AS pcb_c_qty,re.pcb_ctr AS pcb_ctr, re.pcb_ctr_qty AS pcb_ctr_qty,"
@@ -334,7 +375,7 @@ public class WhShippingDAO {
                 //utk display data from table wh_request
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
                 whShipping.setRequestEquipmentId(rs.getString("equipment_id"));
-                 whShipping.setPcbA(rs.getString("pcb_a"));
+                whShipping.setPcbA(rs.getString("pcb_a"));
                 whShipping.setPcbAQty(rs.getString("pcb_a_qty"));
                 whShipping.setPcbB(rs.getString("pcb_b"));
                 whShipping.setPcbBQty(rs.getString("pcb_b_qty"));
@@ -410,7 +451,7 @@ public class WhShippingDAO {
         String sql = "SELECT sh.*,re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, "
                 + "re.pcb_a AS pcb_a, re.pcb_a_qty AS pcb_a_qty, re.pcb_b AS pcb_b, re.pcb_b_qty AS pcb_b_qty, re.pcb_c AS pcb_c, re.pcb_c_qty AS pcb_c_qty,re.pcb_ctr AS pcb_ctr, re.pcb_ctr_qty AS pcb_ctr_qty, "
                 + "re.quantity AS quantity,re.requested_by AS requested_by, re.requested_date, DATE_FORMAT(re.requested_date,'%d %M %Y') AS view_requested_date "
-                + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id ORDER BY id DESC";
+                + "FROM cdars_wh_shipping sh, cdars_wh_request re WHERE sh.request_id = re.id AND sh.flag = '0' ORDER BY id DESC";
         List<WhShipping> whShippingList = new ArrayList<WhShipping>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -533,11 +574,37 @@ public class WhShippingDAO {
     }
 
     public Integer getCountMpNo(String mpNo) {
-//        QueryResult queryResult = new QueryResult();
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
                     "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE mp_no = '" + mpNo + "'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+
+    public Integer getCountRequestId(String requestId) {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE request_id = '" + requestId + "'"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

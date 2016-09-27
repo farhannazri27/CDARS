@@ -44,7 +44,8 @@
                                         <th><span>Hardware ID</span></th>
                                         <th><span>Quantity</span></th>
                                         <th><span>Material Pass No</span></th>
-                                        <th><span>Location</span></th>
+                                        <th><span>Rack</span></th>
+                                        <th><span>Shelf</span></th>
                                         <th><span>Inventory Date</span></th>
                                         <th><span>Manage</span></th>
                                     </tr>
@@ -57,7 +58,8 @@
                                             <td><c:out value="${whInventory.equipmentId}"/></td>
                                             <td><c:out value="${whInventory.quantity}"/></td>
                                             <td><c:out value="${whInventory.mpNo}"/></td>
-                                            <td><c:out value="${whInventory.inventoryLocation}"/></td>
+                                            <td><c:out value="${whInventory.inventoryRack}"/></td>
+                                             <td><c:out value="${whInventory.inventoryShelf}"/></td>
                                             <td><c:out value="${whInventory.viewInventoryDate}"/></td>
                                             <td align="left">
                                                 <a href="${contextPath}/wh/whInventory/view/${whInventory.id}" class="table-link" title="View">
@@ -90,7 +92,7 @@
                     "order": [],
                     "aoColumnDefs": [
                         {"bSortable": false, "aTargets": [0]},
-                        {"bSortable": false, "aTargets": [7]}
+                        {"bSortable": false, "aTargets": [8]}
                     ],
                     "sDom": "tp"
                 });
@@ -102,19 +104,19 @@
                             "sExtends": "copy",
                             "sButtonText": "Copy",
                             "sTitle": exportTitle,
-                            "mColumns": [0, 1, 2, 3, 4, 5, 6]
+                            "mColumns": [0, 1, 2, 3, 4, 5, 6,7]
                         },
                         {
                             "sExtends": "xls",
                             "sButtonText": "Excel",
                             "sTitle": exportTitle,
-                            "mColumns": [0, 1, 2, 3, 4, 5, 6]
+                            "mColumns": [0, 1, 2, 3, 4, 5, 6,7]
                         },
                         {
                             "sExtends": "pdf",
                             "sButtonText": "PDF",
                             "sTitle": exportTitle,
-                            "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
+                            "mColumns": [0, 1, 2, 3, 4, 5, 6, 7,7]
                         },
                         {
                             "sExtends": "print",

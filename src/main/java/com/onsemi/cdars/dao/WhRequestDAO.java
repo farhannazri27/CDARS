@@ -417,4 +417,31 @@ public class WhRequestDAO {
         }
         return queryResult;
     }
+    
+    public Integer getCountNowDateMoreDateRequested2Days() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND NOW() > ADDDATE(DATE(requested_date),2)"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
 }

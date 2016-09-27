@@ -32,14 +32,14 @@ import org.springframework.scheduling.annotation.Scheduled;
  */
 @Configuration
 @EnableScheduling
-public class HmsFtpConfig {
+public class ApprovalCronConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HmsFtpConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApprovalCronConfig.class);
 
 //    @Scheduled(fixedRate = 60000)
 //    hold for now
 //    @Scheduled(cron = "0 5 * * * *") //every hour after 5 minute every day
-    @Scheduled(cron = "0 */1 * * * *") //every 1 minutes
+//    @Scheduled(cron = "0 */1 * * * *") //every 1 minutes
     public void DownloadCsv() {
 
         //utk inventory

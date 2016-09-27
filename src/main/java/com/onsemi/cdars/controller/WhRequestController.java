@@ -185,12 +185,24 @@ public class WhRequestController {
             if ("Motherboard".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdMb);
                 whRequest.setQuantity("1");
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
             } else if ("Stencil".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdStencil);
                 whRequest.setQuantity("1");
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
             } else if ("Tray".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdTray);
                 whRequest.setQuantity(quantity);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
             } else if ("PCB".equals(equipmentType)) {
 
                 String pcbName = equipmentIdpcbA.substring(0, 6);
