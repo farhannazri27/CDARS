@@ -95,9 +95,41 @@ public class WhRequestPdf extends AbstractITextPdfViewPotrait {
             cellContent.setPhrase(new Phrase(whRequest.getEquipmentId(), fontContent));
             table.addCell(cellContent);
         } else if ("PCB".equals(whRequest.getEquipmentType())) {
-            cellHeader.setPhrase(new Phrase("PCB Name", fontHeader));
+            cellHeader.setPhrase(new Phrase("PCB ID", fontHeader));
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whRequest.getEquipmentId(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("PCB ID Qual A", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbA(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("Quantity Qual A", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbAQty(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("PCB ID Qual B", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbB(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("Quantity Qual B", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbBQty(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("PCB ID Qual C", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbC(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("Quantity Qual C", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbCQty(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("PCB ID Control", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbCtr(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("Quantity Control", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getPcbCtrQty(), fontContent));
             table.addCell(cellContent);
         } else {
             cellHeader.setPhrase(new Phrase("Equipment ID", fontHeader));
@@ -106,14 +138,9 @@ public class WhRequestPdf extends AbstractITextPdfViewPotrait {
             table.addCell(cellContent);
         }
 
-        cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+        cellHeader.setPhrase(new Phrase("Total Quantity", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRequest.getQuantity(), fontContent));
-        table.addCell(cellContent);
-
-        cellHeader.setPhrase(new Phrase("Location", fontHeader));
-        table.addCell(cellHeader);
-        cellContent.setPhrase(new Phrase(whRequest.getLocation(), fontContent));
         table.addCell(cellContent);
 
         cellHeader.setPhrase(new Phrase("Requested By", fontHeader));

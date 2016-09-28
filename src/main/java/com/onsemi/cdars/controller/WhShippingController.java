@@ -75,7 +75,7 @@ public class WhShippingController {
             String IdLabel = "Tray Type";
             model.addAttribute("IdLabel", IdLabel);
         } else if ("PCB".equals(type)) {
-            String IdLabel = "PCB Name";
+            String IdLabel = "PCB ID";
             model.addAttribute("IdLabel", IdLabel);
         } else {
             String IdLabel = "Hardware ID";

@@ -7,6 +7,7 @@ public class WhRequest {
     private String requestType;
     private String equipmentType;
     private String pcbType;
+     private String pcbLimitId;
     private String equipmentId;
     private String pcbA;
     private String pcbAQty;
@@ -328,5 +329,15 @@ public class WhRequest {
     public void setShelf(String shelf) {
         this.shelf = shelf;
     }
+
+    public String getPcbLimitId() {
+        return pcbLimitId;
+    }
+
+    public void setPcbLimitId(String pcbLimitId) {
+        this.pcbLimitId = pcbLimitId;
+    }
+    
+    
 
 }

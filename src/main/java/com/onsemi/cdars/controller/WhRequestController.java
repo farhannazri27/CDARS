@@ -155,6 +155,7 @@ public class WhRequestController {
             @RequestParam(required = false) String requestType,
             @RequestParam(required = false) String equipmentType,
             @RequestParam(required = false) String pcbType,
+            @RequestParam(required = false) String pcbLimitId,
             @RequestParam(required = false) String inventoryIdMb,
             @RequestParam(required = false) String inventoryIdStencil,
             @RequestParam(required = false) String inventoryIdTray,
@@ -256,6 +257,10 @@ public class WhRequestController {
                 whRequest.setRack(inventory.getInventoryRack());
                 whRequest.setShelf(inventory.getInventoryShelf());
                 whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
 
             } else if ("Stencil".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdStencil);
@@ -268,6 +273,10 @@ public class WhRequestController {
                 whRequest.setRack(inventory.getInventoryRack());
                 whRequest.setShelf(inventory.getInventoryShelf());
                 whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
 
             } else if ("Tray".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdTray);
@@ -280,6 +289,10 @@ public class WhRequestController {
                 whRequest.setRack(inventory.getInventoryRack());
                 whRequest.setShelf(inventory.getInventoryShelf());
                 whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
 
             } else if ("PCB".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdPcb);
@@ -303,11 +316,6 @@ public class WhRequestController {
             }
         }
 
-//        if (!quantity.equals("")) {
-//            whRequest.setQuantity(quantity);
-//        } else {
-//            whRequest.setQuantity("1");
-//        }
         whRequest.setRequestedBy(userSession.getFullname());
         whRequest.setRequestorEmail(userSession.getEmail());
         whRequest.setRemarks(remarks);
@@ -367,7 +375,9 @@ public class WhRequestController {
                 whRetrieval.setPcbCtr(whrequest.getPcbCtr());
                 whRetrieval.setPcbCtrQty(whrequest.getPcbCtrQty());
                 whRetrieval.setHardwareQty(whrequest.getQuantity());
-                whRetrieval.setLocation(whrequest.getLocation());
+//                whRetrieval.setLocation(whrequest.getLocation());
+                whRetrieval.setRack(whrequest.getRack());
+                whRetrieval.setShelf(whrequest.getShelf());
                 whRetrieval.setMpNo(whrequest.getMpNo());
                 whRetrieval.setMpExpiryDate(whrequest.getMpExpiryDate());
                 whRetrieval.setRequestedBy(whrequest.getRequestedBy());
@@ -551,6 +561,20 @@ public class WhRequestController {
     ) {
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         WhRequest whRequest = whRequestDAO.getWhRequest(whRequestId);
+        PcbLimitDAO pcbLimitD = new PcbLimitDAO();
+        int countPcbL = pcbLimitD.getCountPcbType(whRequest.getPcbType());
+
+        if (countPcbL == 1) {
+            pcbLimitD = new PcbLimitDAO();
+            PcbLimit pcbLimit = pcbLimitD.getPcbLimitByType(whRequest.getPcbType());
+            String PcbLimitQty = pcbLimit.getQuantity();
+            String PcbLimitType = pcbLimit.getPcbType();
+            String PcbLimitTypeAndQty = PcbLimitType + "   Max Qty- " + PcbLimitQty;
+            model.addAttribute("PcbLimitTypeAndQty", PcbLimitTypeAndQty);
+        } else {
+            String PcbLimitType = "";
+            model.addAttribute("PcbLimitTypeAndQty", PcbLimitType);
+        }
 
         ParameterDetailsDAO sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> requestType = sDAO.getGroupParameterDetailList(whRequest.getRequestType(), "006");
@@ -573,6 +597,24 @@ public class WhRequestController {
         model.addAttribute("stencil", stencil);
         model.addAttribute("tray", tray);
         model.addAttribute("whRequest", whRequest);
+
+        String type = whRequest.getEquipmentType();
+        if ("Motherboard".equals(type)) {
+            String IdLabel = "Motherboard ID";
+            model.addAttribute("IdLabel", IdLabel);
+        } else if ("Stencil".equals(type)) {
+            String IdLabel = "Stencil ID";
+            model.addAttribute("IdLabel", IdLabel);
+        } else if ("Tray".equals(type)) {
+            String IdLabel = "Tray Type";
+            model.addAttribute("IdLabel", IdLabel);
+        } else if ("PCB".equals(type)) {
+            String IdLabel = "PCB ID";
+            model.addAttribute("IdLabel", IdLabel);
+        } else {
+            String IdLabel = "Hardware ID";
+            model.addAttribute("IdLabel", IdLabel);
+        }
         return "whRequest/edit";
     }
 
@@ -585,11 +627,20 @@ public class WhRequestController {
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String requestType,
             @RequestParam(required = false) String equipmentType,
+            @RequestParam(required = false) String pcbType,
             @RequestParam(required = false) String equipmentId,
             @RequestParam(required = false) String equipmentIdMb,
             @RequestParam(required = false) String equipmentIdStencil,
             @RequestParam(required = false) String equipmentIdTray,
             @RequestParam(required = false) String equipmentIdPcb,
+            @RequestParam(required = false) String pcbA,
+            @RequestParam(required = false) String pcbB,
+            @RequestParam(required = false) String pcbC,
+            @RequestParam(required = false) String pcbCtr,
+            @RequestParam(required = false) String pcbAQty,
+            @RequestParam(required = false) String pcbBQty,
+            @RequestParam(required = false) String pcbCQty,
+            @RequestParam(required = false) String pcbCtrQty,
             @RequestParam(required = false) String quantity,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) String remarks,
@@ -598,27 +649,56 @@ public class WhRequestController {
         WhRequest whRequest = new WhRequest();
         whRequest.setId(id);
         whRequest.setRequestType(requestType);
-        if (!quantity.equals("")) {
-            whRequest.setQuantity(quantity);
-        } else {
-            whRequest.setQuantity("1");
-        }
-        whRequest.setLocation(location);
+//       
+//        whRequest.setLocation(location);
         whRequest.setEquipmentType(equipmentType);
-        if (!equipmentIdMb.equals("")) {
-            whRequest.setEquipmentId(equipmentIdMb);
-        } else if (!equipmentIdStencil.equals("")) {
-            whRequest.setEquipmentId(equipmentIdStencil);
-        } else if (!equipmentIdTray.equals("")) {
-            whRequest.setEquipmentId(equipmentIdTray);
-        } else if (!equipmentIdPcb.equals("")) {
-            whRequest.setEquipmentId(equipmentIdPcb);
+
+        if ("PCB".equals(equipmentType)) {
+
+            whRequest.setPcbType(pcbType);
+            whRequest.setPcbA(pcbA);
+            whRequest.setPcbB(pcbB);
+            whRequest.setPcbC(pcbC);
+            whRequest.setPcbCtr(pcbCtr);
+            whRequest.setPcbAQty(pcbAQty);
+            whRequest.setPcbBQty(pcbBQty);
+            whRequest.setPcbCQty(pcbCQty);
+            whRequest.setPcbCtrQty(pcbCtrQty);
+            Integer totalQty = Integer.valueOf(pcbAQty) + Integer.valueOf(pcbBQty) + Integer.valueOf(pcbCQty) + Integer.valueOf(pcbCtrQty);
+            whRequest.setQuantity(totalQty.toString());
+
+            PcbLimitDAO pcbDao = new PcbLimitDAO();
+            PcbLimit pcb = pcbDao.getPcbLimitByType(pcbType);
+            if (totalQty > Integer.valueOf(pcb.getQuantity())) {
+                redirectAttrs.addFlashAttribute("error", "Total of PCB quantity exceeded the PCB limit.Please re-check.");
+                return "redirect:/wh/whRequest/edit/" + id;
+            }
         } else {
-            whRequest.setEquipmentId(equipmentId);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+            whRequest.setQuantity(quantity);
+
         }
+
+        //hold for now 27/9/16
+//        if (!equipmentIdMb.equals("")) {
+//            whRequest.setEquipmentId(equipmentIdMb);
+//        } else if (!equipmentIdStencil.equals("")) {
+//            whRequest.setEquipmentId(equipmentIdStencil);
+//        } else if (!equipmentIdTray.equals("")) {
+//            whRequest.setEquipmentId(equipmentIdTray);
+//        } else if (!equipmentIdPcb.equals("")) {
+//            whRequest.setEquipmentId(equipmentIdPcb);
+//        } else {
+//            whRequest.setEquipmentId(equipmentId);
+//        }
+        whRequest.setEquipmentId(equipmentId);
         whRequest.setRemarks(remarks);
         whRequest.setModifiedBy(userSession.getId());
         whRequest.setFlag(flag);
+
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         QueryResult queryResult = whRequestDAO.updateWhRequest(whRequest);
         args = new String[1];
@@ -688,6 +768,24 @@ public class WhRequestController {
         List<ParameterDetails> approvalStatus = sDAO.getGroupParameterDetailList(whRequest.getFinalApprovedStatus(), "007");
         model.addAttribute("whRequest", whRequest);
         model.addAttribute("approvalStatus", approvalStatus);
+
+        String type = whRequest.getEquipmentType();
+        if ("Motherboard".equals(type)) {
+            String IdLabel = "Motherboard ID";
+            model.addAttribute("IdLabel", IdLabel);
+        } else if ("Stencil".equals(type)) {
+            String IdLabel = "Stencil ID";
+            model.addAttribute("IdLabel", IdLabel);
+        } else if ("Tray".equals(type)) {
+            String IdLabel = "Tray Type";
+            model.addAttribute("IdLabel", IdLabel);
+        } else if ("PCB".equals(type)) {
+            String IdLabel = "PCB ID";
+            model.addAttribute("IdLabel", IdLabel);
+        } else {
+            String IdLabel = "Hardware ID";
+            model.addAttribute("IdLabel", IdLabel);
+        }
         return "whRequest/approval";
     }
 
@@ -749,6 +847,7 @@ public class WhRequestController {
 
                 ship.setRequestId(id);
                 ship.setStatus("No Material Pass Number");
+                ship.setFlag("0");
                 WhShippingDAO whShippingDAO = new WhShippingDAO();
                 QueryResult queryResultShip = whShippingDAO.insertWhShipping(ship);
                 return "redirect:/wh/whShipping";

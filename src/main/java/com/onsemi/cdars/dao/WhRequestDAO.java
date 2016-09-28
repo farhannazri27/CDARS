@@ -417,12 +417,12 @@ public class WhRequestDAO {
         }
         return queryResult;
     }
-    
-    public Integer getCountNowDateMoreDateRequested2Days() {
+
+    public Integer getCountNowDateMoreDateRequested3Days() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND NOW() > ADDDATE(DATE(requested_date),2)"
+                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND NOW() > ADDDATE(DATE(requested_date),3)"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

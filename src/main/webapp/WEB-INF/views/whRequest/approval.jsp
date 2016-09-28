@@ -11,54 +11,98 @@
         <div class="col-lg-12">
             <h1>Approval for Hardware Request</h1>
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-10">
                     <div class="main-box">
                         <h2>Hardware Request Information</h2>
                         <form id="approval_hardwarequest_form" class="form-horizontal" role="form" action="${contextPath}/wh/whRequest/approvalupdate" method="post">
                             <input type="hidden" name="id" value="${whRequest.id}" />
                             <div class="form-group">
-                                <label for="requestBy" class="col-lg-4 control-label">Request By</label>
+                                <label for="requestBy" class="col-lg-2 control-label">Request By</label>
                                 <div class="col-lg-8">
                                     <input type="text" class="form-control" id="requestBy" name="requestBy" placeholder="Request For" value="${whRequest.requestedBy}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="requestType" class="col-lg-4 control-label">Request For</label>
-                                <div class="col-lg-8">
+                                <label for="requestType" class="col-lg-2 control-label">Request For</label>
+                                <div class="col-lg-3">
                                     <input type="text" class="form-control" id="requestType" name="requestType" value="${whRequest.requestType}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="equipmentType" class="col-lg-4 control-label">Hardware Category</label>
-                                <div class="col-lg-8">
+                                <label for="equipmentType" class="col-lg-2 control-label">Hardware Category</label>
+                                <div class="col-lg-4">
                                     <input type="text" class="form-control" id="equipmentType" name="equipmentType" value="${whRequest.equipmentType}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="equipmentId" class="col-lg-4 control-label">Equipment ID</label>
-                                <div class="col-lg-8">
+                                <label for="equipmentId" class="col-lg-2 control-label">${IdLabel}</label>
+                                <div class="col-lg-6">
                                     <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.equipmentId}" readonly>
+                                </div>
+                                 <label for="quantity" class="col-lg-1 control-label">Total Quantity </label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.quantity}" readonly>
                                 </div>
                             </div>
                             <div class="form-group" id="quantitydiv" hidden>
-                                <label for="quantity" class="col-lg-4 control-label">Quantity *</label>
+                                <label for="quantity" class="col-lg-2 control-label">Quantity </label>
                                 <div class="col-lg-2">
                                     <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.quantity}" readonly>
                                 </div>
-                            </div> 
+                            </div>
+                            <div class="form-group" id="pcbADiv" hidden>
+                                <label for="pcbA" class="col-lg-2 control-label">Qual A</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" id="pcbA" name="pcbA" value="${whRequest.pcbA}" readonly>
+                                </div>
+                             <label for="pcbAQty" class="col-lg-1 control-label">Quantity</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="pcbAQty" name="pcbAQty" value="${whRequest.pcbAQty}" readonly>
+                                </div>   
+                            </div>
+                            <div class="form-group" id="pcbBDiv" hidden>
+                                <label for="pcbB" class="col-lg-2 control-label">Qual B</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" id="pcbB" name="pcbB" value="${whRequest.pcbB}" readonly>
+                                </div>
+                                <label for="pcbBQty" class="col-lg-1 control-label">Quantity</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="pcbBQty" name="pcbBQty" value="${whRequest.pcbBQty}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group" id="pcbCDiv" hidden>
+                                <label for="pcbC" class="col-lg-2 control-label">Qual C</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" id="pcbC" name="pcbC" value="${whRequest.pcbC}" readonly>
+                                </div>
+                                <label for="pcbCQty" class="col-lg-1 control-label">Quantity</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="pcbCQty" name="pcbCQty" value="${whRequest.pcbCQty}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group" id="pcbCtrDiv" hidden>
+                                <label for="equipmentId" class="col-lg-2 control-label">Control</label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" id="pcbCtr" name="pcbCtr" value="${whRequest.pcbCtr}" readonly>
+                                </div>
+                                <label for="pcbCtrQty" class="col-lg-1 control-label">Quantity</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="pcbCtrQty" name="pcbCtrQty" value="${whRequest.pcbCtrQty}" readonly>
+                                </div>
+                            </div>
                             <div class="form-group" id="remarksDiv" >
-                                <label for="remarks" class="col-lg-4 control-label">Remarks </label>
-                                <div class="col-lg-8">
+                                <label for="remarks" class="col-lg-2 control-label">Remarks </label>
+                                <div class="col-lg-6">
                                     <textarea class="form-control" rows="5" id="remarks" name="remarks" readonly>${whRequest.remarks}</textarea>
                                 </div>
                             </div>
 
                             <!--approval-->
-                            <br>
+                            <!--<br>-->
                             <br>
                             <div class="form-group" id="approvalDiv" >
-                                <label for="finalApprovedStatus" class="col-lg-4 control-label">Approved / Not Approved * </label>
-                                <div class="col-lg-8">                                      
+                                <label for="finalApprovedStatus" class="col-lg-2 control-label">Approved / Not Approved * </label>
+                                <div class="col-lg-6">                                      
                                     <select id="finalApprovedStatus" name="finalApprovedStatus" class="form-control">
                                         <option value=""></option>
                                         <c:forEach items="${approvalStatus}" var="group">
@@ -68,8 +112,8 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="remarksApprover" class="col-lg-4 control-label">Remarks </label>
-                                <div class="col-lg-8">
+                                <label for="remarksApprover" class="col-lg-2 control-label">Remarks </label>
+                                <div class="col-lg-6">
                                     <textarea class="form-control" rows="5" id="remarksApprover" name="remarksApprover">${whRequest.remarksApprover}</textarea>
                                 </div>
                             </div>
@@ -83,6 +127,7 @@
                         </form>
                     </div>
                 </div>	
+
             </div>
         </div>
     </s:layout-component>
@@ -103,11 +148,19 @@
                     $("#typediv").hide();
                     $("#quantitydiv").hide();
                 } else if (element.val() === "Tray") {
-                    $("#quantitydiv").show();
+//                    $("#quantitydiv").show();
                     $("#typediv").hide();
                 } else if (element.val() === "PCB") {
                     $("#typediv").hide();
-                    $("#quantitydiv").show();
+//                    $("#quantitydiv").show();
+                    $("#pcbADiv").show();
+//                    $("#pcbAQtyDiv").show();
+                    $("#pcbBDiv").show();
+//                    $("#pcbBQtyDiv").show();
+                    $("#pcbCDiv").show();
+//                    $("#pcbCQtyDiv").show();
+                    $("#pcbCtrDiv").show();
+//                    $("#pcbCtrQtyDiv").show();
                 } else {
                     $("#typediv").hide();
                     $("#quantitydiv").hide();
@@ -140,7 +193,7 @@
             $('#finalApprovedStatus').on('change', function () {
                 if ($(this).val() === "Not Approved") {
                     $("#remarksApprover").attr("required", true);
-                }else{
+                } else {
                     $("#remarksApprover").attr("required", false);
                 }
             });
