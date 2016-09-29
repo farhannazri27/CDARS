@@ -5,10 +5,10 @@
  */
 package com.onsemi.cdars.config;
 
+import com.onsemi.cdars.dao.WhInventoryDAO;
 import com.onsemi.cdars.dao.WhRequestDAO;
 import com.onsemi.cdars.tools.EmailSender;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +66,90 @@ public class ApprovalCronConfig {
 
             } else {
                 LOGGER.info("No pending hardware for approval disposition.");
+            }
+
+        } catch (Exception ee) {
+            ee.printStackTrace();
+        }
+
+    }
+
+    @Scheduled(cron = "0 0 8 * * *") //every 8.00am
+    public void EmailForMPExpiryDate() {
+
+        //utk inventory
+        LOGGER.info("cron detected -[Approval Reminder]!!!");
+
+        try {
+
+            WhInventoryDAO inventoryD = new WhInventoryDAO();
+            int count = inventoryD.getCountMpExpiryDate();
+            if (count > 0) {
+
+                EmailSender emailSender = new EmailSender();
+                com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+                user.setFullname("All");
+
+                emailSender.htmlEmail(
+                        servletContext,
+                        //                    user name
+                        user,
+                        //                    to
+                        "fg79cj@onsemi.com",
+                        //                    subject
+                        "Material Pass Will Expire Within 30 Days",
+                        //                    msg
+                        "There are " + count + " material pass that will be expire within 30 days. Please go to this link "
+                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">CDARS</a>"
+                        + " to request a retrieval from Sungai Gadut Warehouse. Thank you."
+                );
+
+                LOGGER.info("total material pass to expire: " + count);
+
+            } else {
+                LOGGER.info("No material pass is expire.");
+            }
+
+        } catch (Exception ee) {
+            ee.printStackTrace();
+        }
+
+    }
+
+    @Scheduled(cron = "0 0 8 * * *") //every 8.00am
+    public void EmailForExpiredMp() {
+
+        //utk inventory
+        LOGGER.info("cron detected -[Approval Reminder for expired Mp]!!!");
+
+        try {
+
+            WhInventoryDAO inventoryD = new WhInventoryDAO();
+            int count = inventoryD.getCountExpiredMp();
+            if (count > 0) {
+
+                EmailSender emailSender = new EmailSender();
+                com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+                user.setFullname("All");
+
+                emailSender.htmlEmail(
+                        servletContext,
+                        //                    user name
+                        user,
+                        //                    to
+                        "fg79cj@onsemi.com",
+                        //                    subject
+                        "Material Pass Has Expired",
+                        //                    msg
+                        "There are " + count + " material pass has expired. Please go to this link "
+                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">CDARS</a>"
+                        + " to request a retrieval from Sungai Gadut Warehouse. Thank you."
+                );
+
+                LOGGER.info("total material pass expired: " + count);
+
+            } else {
+                LOGGER.info("No material pass has expired.");
             }
 
         } catch (Exception ee) {
