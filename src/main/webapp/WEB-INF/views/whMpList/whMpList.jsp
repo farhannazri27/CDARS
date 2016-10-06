@@ -138,7 +138,7 @@
                                     function modalDelete(e) {
 //                var deleteId = $(e).attr("modaldeleteid");
 //                var deleteInfo = $("#modal_delete_info_" + deleteId).html();
-                                        var deleteUrl = "${contextPath}/wh/whShipping/whMpList/deleteAll";
+                                        var deleteUrl = "${contextPath}/wh/whShipping/whMpList/changeFlag1";
                                         var deleteMsg = "Are you sure want to delete all? All related data will be deleted.";
                                         $("#delete_modal .modal-body").html(deleteMsg);
                                         $("#modal_delete_button").attr("href", deleteUrl);

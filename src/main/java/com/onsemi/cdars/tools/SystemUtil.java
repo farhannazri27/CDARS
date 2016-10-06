@@ -1,16 +1,23 @@
 package com.onsemi.cdars.tools;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class SystemUtil {
 
@@ -178,5 +185,26 @@ public class SystemUtil {
         } catch (IOException ex) {
             Logger.getLogger(SystemUtil.class.getName()).log(Level.SEVERE, ex.getMessage());
         }
+    }
+    
+    public static List<LinkedHashMap<String, String>> jsonArrayToList(JSONArray jsonArray) throws IOException {
+        List<LinkedHashMap<String, String>> list = new ArrayList();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            //If you need ID of item but ID key is in "diffgr:id" format, you had to replace all to "diffgrid" first
+            //JSONObject jo = jsonArray.getJSONObject(i);
+            //String a = jo.toString();
+            //String b = a.replace("diffgr:id", "diffgrid");
+            //System.out.println(b);
+            //JSONObject jsonObject = new JSONObject(b);
+            //If ID not needed, use below code, don't enable above because it will effect the performance
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            //System.out.println(jsonObject.toString());
+            LinkedHashMap<String, String> item;
+            ObjectMapper mapper = new ObjectMapper();
+            item = mapper.readValue(jsonObject.toString(), new TypeReference<LinkedHashMap<String, String>>() {
+            });
+            list.add(item);
+        }
+        return list;
     }
 }

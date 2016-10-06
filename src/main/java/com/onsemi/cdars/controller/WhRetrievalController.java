@@ -275,6 +275,46 @@ public class WhRetrievalController {
                 LOGGER.info("update inventory failed");
             }
 
+            //update request - change flag to 1 (item can be request again)
+            //update retrieve
+            whdao = new WhRetrievalDAO();
+            WhRetrieval wh1 = whdao.getWhRetrieval(id);
+
+            WhRequest requestUpdate = new WhRequest();
+            requestUpdate.setFlag("1");
+            requestUpdate.setId(wh1.getRequestId());
+            WhRequestDAO Update = new WhRequestDAO();
+            QueryResult updateRe = Update.updateWhRequestFlag1(requestUpdate);
+            if (updateRe.getResult() == 1) {
+                LOGGER.info("update request done");
+            } else {
+                LOGGER.info("update request failed");
+            }
+
+            //update ship
+            whdao = new WhRetrievalDAO();
+            WhRetrieval wh2 = whdao.getWhRetrieval(id);
+
+            WhRequestDAO request2dao = new WhRequestDAO();
+            WhRequest request2 = request2dao.getWhRequest(wh2.getRequestId());
+
+            inventoryD = new WhInventoryDAO();
+            WhInventory inventory2 = inventoryD.getWhInventory(request2.getInventoryId());
+            
+            request2dao = new WhRequestDAO();
+            WhRequest request3 = request2dao.getWhRequest(inventory2.getRequestId());
+
+            WhRequest requestUpdate1 = new WhRequest();
+            requestUpdate1.setFlag("1");
+            requestUpdate1.setId(request3.getId());
+            Update = new WhRequestDAO();
+            QueryResult updateRe1 = Update.updateWhRequestFlag1(requestUpdate1);
+            if (updateRe1.getResult() == 1) {
+                LOGGER.info("update request done");
+            } else {
+                LOGGER.info("update request failed");
+            }
+
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
         }

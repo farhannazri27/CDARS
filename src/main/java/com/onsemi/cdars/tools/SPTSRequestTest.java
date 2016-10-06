@@ -1,6 +1,9 @@
 package com.onsemi.cdars.tools;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -45,18 +48,20 @@ public class SPTSRequestTest {
          expiryEndDate,//dateTime
          excludeScrapped//boolean
          */
-        System.out.println("GET ITEM BY PARAM...");
-        JSONObject params0 = new JSONObject();
-        params0.put("itemType", "PCB%");
-        params0.put("itemStatus", "0");
-        params0.put("status", "1");
-        params0.put("itemID", "%QUAL A");
-//        params0.put("itemID", "AHWH3-4");
-        JSONArray getItemByParam = SPTSWebService.getItemByParam(params0);
-        for (int i = 0; i < getItemByParam.length(); i++) {
-            System.out.println(getItemByParam.getJSONObject(i));
-        }
-        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+//        System.out.println("GET ITEM BY PARAM...");
+//        JSONObject params0 = new JSONObject();
+////        params0.put("itemType", "PCB%");
+////        params0.put("itemStatus", "0");
+////        params0.put("status", "1");
+////        params0.put("itemID", "%QUAL A");
+//        params0.put("itemID", "CDARS-MB_1");
+//        params0.put("version", "07f86952-7c90-4bb8-90ba-696ca589851d");
+//
+//        JSONArray getItemByParam = SPTSWebService.getItemByParam(params0);
+//        for (int i = 0; i < getItemByParam.length(); i++) {
+//            System.out.println(getItemByParam.getJSONObject(i));
+//        }
+//        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
         //InsertItem
         /*
          -- KEYS --
@@ -139,11 +144,12 @@ public class SPTSRequestTest {
          "SiteShelf": "Seremban-18"
          */
 //        System.out.println("INSERT ITEM...");
-//        String itemID = "AHWFB-18";
+////        String itemID = "AHWFB-18";
+//        String itemID = "19999A_CDARS-pcbTesting - QUAL C";
 //        JSONObject params1 = new JSONObject();
 //        params1.put("itemID", itemID);
-//        params1.put("itemName", "M_AHWFB-ACBH-48B22-00L00-0P00H31000T150-001");
-//        params1.put("onHandQty", "1");
+//        params1.put("itemName", "CDARS-pcbTesting - QUAL C");
+//        params1.put("onHandQty", "50");
 //        params1.put("prodQty", "0");
 //        params1.put("repairQty", "0");
 //        params1.put("otherQty", "0");
@@ -154,21 +160,15 @@ public class SPTSRequestTest {
 //        params1.put("internalRecleaningQty", "0");
 //        params1.put("storageFactoryQty", "0");
 //        params1.put("minQty", "1");
-//        params1.put("maxQty", "1");
+//        params1.put("maxQty", "100");
 //        params1.put("unit", "pcs");
 //        params1.put("unitCost", "4000.00");
-//        params1.put("rack", "AC15");
-//        params1.put("shelf", "18");
-//        params1.put("model", "ACS 22way 0.156in Connector (No resistor )");
-//        params1.put("equipmentType", "Motherboard  (NO ASSY#)");
-//        params1.put("stressType", "HTFB");
+//        params1.put("rack", "PCB");
+//        params1.put("shelf", "1");
 //        params1.put("isCritical", "false");
 //        params1.put("isConsumeable", "false");
-//        params1.put("itemType", "BIB");
-//        params1.put("cardType", "N/A");
-//        params1.put("bibPKID", "1");
-//        params1.put("bibCardPKID", "1");
-//        params1.put("remarks", "Test");
+//        params1.put("itemType", "PCB (PRODUCTION)");
+//        params1.put("remarks", "Test CDARS");
 //        params1.put("downtimeValue", "1");
 //        params1.put("downtimeUnit", "N/A");
 //        params1.put("implementationCost", "200.00");
@@ -176,8 +176,23 @@ public class SPTSRequestTest {
 //        params1.put("manpowerUnit", "N/A");
 //        params1.put("complexityScore", "0");
 //        params1.put("expirationDate", "2017-08-30");
-//        Integer pkID = SPTSWebService.insertItem(params1);
-//        System.out.println("pkID: " + pkID);
+//        SPTSResponse pkID = SPTSWebService.insertItem(params1);
+//
+//        System.out.println("status: " + pkID.getStatus());
+//        System.out.println("pkID: " + pkID.getResponseId());
+//        System.out.println("result: " + pkID.getResponseCode());
+////      
+//        
+// public DataSet GetSFItemByParam(int? pkID, int? itemPKID, string itemID, string itemName, int? transactionPKID, int? sfItemStatus, string sfRack, string sfShelf, int? onHandQty, int? status, int? minQty, int? maxQty, string unit, string rack, string shelf, string model, string equipmentType, string stressType, bool? isCritical, bool? isConsumeable, string itemType, string cardType, int? bibPKID, int? bibCardPKID, string remarks, bool? checkAlert, int? itemStatus, int? cdarsStatus, int? expiryB4Day, DateTime? expiryStartDate, DateTime? expiryEndDate, bool? excludeScrapped)
+//         JSONObject params0 = new JSONObject();
+////        params0.put("itemPKID", "7419");
+//        params0.put("itemID", "");
+////        params0.put("transactionPKID", "70192");
+//        JSONArray getItemByParam = SPTSWebService.getSFItemByParam(params0);
+//        for (int i = 0; i < getItemByParam.length(); i++) {
+//            System.out.println(getItemByParam.getJSONObject(i));
+//        }
+//        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
 //        if (pkID != 0) {
 //            System.out.println("GET ITEM BY PKID...");
 //            JSONObject jsonObject1 = SPTSWebService.getItemByPKID(pkID.toString());
@@ -237,7 +252,7 @@ public class SPTSRequestTest {
 //
 //            Boolean update = SPTSWebService.updateItem(params2);
 //            if (update) {
-//                JSONObject jsonObject2 = SPTSWebService.getItemByPKID(pkID.toString());
+//                JSONObject jsonObject2 = SPTSWebService.getItemByPKID("7694");
 ////            JSONObject jsonObject2 = SPTSWebService.getItemByPKID("6085");
 //                System.out.println(jsonObject2.toString());
 //                version2 = jsonObject2.getString("Version");
@@ -247,21 +262,144 @@ public class SPTSRequestTest {
 ////                System.out.println("Update Failed: " + "6085");
 //            }
 //
-//            System.out.println("DELETE ITEM...");
-//            JSONObject params3 = new JSONObject();
-//            params3.put("pkID", pkID.toString());
-////            params3.put("pkID", "6085");
-//            params3.put("version", version2);
-//            params3.put("forceDelete", "false");
+//        JSONObject jsonObject2 = SPTSWebService.getItemByPKID("7687");
+//                System.out.println(jsonObject2.toString());
+//                String version2 = jsonObject2.getString("Version");
+//                System.out.println("Version 2: " + version2);
+//                 public int InsertTransaction(DateTime dateTime, int itemsPKID, int transType, int transQty, string remarks);
+//        JSONObject params2 = new JSONObject();
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        //get current date time with Date()
+//        Date date = new Date();
+//        System.out.println(dateFormat.format(date));
 //
-//            Boolean delete = SPTSWebService.deleteItem(params3);
-//            if (delete) {
-//                System.out.println("Delete Success: " + pkID.toString());
-////                System.out.println("Delete Success: " + "6085");
-//            } else {
-//                System.out.println("Delete Failed: " + pkID.toString());
-////                System.out.println("Delete Failed: " + "6085");
-//            }
+//        String formattedDate = dateFormat.format(date);
+//
+//        params2.put("dateTime", formattedDate);
+//        params2.put("itemsPKID", "7688");
+//        params2.put("transType", "20");
+//        params2.put("transQty", "1");
+//        params2.put("remarks", "test from cdars - return");
+//        SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+//        System.out.println("update: " + TransPkid.getResponseId());
+//         public int InsertSFItem(int itemPKID, int transactionPKID, int sfItemStatus, string sfRack, string sfShelf)
+//        JSONObject params3 = new JSONObject();
+//
+//        params3.put("itemPKID", "7687");
+//        params3.put("transactionPKID", "70566");
+//        params3.put("sfItemStatus", "0");
+//        params3.put("sfRack", "");
+//        params3.put("sfShelf", "");
+//        SPTSResponse sfPkid = SPTSWebService.insertSFItem(params3);
+//        
+//        System.out.println("update: " + sfPkid.getResponseId());
+//        public DataSet GetSFItemByParam(int? pkID, int? itemPKID, string itemID, string itemName, int? transactionPKID, int? sfItemStatus, string sfRack, string sfShelf, int? onHandQty, int? status, int? minQty, int? maxQty, string unit, string rack, string shelf, string model, string equipmentType, string stressType, bool? isCritical, bool? isConsumeable, string itemType, string cardType, int? bibPKID, int? bibCardPKID, string remarks, bool? checkAlert, int? itemStatus, int? cdarsStatus, int? expiryB4Day, DateTime? expiryStartDate, DateTime? expiryEndDate, bool? excludeScrapped)
+//         JSONObject params0 = new JSONObject();
+//        params0.put("itemPKID", "7687");
+////        params0.put("pkID", "2");
+////        params0.put("transactionPKID", "70192");
+//        JSONArray getItemByParam = SPTSWebService.getSFItemByParam(params0);
+//        for (int i = 0; i < getItemByParam.length(); i++) {
+//            System.out.println(getItemByParam.getJSONObject(i));
 //        }
+//        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+// public bool UpdateSFItemLocation(int pkID, string version, int sfItemStatus, string sfRack, string sfShelf)
+//        JSONObject params3 = new JSONObject();
+////
+//        params3.put("pkID", "2");
+//        params3.put("version", "cdf17cf8-adc8-428c-8b34-088c195b6d78");
+//        params3.put("sfItemStatus", "0");
+//        params3.put("sfRack", "HA-01");
+//        params3.put("sfShelf", "HA-01-01");
+//        SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
+//
+//        System.out.println("status: " + sfPkid.getStatus());
+        System.out.println("DELETE SFITEM...");
+        JSONObject params3 = new JSONObject();
+        params3.put("pkID", "1");
+        params3.put("version", "de02cc41-6912-4383-93f1-e54c0fdd16bb");
+
+        SPTSResponse delete = SPTSWebService.DeleteSFItem(params3);
+        if (delete.getStatus()) {
+            System.out.println("Delete Success: 4");
+//                System.out.println("Delete Success: " + "6085");
+        } else {
+            System.out.println("Delete Failed: 4");
+//                System.out.println("Delete Failed: " + "6085");
+        }
+//        aa22ee6d-94d5-449b-8825-a2c0df40bd39
+        //getSFItemByParam
+//        JSONObject params0 = new JSONObject();
+//        params0.put("itemID", "CDARS-MB_1");
+////        params0.put("pkID", "70571");
+////        params0.put("transType", "19");
+////         params0.put("itemType", "BIB");
+////         params0.put("transQty", "1");
+//        JSONArray getItemByParam = SPTSWebService.getSFItemByParam(params0);
+//        for (int i = 0; i < getItemByParam.length(); i++) {
+//            System.out.println(getItemByParam.getJSONObject(i));
+//        }
+//        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+//        System.out.println("DELETE Transaction...");
+//        JSONObject params3 = new JSONObject();
+//        params3.put("pkID", "70571");
+//        params3.put("version", "3b5b36bd-340f-49ba-8729-10b5bb49ee7f");
+//
+//        SPTSResponse delete = SPTSWebService.DeleteTransaction(params3);
+//        if (delete.getStatus()) {
+//            System.out.println("Delete Success: 70571");
+////                System.out.println("Delete Success: " + "6085");
+//        } else {
+//            System.out.println("Delete Failed: 70571");
+////                System.out.println("Delete Failed: " + "6085");
+//        }
+//        public int InsertActivityLog(string userID, string logModule, string logAction, string logInfo)
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+////        //get current date time with Date()
+//        Date date = new Date();
+//        System.out.println(dateFormat.format(date));
+//
+//        String formattedDate = dateFormat.format(date);
+//        System.out.println("insert Transaction log...");
+//        JSONObject params3 = new JSONObject();
+//        params3.put("userID", "fg79cj");
+//        params3.put("logModule", "TRACKING");
+//        params3.put("logAction", "UPDATE");
+//        params3.put("logInfo", "<DATA BEFORE > DateTime:[{2016-10-04}], ItemID:[{7687}], ItemName:[{CDARS-MB-Testing_2}], Tracking:[{Out for Storage Factory}], Qty:[{1}], Remarks:[] <DATA AFTER > DateTime:[{2016-10-04}], ItemID:[{7687}], ItemName:[{CDARS-MB-Testing_2}], Tracking:[{Return From Storage Factory}], Qty:[{1}], Remarks:[]");
+//
+//        SPTSResponse delete = SPTSWebService.insertActivityLog(params3);
+//        System.out.println("insertTransLog: " + delete.getResponseId());
+
+//        System.out.println("DELETE ITEM...");
+//        JSONObject params3 = new JSONObject();
+//        params3.put("pkID", "7686");
+////            params3.put("pkID", "6085");
+////            params3.put("version", version2);
+//        params3.put("version", "a8fb66b4-7bd2-481a-b072-ba1dbbfbc235");
+//        params3.put("forceDelete", "false");
+//
+//        SPTSResponse delete = SPTSWebService.deleteItem(params3);
+//        if (delete.getStatus()) {
+//            System.out.println("Delete Success: 7686");
+////                System.out.println("Delete Success: " + "6085");
+//        } else {
+//            System.out.println("Delete Failed: 7686");
+////                System.out.println("Delete Failed: " + "6085");
+//        }
+//        }
+//        System.out.println("GET TRANSACTION BY PARAM...");
+//        JSONObject params0 = new JSONObject();
+////        params0.put("itemType", "PCB%");
+////        params0.put("itemStatus", "0");
+////        params0.put("status", "1");
+////        params0.put("itemID", "%QUAL A");
+//        params0.put("itemsPKID", "7419");
+////        params0.put("version", "07f86952-7c90-4bb8-90ba-696ca589851d");
+//
+//        JSONArray getItemByParam = SPTSWebService.getTransactionByParam(params0);
+//        for (int i = 0; i < getItemByParam.length(); i++) {
+//            System.out.println(getItemByParam.getJSONObject(i));
+//        }
+//        System.out.println("COUNT GET TRANSACTION BY PARAM..." + getItemByParam.length());
     }
 }

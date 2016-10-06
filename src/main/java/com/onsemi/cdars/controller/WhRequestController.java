@@ -24,6 +24,9 @@ import com.onsemi.cdars.tools.SptsClass;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
@@ -88,9 +91,8 @@ public class WhRequestController {
         sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> equipmentType = sDAO.getGroupParameterDetailList("", "002");
 
-        sDAO = new ParameterDetailsDAO();
-        List<ParameterDetails> tray = sDAO.getGroupParameterDetailList("", "013");
-
+//        sDAO = new ParameterDetailsDAO();
+//        List<ParameterDetails> tray = sDAO.getGroupParameterDetailList("", "013");
         WhInventoryDAO inventory = new WhInventoryDAO();
         List<WhInventory> inventoryListMb = inventory.getWhInventoryMbActiveList("");
 
@@ -112,9 +114,16 @@ public class WhRequestController {
         SptsClass bib = new SptsClass();
         List<LinkedHashMap<String, String>> itemListbib = bib.getSptsItemByParam("BIB", "0", "1");
 
+        SptsClass tray = new SptsClass();
+        List<LinkedHashMap<String, String>> itemListtray = tray.getSptsItemByParam("TRAY", "0", "1");
+
         SptsClass pcb = new SptsClass();
         List<LinkedHashMap<String, String>> itemListpcbQualA = pcb.getSptsItemByParamForPcb("PCB%", "0", "1", "%QUAL A");
 
+//        LinkedHashMap<String, String> test = itemListpcbQualA.get(0);
+//        LinkedHashMap<String, String> test2 = itemListpcbQualA.get(2);
+//        LOGGER.info("pkid...................: " + test);
+//        LOGGER.info("pkid2...................: " + test.get("PKID"));
         pcb = new SptsClass();
         List<LinkedHashMap<String, String>> itemListpcbQualB = pcb.getSptsItemByParamForPcb("PCB%", "0", "1", "%QUAL B");
 
@@ -126,6 +135,7 @@ public class WhRequestController {
 
         model.addAttribute("StencilItemList", stencil);
         model.addAttribute("bibItemList", itemListbib);
+        model.addAttribute("trayItemList", itemListtray);
         model.addAttribute("pcbItemListA", itemListpcbQualA);
         model.addAttribute("pcbItemListB", itemListpcbQualB);
         model.addAttribute("pcbItemListC", itemListpcbQualC);
@@ -140,7 +150,7 @@ public class WhRequestController {
         model.addAttribute("inventoryListTray", inventoryListTray);
         model.addAttribute("inventoryListStencil", inventoryListStencil);
         model.addAttribute("inventoryListPCB", inventoryListPCB);
-        model.addAttribute("tray", tray);
+
         model.addAttribute("username", username);
         return "whRequest/add";
     }
@@ -190,6 +200,15 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountFlag0ForShip(equipmentIdMb);
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+                    return "redirect:/wh/whRequest/add";
+                }
             } else if ("Stencil".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdStencil);
                 whRequest.setQuantity("1");
@@ -197,6 +216,15 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountFlag0ForShip(equipmentIdStencil);
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+                    return "redirect:/wh/whRequest/add";
+                }
             } else if ("Tray".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdTray);
                 whRequest.setQuantity(quantity);
@@ -206,8 +234,9 @@ public class WhRequestController {
                 whRequest.setPcbCtrQty("0");
             } else if ("PCB".equals(equipmentType)) {
 
-                String pcbName = equipmentIdpcbA.substring(0, 6);
-                whRequest.setEquipmentId(pcbName);
+//                String pcbName = equipmentIdpcbA.substring(0, 6);
+                String[] pcbName = equipmentIdpcbA.split("-");
+                whRequest.setEquipmentId(pcbName[0]);
                 whRequest.setPcbType(pcbType);
                 whRequest.setPcbA(equipmentIdpcbA);
                 whRequest.setPcbAQty(pcbAQty);
@@ -231,11 +260,14 @@ public class WhRequestController {
                     return "redirect:/wh/whRequest/add";
                 }
 
-                String qualB = equipmentIdpcbB.substring(0, 6);
-                String qualC = equipmentIdpcbC.substring(0, 6);
-                String qualCtr = equipmentIdpcbCtr.substring(0, 6);
+                String[] qualB = equipmentIdpcbB.split("-");
+                String[] qualC = equipmentIdpcbC.split("-");
+                String[] qualCtr = equipmentIdpcbCtr.split("-");
 
-                if ((pcbName == null ? qualB != null : !pcbName.equals(qualB)) || !pcbName.equals(qualC) || !pcbName.equals(qualCtr)) {
+//                String qualB = equipmentIdpcbB.substring(0, 6);
+//                String qualC = equipmentIdpcbC.substring(0, 6);
+//                String qualCtr = equipmentIdpcbCtr.substring(0, 6);
+                if ((pcbName[0] == null ? qualB[0] != null : !pcbName[0].equals(qualB[0])) || !pcbName[0].equals(qualC[0]) || !pcbName[0].equals(qualCtr[0])) {
                     redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
 //                    model.addAttribute("error", "Pcb ID is not tally. Please re-check.");
                     model.addAttribute("whRequest", whRequest);
@@ -243,6 +275,26 @@ public class WhRequestController {
                     return "redirect:/wh/whRequest/add";
                 }
             }
+//            //check either item can be request or not
+//            String equipmentId2 = "";
+//            if ("Motherboard".equals(equipmentType) && "Ship".equals(requestType)) {
+//                equipmentId2 = equipmentIdMb;
+//            } else if ("Stencil".equals(equipmentType) && "Ship".equals(requestType)) {
+//                equipmentId2 = equipmentIdStencil;
+//            } else if ("Tray".equals(equipmentType) && "Ship".equals(requestType)) {
+//                equipmentId2 = equipmentIdTray;
+//            } else if ("PCB".equals(equipmentType) && "Ship".equals(requestType)) {
+//                String pcbName = equipmentIdpcbA.substring(0, 6);
+//                equipmentId2 = pcbName;
+//            }
+//            WhRequestDAO requestda = new WhRequestDAO();
+//            int countitemflag0 = requestda.getCountFlag0(equipmentId2);
+//            if (countitemflag0 > 0) {
+//                redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+//                model.addAttribute("whRequest", whRequest);
+//                return "redirect:/wh/whRequest/add";
+//            }
+
         } else {
             whRequest.setStatus("Requested");
             if ("Motherboard".equals(equipmentType)) {
@@ -262,6 +314,15 @@ public class WhRequestController {
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
 
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountFlag0ForRetrieve(inventory.getEquipmentId());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+                    return "redirect:/wh/whRequest/add";
+                }
+
             } else if ("Stencil".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdStencil);
 
@@ -277,6 +338,15 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountFlag0ForRetrieve(inventory.getEquipmentId());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+                    return "redirect:/wh/whRequest/add";
+                }
 
             } else if ("Tray".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdTray);
@@ -320,8 +390,8 @@ public class WhRequestController {
         whRequest.setRequestorEmail(userSession.getEmail());
         whRequest.setRemarks(remarks);
         whRequest.setCreatedBy(userSession.getId());
-
         whRequest.setFlag("0");
+
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         QueryResult queryResult = whRequestDAO.insertWhRequest(whRequest);
         args = new String[1];

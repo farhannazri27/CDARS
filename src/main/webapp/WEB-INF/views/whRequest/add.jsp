@@ -148,8 +148,8 @@
                                     <!--<select id="equipmentIdTray" name="equipmentIdTray" class="selectpicker" data-style="btn-info" data-live-search="true">-->
                                     <select id="equipmentIdTray" name="equipmentIdTray" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
-                                        <c:forEach items="${tray}" var="group">
-                                            <option value="${group.name}" ${group.selected}>${group.name} </option>
+                                        <c:forEach items="${trayItemList}" var="group">
+                                            <option value="${group.ItemID}" ${group.selected}>${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
                                         </c:forEach>
                                     </select>
                                 </div>

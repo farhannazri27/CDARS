@@ -44,12 +44,14 @@ public class WhShippingController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String whShipping(
-            Model model
+            Model model, @ModelAttribute UserSession userSession
     ) {
         WhShippingDAO whShippingDAO = new WhShippingDAO();
         List<WhShipping> whShippingList = whShippingDAO.getWhShippingListMergeWithRequest();
+        String groupId = userSession.getGroup();
 
         model.addAttribute("whShippingList", whShippingList);
+        model.addAttribute("groupId", groupId);
         return "whShipping/whShipping";
     }
 
@@ -240,7 +242,7 @@ public class WhShippingController {
         args[0] = hardwareBarcode2;
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
-                      return "redirect:/wh/whShipping";
+            return "redirect:/wh/whShipping";
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
         }

@@ -10,11 +10,11 @@ public class WhMpList {
     private String hardwareId;
     private String quantity;
     private String requestedBy;
-     private String requestedDate;
+    private String requestedDate;
     private String createdDate;
     private String createdBy;
     private String viewMpExpiryDate;
-    
+
     private String pcbA;
     private String pcbAQty;
     private String pcbB;
@@ -23,6 +23,7 @@ public class WhMpList {
     private String pcbCQty;
     private String pcbCtr;
     private String pcbCtrQty;
+    private String flag;
 
     public String getId() {
         return id;
@@ -183,8 +184,13 @@ public class WhMpList {
     public void setPcbCtrQty(String pcbCtrQty) {
         this.pcbCtrQty = pcbCtrQty;
     }
-    
-    
-    
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
 
 }
