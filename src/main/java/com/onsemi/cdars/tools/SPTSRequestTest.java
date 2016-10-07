@@ -186,13 +186,16 @@ public class SPTSRequestTest {
 // public DataSet GetSFItemByParam(int? pkID, int? itemPKID, string itemID, string itemName, int? transactionPKID, int? sfItemStatus, string sfRack, string sfShelf, int? onHandQty, int? status, int? minQty, int? maxQty, string unit, string rack, string shelf, string model, string equipmentType, string stressType, bool? isCritical, bool? isConsumeable, string itemType, string cardType, int? bibPKID, int? bibCardPKID, string remarks, bool? checkAlert, int? itemStatus, int? cdarsStatus, int? expiryB4Day, DateTime? expiryStartDate, DateTime? expiryEndDate, bool? excludeScrapped)
 //         JSONObject params0 = new JSONObject();
 ////        params0.put("itemPKID", "7419");
-//        params0.put("itemID", "");
+//        params0.put("itemID", "19999A_CDARS-pcbTesting - CONTROL");
 ////        params0.put("transactionPKID", "70192");
 //        JSONArray getItemByParam = SPTSWebService.getSFItemByParam(params0);
 //        for (int i = 0; i < getItemByParam.length(); i++) {
 //            System.out.println(getItemByParam.getJSONObject(i));
 //        }
 //        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+//            System.out.println("pkid..." + getItemByParam.getJSONObject(0).getInt("PKID"));
+//                System.out.println("version..." + getItemByParam.getJSONObject(0).getString("Version"));
+
 //        if (pkID != 0) {
 //            System.out.println("GET ITEM BY PKID...");
 //            JSONObject jsonObject1 = SPTSWebService.getItemByPKID(pkID.toString());
@@ -314,19 +317,19 @@ public class SPTSRequestTest {
 //        SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
 //
 //        System.out.println("status: " + sfPkid.getStatus());
-        System.out.println("DELETE SFITEM...");
-        JSONObject params3 = new JSONObject();
-        params3.put("pkID", "1");
-        params3.put("version", "de02cc41-6912-4383-93f1-e54c0fdd16bb");
-
-        SPTSResponse delete = SPTSWebService.DeleteSFItem(params3);
-        if (delete.getStatus()) {
-            System.out.println("Delete Success: 4");
-//                System.out.println("Delete Success: " + "6085");
-        } else {
-            System.out.println("Delete Failed: 4");
-//                System.out.println("Delete Failed: " + "6085");
-        }
+//        System.out.println("DELETE SFITEM...");
+//        JSONObject params3 = new JSONObject();
+//        params3.put("pkID", "1");
+//        params3.put("version", "de02cc41-6912-4383-93f1-e54c0fdd16bb");
+//
+//        SPTSResponse delete = SPTSWebService.DeleteSFItem(params3);
+//        if (delete.getStatus()) {
+//            System.out.println("Delete Success: 4");
+////                System.out.println("Delete Success: " + "6085");
+//        } else {
+//            System.out.println("Delete Failed: 4");
+////                System.out.println("Delete Failed: " + "6085");
+//        }
 //        aa22ee6d-94d5-449b-8825-a2c0df40bd39
         //getSFItemByParam
 //        JSONObject params0 = new JSONObject();
@@ -401,5 +404,25 @@ public class SPTSRequestTest {
 //            System.out.println(getItemByParam.getJSONObject(i));
 //        }
 //        System.out.println("COUNT GET TRANSACTION BY PARAM..." + getItemByParam.length());
+
+//get item from sfitem
+                        System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+                        JSONObject paramsQualA = new JSONObject();
+                        paramsQualA.put("itemID", "19999A_CDARS-pcbTesting - CONTROL");
+                        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+                        int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+                        String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+                        
+                          //delete sfitem
+                        JSONObject paramsdeleteSfA = new JSONObject();
+                        paramsdeleteSfA.put("pkID", itemSfApkid);
+                        paramsdeleteSfA.put("version", versionSfA);
+                        SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
+                        if (deleteA.getStatus()) {
+                            System.out.println("Delete Success pcb A: " + itemSfApkid);
+                        } else {
+                            System.out.println("Delete Failed pcb A: " + itemSfApkid);
+                        }
     }
 }

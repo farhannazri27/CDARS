@@ -235,7 +235,7 @@ public class WhRequestController {
             } else if ("PCB".equals(equipmentType)) {
 
 //                String pcbName = equipmentIdpcbA.substring(0, 6);
-                String[] pcbName = equipmentIdpcbA.split("-");
+                String[] pcbName = equipmentIdpcbA.split(" - ");
                 whRequest.setEquipmentId(pcbName[0]);
                 whRequest.setPcbType(pcbType);
                 whRequest.setPcbA(equipmentIdpcbA);
@@ -260,9 +260,9 @@ public class WhRequestController {
                     return "redirect:/wh/whRequest/add";
                 }
 
-                String[] qualB = equipmentIdpcbB.split("-");
-                String[] qualC = equipmentIdpcbC.split("-");
-                String[] qualCtr = equipmentIdpcbCtr.split("-");
+                String[] qualB = equipmentIdpcbB.split(" - ");
+                String[] qualC = equipmentIdpcbC.split(" - ");
+                String[] qualCtr = equipmentIdpcbCtr.split(" - ");
 
 //                String qualB = equipmentIdpcbB.substring(0, 6);
 //                String qualC = equipmentIdpcbC.substring(0, 6);

@@ -13,10 +13,17 @@ import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhInventory;
 import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.tools.QueryResult;
+import com.onsemi.cdars.tools.SPTSResponse;
+import com.onsemi.cdars.tools.SPTSWebService;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.ServletContext;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +52,7 @@ public class WhRetrievalController {
     private static final String LINE_SEPARATOR = "\n";
 
     //File header
-    private static final String HEADER = "request_id,hardware_type,hardware_id,quantity,location,status";
+    private static final String HEADER = "request_id,hardware_type,hardware_id,quantity,rack,shelf,status";
     private static final String HEADERArray = "id, request_type, hardware_type, hardware_id, type, quantity, requested_by, requested_date, remarks";
 
     @Autowired
@@ -161,7 +168,7 @@ public class WhRetrievalController {
             @RequestParam(required = false) String ttVerification,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String flag
-    ) {
+    ) throws IOException {
         WhRetrieval whRetrieval = new WhRetrieval();
         whRetrieval.setId(id);
         whRetrieval.setTtVerification(ttVerification);
@@ -199,7 +206,9 @@ public class WhRetrievalController {
                     fileWriter.append(COMMA_DELIMITER);
                     fileWriter.append(wh.getHardwareQty());
                     fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getLocation());
+                    fileWriter.append(wh.getRack());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getShelf());
                     fileWriter.append(COMMA_DELIMITER);
                     fileWriter.append(wh.getStatus());
                     fileWriter.append(COMMA_DELIMITER);
@@ -236,7 +245,9 @@ public class WhRetrievalController {
                     fileWriter.append(COMMA_DELIMITER);
                     fileWriter.append(wh.getHardwareQty());
                     fileWriter.append(COMMA_DELIMITER);
-                    fileWriter.append(wh.getLocation());
+                    fileWriter.append(wh.getRack());
+                    fileWriter.append(COMMA_DELIMITER);
+                    fileWriter.append(wh.getShelf());
                     fileWriter.append(COMMA_DELIMITER);
                     fileWriter.append(wh.getStatus());
                     fileWriter.append(COMMA_DELIMITER);
@@ -276,7 +287,7 @@ public class WhRetrievalController {
             }
 
             //update request - change flag to 1 (item can be request again)
-            //update retrieve
+            //update request retrieve
             whdao = new WhRetrievalDAO();
             WhRetrieval wh1 = whdao.getWhRetrieval(id);
 
@@ -291,7 +302,7 @@ public class WhRetrievalController {
                 LOGGER.info("update request failed");
             }
 
-            //update ship
+            //update request ship
             whdao = new WhRetrievalDAO();
             WhRetrieval wh2 = whdao.getWhRetrieval(id);
 
@@ -300,7 +311,7 @@ public class WhRetrievalController {
 
             inventoryD = new WhInventoryDAO();
             WhInventory inventory2 = inventoryD.getWhInventory(request2.getInventoryId());
-            
+
             request2dao = new WhRequestDAO();
             WhRequest request3 = request2dao.getWhRequest(inventory2.getRequestId());
 
@@ -313,6 +324,254 @@ public class WhRetrievalController {
                 LOGGER.info("update request done");
             } else {
                 LOGGER.info("update request failed");
+            }
+
+            //update spts - insert transaction and delete sfitem
+            if ("PCB".equals(wh.getHardwareType())) {
+                if (!"0".equals(wh.getPcbAQty())) {
+                    System.out.println("GET ITEM PCB A BY PARAM...");
+                    JSONObject paramsA = new JSONObject();
+                    String itemIDQualA = wh.getPcbA();
+                    paramsA.put("itemID", itemIDQualA);
+                    JSONArray getItemByParamQualA = SPTSWebService.getItemByParam(paramsA);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualA.length());
+                    int itempkidQualA = getItemByParamQualA.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkidQualA............." + itempkidQualA);
+
+//                        //insert transaction spts for pcb qual a
+                    JSONObject paramsA2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    paramsA2.put("dateTime", formattedDate);
+                    paramsA2.put("itemsPKID", itempkidQualA);
+                    paramsA2.put("transType", "20");
+                    paramsA2.put("transQty", wh.getPcbAQty());
+                    paramsA2.put("remarks", "Retrieve from Storage Factory");
+                    SPTSResponse TransPkidQualA = SPTSWebService.insertTransaction(paramsA2);
+                    System.out.println("TransPkidQualA: " + TransPkidQualA.getResponseId());
+
+                    if (TransPkidQualA.getResponseId() > 0) {
+                        LOGGER.info("transaction done pcb Qual A");
+
+                        //get item from sfitem
+                        System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+                        JSONObject paramsQualA = new JSONObject();
+                        paramsQualA.put("itemID", itemIDQualA);
+                        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+                        int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+                        String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+                        
+                          //delete sfitem
+                        JSONObject paramsdeleteSfA = new JSONObject();
+                        paramsdeleteSfA.put("pkID", itemSfApkid);
+                        paramsdeleteSfA.put("version", versionSfA);
+                        SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
+                        if (deleteA.getStatus()) {
+                            System.out.println("Delete Success pcb A: " + itemIDQualA);
+                        } else {
+                            System.out.println("Delete Failed pcb A: " + itemIDQualA);
+                        }
+                    } else {
+                        LOGGER.info("transaction failed pcb Qual A");
+                    }
+                }
+                if (!"0".equals(wh.getPcbBQty())) {
+                    System.out.println("GET ITEM PCB B BY PARAM...");
+                    JSONObject paramsB = new JSONObject();
+                    String itemIDQualB = wh.getPcbB();
+                    paramsB.put("itemID", itemIDQualB);
+                    JSONArray getItemByParamQualB = SPTSWebService.getItemByParam(paramsB);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualB.length());
+                    int itempkidQualB = getItemByParamQualB.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkidQualB............." + itempkidQualB);
+
+//                        //insert transaction spts for pcb qual b
+                    JSONObject paramsB2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    paramsB2.put("dateTime", formattedDate);
+                    paramsB2.put("itemsPKID", itempkidQualB);
+                    paramsB2.put("transType", "20");
+                    paramsB2.put("transQty", wh.getPcbBQty());
+                    paramsB2.put("remarks", "Retrieve from Storage Factory");
+                    SPTSResponse TransPkidQualB = SPTSWebService.insertTransaction(paramsB2);
+                    System.out.println("TransPkidQualB: " + TransPkidQualB.getResponseId());
+
+                    if (TransPkidQualB.getResponseId() > 0) {
+                        LOGGER.info("transaction done pcb Qual B");
+
+                       //get item from sfitem
+                        System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
+                        JSONObject paramsQualB = new JSONObject();
+                        paramsQualB.put("itemID", itemIDQualB);
+                        JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
+                        int itemSfBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
+                        String versionSfB = getItemByParamB.getJSONObject(0).getString("Version");
+                        
+                          //delete sfitem
+                        JSONObject paramsdeleteSfB = new JSONObject();
+                        paramsdeleteSfB.put("pkID", itemSfBpkid);
+                        paramsdeleteSfB.put("version", versionSfB);
+                        SPTSResponse deleteB = SPTSWebService.DeleteSFItem(paramsdeleteSfB);
+                        if (deleteB.getStatus()) {
+                            System.out.println("Delete Success pcb B: " + itemIDQualB);
+                        } else {
+                            System.out.println("Delete Failed pcb B: " + itemIDQualB);
+                        }
+                    } else {
+                        LOGGER.info("transaction failed pcb Qual B");
+                    }
+                }
+                if (!"0".equals(wh.getPcbCQty())) {
+                    System.out.println("GET ITEM PCB C BY PARAM...");
+                    JSONObject paramsC = new JSONObject();
+                    String itemIDQualc = wh.getPcbC();
+                    paramsC.put("itemID", itemIDQualc);
+                    JSONArray getItemByParamQualC = SPTSWebService.getItemByParam(paramsC);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualC.length());
+                    int itempkidQualC = getItemByParamQualC.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkidQualC............." + itempkidQualC);
+
+//                        //insert transaction spts for pcb qual c
+                    JSONObject paramsC2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    paramsC2.put("dateTime", formattedDate);
+                    paramsC2.put("itemsPKID", itempkidQualC);
+                    paramsC2.put("transType", "20");
+                    paramsC2.put("transQty", wh.getPcbCQty());
+                    paramsC2.put("remarks", "Retrieve from Storage Factory");
+                    SPTSResponse TransPkidQualC = SPTSWebService.insertTransaction(paramsC2);
+                    System.out.println("TransPkidQualC: " + TransPkidQualC.getResponseId());
+
+                    if (TransPkidQualC.getResponseId() > 0) {
+                        LOGGER.info("transaction done pcb Qual C");
+
+                       //get item from sfitem
+                        System.out.println("GET SFITEM PCB QUAL C BY PARAM...");
+                        JSONObject paramsQualC = new JSONObject();
+                        paramsQualC.put("itemID", itemIDQualc);
+                        JSONArray getItemByParamC = SPTSWebService.getSFItemByParam(paramsQualC);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamC.length());
+                        int itemSfCpkid = getItemByParamC.getJSONObject(0).getInt("PKID");
+                        String versionSfC = getItemByParamC.getJSONObject(0).getString("Version");
+                        
+                          //delete sfitem
+                        JSONObject paramsdeleteSfC = new JSONObject();
+                        paramsdeleteSfC.put("pkID", itemSfCpkid);
+                        paramsdeleteSfC.put("version", versionSfC);
+                        SPTSResponse deleteC = SPTSWebService.DeleteSFItem(paramsdeleteSfC);
+                        if (deleteC.getStatus()) {
+                            System.out.println("Delete Success pcb C: " + itemIDQualc);
+                        } else {
+                            System.out.println("Delete Failed pcb C: " + itemIDQualc);
+                        }
+                    } else {
+                        LOGGER.info("transaction failed pcb Qual C");
+                    }
+                }
+                if (!"0".equals(wh.getPcbCtrQty())) {
+                    System.out.println("GET ITEM PCB Ctr BY PARAM...");
+                    JSONObject paramsCtr = new JSONObject();
+                    String itemIDQualctr = wh.getPcbCtr();
+                    paramsCtr.put("itemID", itemIDQualctr);
+                    JSONArray getItemByParamQualCtr = SPTSWebService.getItemByParam(paramsCtr);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualCtr.length());
+                    int itempkidQualCtr = getItemByParamQualCtr.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkidQualCtr............." + itempkidQualCtr);
+
+//                        //insert transaction spts for pcb qual ctr
+                    JSONObject paramsCtr2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    paramsCtr2.put("dateTime", formattedDate);
+                    paramsCtr2.put("itemsPKID", itempkidQualCtr);
+                    paramsCtr2.put("transType", "20");
+                    paramsCtr2.put("transQty", wh.getPcbCtrQty());
+                    paramsCtr2.put("remarks", "Retrieve from Storage Factory");
+                    SPTSResponse TransPkidQualCtr = SPTSWebService.insertTransaction(paramsCtr2);
+                    System.out.println("TransPkidQualCtr: " + TransPkidQualCtr.getResponseId());
+
+                    if (TransPkidQualCtr.getResponseId() > 0) {
+                        LOGGER.info("transaction done pcb Ctr");
+
+                        //get item from sfitem
+                        System.out.println("GET SFITEM PCB CTR BY PARAM...");
+                        JSONObject paramsQualCtr = new JSONObject();
+                        paramsQualCtr.put("itemID", itemIDQualctr);
+                        JSONArray getItemByParamCtr = SPTSWebService.getSFItemByParam(paramsQualCtr);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamCtr.length());
+                        int itemSfCtrpkid = getItemByParamCtr.getJSONObject(0).getInt("PKID");
+                        String versionSfCtr = getItemByParamCtr.getJSONObject(0).getString("Version");
+                        
+                          //delete sfitem
+                        JSONObject paramsdeleteSfCtr = new JSONObject();
+                        paramsdeleteSfCtr.put("pkID", itemSfCtrpkid);
+                        paramsdeleteSfCtr.put("version", versionSfCtr);
+                        SPTSResponse deleteCtr = SPTSWebService.DeleteSFItem(paramsdeleteSfCtr);
+                        if (deleteCtr.getStatus()) {
+                            System.out.println("Delete Success pcb Ctr: " + itemIDQualctr);
+                        } else {
+                            System.out.println("Delete Failed pcb Ctr: " + itemIDQualctr);
+                        }
+                    } else {
+                        LOGGER.info("transaction failed pcb Ctr");
+                    }
+                }
+            } else {
+                System.out.println("GET ITEM BY PARAM...");
+                JSONObject params = new JSONObject();
+                String itemID = wh.getHardwareId();
+                params.put("itemID", itemID);
+                JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                LOGGER.info("itempkid............." + itempkid);
+
+//                        //insert transaction spts for pcb qual ctr
+                JSONObject params2 = new JSONObject();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                String formattedDate = dateFormat.format(date);
+                params2.put("dateTime", formattedDate);
+                params2.put("itemsPKID", itempkid);
+                params2.put("transType", "20");
+                params2.put("transQty", wh.getHardwareQty());
+                params2.put("remarks", "Retrieve from Storage Factory");
+                SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                System.out.println("TransPkid: " + TransPkid.getResponseId());
+
+                if (TransPkid.getResponseId() > 0) {
+                    LOGGER.info("transaction done item ");
+
+                    //get item from sfitem
+                        System.out.println("GET SFITEM ITEM BY PARAM...");
+                        JSONObject params3 = new JSONObject();
+                        params3.put("itemID", itemID);
+                        JSONArray getItemByParam2 = SPTSWebService.getSFItemByParam(params3);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam2.length());
+                        int itemSfpkid = getItemByParam2.getJSONObject(0).getInt("PKID");
+                        String versionSf = getItemByParam2.getJSONObject(0).getString("Version");
+                        
+                          //delete sfitem
+                        JSONObject paramsdeleteSf = new JSONObject();
+                        paramsdeleteSf.put("pkID", itemSfpkid);
+                        paramsdeleteSf.put("version", versionSf);
+                        SPTSResponse deleteCtr = SPTSWebService.DeleteSFItem(paramsdeleteSf);
+                        if (deleteCtr.getStatus()) {
+                            System.out.println("Delete Success item: " + itemID);
+                        } else {
+                            System.out.println("Delete Failed item: " + itemID);
+                        }
+                } else {
+                    LOGGER.info("transaction failed item");
+                }
             }
 
         } else {
