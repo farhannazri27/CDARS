@@ -202,6 +202,22 @@
         <script>
             $(document).ready(function () {
 
+                $('#hardwareId').bind('copy paste cut', function (e) {
+                    e.preventDefault(); //this line will help us to disable cut,copy,paste		
+                });
+                
+//                $('#mpNo').bind('copy paste cut', function (e) {
+//                    e.preventDefault();		
+//                });
+                
+                $('#hardwareBarcode1').bind('copy paste cut', function (e) {
+                    e.preventDefault(); 	
+                });
+                
+                $('#hardwareBarcode2').bind('copy paste cut', function (e) {
+                    e.preventDefault(); 		
+                });
+
 
                 var elementhardwareType = $('#hardwareType');
                 if (elementhardwareType.val() === "PCB") {
@@ -277,7 +293,9 @@
                 var validator = $("#mp_form").validate({
                     rules: {
                         mpNo: {
-                            required: true
+                            required: true,
+                            minlength: 17,
+                            maxlength: 17
                         },
                         mpExpiryDate: {
                             required: true

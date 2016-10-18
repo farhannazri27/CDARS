@@ -6,6 +6,10 @@
         <link rel="stylesheet" href="${contextPath}/resources/private/datatables/css/dataTables.tableTools.css" type="text/css" />
     </s:layout-component>
     <s:layout-component name="page_css_inline">
+        <style>
+            th { font-size: 12px; }
+            td { font-size: 11px; }
+        </style>
     </s:layout-component>
     <s:layout-component name="page_container">
         <div class="col-lg-12">
@@ -65,12 +69,12 @@
                                 <tbody>
                                     <c:forEach items="${whMpListList}" var="whMpList" varStatus="whMpListLoop">
                                         <tr>
-                                            <td><c:out value="${whMpListLoop.index+1}"/></td>
-                                            <td><c:out value="${whMpList.mpNo}"/></td>
-                                            <td><c:out value="${whMpList.viewMpExpiryDate}"/></td>
-                                            <td><c:out value="${whMpList.hardwareType}"/></td>
-                                            <td><c:out value="${whMpList.hardwareId}"/></td>
-                                            <td><c:out value="${whMpList.quantity}"/></td>
+                                            <td class="col-lg-1"><c:out value="${whMpListLoop.index+1}"/></td>
+                                            <td class="col-lg-4"><c:out value="${whMpList.mpNo}"/></td>
+                                            <td class="col-lg-2"><c:out value="${whMpList.viewMpExpiryDate}"/></td>
+                                            <td class="col-lg-1"><c:out value="${whMpList.hardwareType}"/></td>
+                                            <td class="col-lg-3"><c:out value="${whMpList.hardwareId}"/></td>
+                                            <td class="col-lg-1"><c:out value="${whMpList.quantity}"/></td>
                                         </tr>
                                     </c:forEach>
                                 </tbody>
@@ -96,7 +100,7 @@
                                                 {"bSortable": false, "aTargets": [0]},
                                                 {"bSortable": false, "aTargets": [5]}
                                             ],
-                                            "sDom": "tp"
+                                            "sDom": "Bfrtip"
                                         });
                                         var exportTitle = "Material Pass List";
                                         var tt = new $.fn.dataTable.TableTools(oTable, {

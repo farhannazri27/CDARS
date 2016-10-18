@@ -52,9 +52,15 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="location" class="col-lg-4 control-label">Location </label>
+                                <label for="rack" class="col-lg-4 control-label">Rack </label>
                                 <div class="col-lg-3">
-                                    <input type="text" class="form-control" id="location" name="location" value="${whRetrieval.location}" readonly>
+                                    <input type="text" class="form-control" id="rack" name="rack" value="${whRetrieval.rack}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="shelf" class="col-lg-4 control-label">Shelf </label>
+                                <div class="col-lg-3">
+                                    <input type="text" class="form-control" id="shelf" name="shelf" value="${whRetrieval.shelf}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">

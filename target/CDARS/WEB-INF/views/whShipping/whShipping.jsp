@@ -17,7 +17,7 @@
                             <h2 class="pull-left">Shipping List</h2>
 
                             <div class="filter-block pull-right">
-                                <a href="${contextPath}/wh/whShipping/whMpList" class="btn btn-primary pull-right">
+                                <a href="${contextPath}/wh/whShipping/whMpList/s" class="btn btn-primary pull-right">
                                     <i class="fa fa-bars fa-lg"></i> Create Shipping Material Pass List
                                 </a>
                             </div>

@@ -20,6 +20,7 @@ public class WhInventoryTemp {
     private String requestedDate;
     private String remarks;
     private String verifiedDate;
+    private String receivalDate;
     private String inventoryDate;
     private String inventoryRack;
     private String inventoryShelf;
@@ -44,6 +45,7 @@ public class WhInventoryTemp {
             String requestedDate,
             String remarks,
             String verifiedDate,
+            String receivalDate,
             String inventoryDate,
             String inventoryRack,
             String inventoryShelf,
@@ -69,6 +71,7 @@ public class WhInventoryTemp {
         this.requestedDate = requestedDate;
         this.remarks = remarks;
         this.verifiedDate = verifiedDate;
+        this.receivalDate = receivalDate;
         this.inventoryDate = inventoryDate;
         this.inventoryRack = inventoryRack;
         this.inventoryShelf = inventoryShelf;
@@ -259,6 +262,14 @@ public class WhInventoryTemp {
 
     public void setInventoryShelf(String inventoryShelf) {
         this.inventoryShelf = inventoryShelf;
+    }
+
+    public String getReceivalDate() {
+        return receivalDate;
+    }
+
+    public void setReceivalDate(String receivalDate) {
+        this.receivalDate = receivalDate;
     }
 
 }

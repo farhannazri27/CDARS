@@ -21,6 +21,7 @@ public class WhInventory {
     private String requestedDate;
     private String remarks;
     private String verifiedDate;
+    private String receivalDate;
     private String inventoryDate;
     private String inventoryLocation;
     private String inventoryRack;
@@ -289,6 +290,14 @@ public class WhInventory {
 
     public void setPcbCtrQty(String pcbCtrQty) {
         this.pcbCtrQty = pcbCtrQty;
+    }
+
+    public String getReceivalDate() {
+        return receivalDate;
+    }
+
+    public void setReceivalDate(String receivalDate) {
+        this.receivalDate = receivalDate;
     }
 
 }

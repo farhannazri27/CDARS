@@ -32,8 +32,8 @@ public class WhInventoryDAO {
             PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO cdars_wh_inventory (request_id, mp_no, mp_expiry_date, equipment_type, equipment_id, "
                     + "pcb_a, pcb_a_qty, pcb_b, pcb_b_qty, pcb_c, pcb_c_qty, pcb_ctr, pcb_ctr_qty, "
-                    + "quantity, requested_by, requested_date, remarks, verified_date, inventory_date, inventory_rack, inventory_shelf,"
-                    + " inventory_by, status, received_date, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)", Statement.RETURN_GENERATED_KEYS
+                    + "quantity, requested_by, requested_date, remarks, verified_date, receival_date, inventory_date, inventory_rack, inventory_shelf,"
+                    + " inventory_by, status, received_date, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whInventory.getRequestId());
             ps.setString(2, whInventory.getMpNo());
@@ -53,12 +53,13 @@ public class WhInventoryDAO {
             ps.setString(16, whInventory.getRequestedDate());
             ps.setString(17, whInventory.getRemarks());
             ps.setString(18, whInventory.getVerifiedDate());
-            ps.setString(19, whInventory.getInventoryDate());
-            ps.setString(20, whInventory.getInventoryRack());
-            ps.setString(21, whInventory.getInventoryShelf());
-            ps.setString(22, whInventory.getInventoryBy());
-            ps.setString(23, whInventory.getStatus());
-            ps.setString(24, whInventory.getFlag());
+            ps.setString(19, whInventory.getReceivalDate());
+            ps.setString(20, whInventory.getInventoryDate());
+            ps.setString(21, whInventory.getInventoryRack());
+            ps.setString(22, whInventory.getInventoryShelf());
+            ps.setString(23, whInventory.getInventoryBy());
+            ps.setString(24, whInventory.getStatus());
+            ps.setString(25, whInventory.getFlag());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -861,7 +862,7 @@ public class WhInventoryDAO {
         }
         return id;
     }
-    
+
     public Integer getCountMpExpiryDate() {
         Integer count = null;
         try {
@@ -888,7 +889,7 @@ public class WhInventoryDAO {
         }
         return count;
     }
-    
+
     public Integer getCountExpiredMp() {
         Integer count = null;
         try {

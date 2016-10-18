@@ -35,7 +35,11 @@
                 filter: none;
                 -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #009d9b !important;
                 box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #009d9b !important;
+            }
 
+            .no-border {
+                border: 0;
+                box-shadow: none; /* You may want to include this as bootstrap applies these styles too */
             }
 
         </style>
@@ -83,14 +87,18 @@
                                     <select id="pcbType" name="pcbType" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${pcbType}" var="group">
-                                            <option value="${group.pcbType}" ${group.selected}>${group.pcbType} &emsp;(Quantity: ${group.quantity})</option>
+                                            <option pcbTypeQty="${group.quantity}" value="${group.pcbType}" ${group.selected}>${group.pcbType}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyPcbType" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyPcbType" name="maxQtyPcbType" value="" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="listdiv">
                                 <label for="equipmentId" class="col-lg-2 control-label">Equipment ID * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="equipmentId" name="equipmentId" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                     </select>
@@ -98,170 +106,249 @@
                             </div>
                             <div class="form-group" id="mblistdiv" hidden>
                                 <label for="equipmentIdMb" class="col-lg-2 control-label">Motherboard ID * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="equipmentIdMb" name="equipmentIdMb" class="js-example-basic-single" style="width: 100%" >
                                         <option value="" selected=""></option>
                                         <c:forEach items="${bibItemList}" var="group">
-                                            <option value="${group.ItemID}">${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
+                                            <option mbquantity="${group.OnHandQty}" value="${group.ItemID}">${group.ItemID}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyMb" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyMb" name="maxQtyMb" value="" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="inventorymblistdiv" hidden>
                                 <label for="inventoryIdMb" class="col-lg-2 control-label">Motherboard ID * </label>
-                                <div class="col-lg-8">                  
+                                <div class="col-lg-7">                  
                                     <select id="inventoryIdMb" name="inventoryIdMb" class="js-example-basic-single" style="width: 100%">
-                                        <!--<select id="inventoryIdMb" name="inventoryIdMb" class="form-control" >-->
                                         <option value="" selected=""></option>
                                         <c:forEach items="${inventoryListMb}" var="group">
-                                            <option value="${group.id}" ${group.selected}>${group.equipmentId}  &emsp;(Quantity: ${group.quantity}) </option>
+                                            <option invQtyMbValue="${group.quantity}" value="${group.id}" ${group.selected}>${group.equipmentId}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="invQtyMb" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="invQtyMb" name="invQtyMb" value="" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="stencillistdiv" hidden>
                                 <label for="equipmentIdStencil" class="col-lg-2 control-label">Stencil ID * </label>
-                                <div class="col-lg-8">                                      
-                                    <!--<select id="equipmentIdStencil" name="equipmentIdStencil" class="selectpicker form-control" data-style="btn-info" data-live-search="true">-->
+                                <div class="col-lg-7">                                      
                                     <select id="equipmentIdStencil" name="equipmentIdStencil" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${StencilItemList}" var="group">
-                                            <option value="${group.ItemID}" >${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
+                                            <option stencilquantity="${group.OnHandQty}" value="${group.ItemID}" >${group.ItemID}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyStencil" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyStencil" name="maxQtyStencil" value="" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="inventorystencillistdiv" hidden>
                                 <label for="inventoryIdStencil" class="col-lg-2 control-label">Stencil ID * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="inventoryIdStencil" name="inventoryIdStencil" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${inventoryListStencil}" var="group">
-                                            <option value="${group.id}" ${group.selected}>${group.equipmentId}  &emsp;(Quantity: ${group.quantity})</option>
+                                            <option invQtyStencilValue="${group.quantity}" value="${group.id}" ${group.selected}>${group.equipmentId}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="invQtyStencil" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="invQtyStencil" name="invQtyStencil" value="" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="traylistdiv" hidden>
                                 <label for="equipmentIdTray" class="col-lg-2 control-label">Tray ID * </label>
-                                <div class="col-lg-8">                                                    
-                                    <!--<select id="equipmentIdTray" name="equipmentIdTray" class="selectpicker" data-style="btn-info" data-live-search="true">-->
+                                <div class="col-lg-7">                                                    
                                     <select id="equipmentIdTray" name="equipmentIdTray" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${trayItemList}" var="group">
-                                            <option value="${group.ItemID}" ${group.selected}>${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
+                                            <option trayquantity="${group.OnHandQty}" value="${group.ItemID}" ${group.selected}>${group.ItemID}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyTray" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyTray" name="maxQtyTray" value="" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="inventorytraylistdiv" hidden>
                                 <label for="inventoryIdTray" class="col-lg-2 control-label">Tray ID * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="inventoryIdTray" name="inventoryIdTray" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${inventoryListTray}" var="group">
-                                            <option value="${group.id}" ${group.selected}>${group.equipmentId} &emsp;(Quantity: ${group.quantity})</option>
+                                            <option invQtyTrayValue="${group.quantity}" value="${group.id}" ${group.selected}>${group.equipmentId}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="invQtyTray" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="invQtyTray" name="invQtyTray" value="" readonly >
                                 </div>
                             </div>
 
                             <div class="form-group" id="pcbCtrlistdiv" hidden>
                                 <label for="equipmentIdpcbCtr" class="col-lg-2 control-label">PCB ID Control*  </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbCtr" name="equipmentIdpcbCtr" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${pcbItemListCtr}" var="group">
-                                            <option value="${group.ItemID}" ${group.selected}>${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
+                                            <option pcbCtrquantity="${group.OnHandQty}" value="${group.ItemID}" ${group.selected}>${group.ItemID}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyCtr" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyCtr" name="maxQtyCtr" value="" readonly >
+                                    <input type="hidden" class="form-control" id="maxQtyCtr1" name="maxQtyCtr1" value="0" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="pcbCtrQtydiv" hidden>
                                 <label for="pcbCtrQty" class="col-lg-2 control-label">Quantity Control* </label>
                                 <div class="col-lg-2">
-                                    <input type="text" class="form-control" id="pcbCtrQty" name="pcbCtrQty" value="">
+                                    <input type="text" class="form-control" id="pcbCtrQty" name="pcbCtrQty" value="0">
                                 </div>
                             </div>    
                             <div class="form-group" id="pcbAlistdiv" hidden>
                                 <label for="equipmentIdpcbA" class="col-lg-2 control-label">PCB ID Qual A * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbA" name="equipmentIdpcbA" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${pcbItemListA}" var="group">
-                                            <option value="${group.ItemID}" ${group.selected}>${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
+                                            <option pcbAquantity="${group.OnHandQty}" value="${group.ItemID}" ${group.selected}>${group.ItemID}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyA" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyA" name="maxQtyA" value="" readonly >
+                                    <input type="hidden" class="form-control" id="maxQtyA1" name="maxQtyA1" value="0" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="pcbAQtydiv" hidden>
                                 <label for="pcbAQty" class="col-lg-2 control-label">Quantity Qual A *</label>
                                 <div class="col-lg-2">
-                                    <input type="text" class="form-control" id="pcbAQty" name="pcbAQty" value="">
+                                    <input type="text" class="form-control" id="pcbAQty" name="pcbAQty" value="0">
                                 </div>
                             </div> 
                             <div class="form-group" id="pcbBlistdiv" hidden>
                                 <label for="equipmentIdpcbB" class="col-lg-2 control-label">PCB ID Qual B * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbB" name="equipmentIdpcbB" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${pcbItemListB}" var="group">
-                                            <option value="${group.ItemID}" ${group.selected}>${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
+                                            <option pcbBquantity="${group.OnHandQty}" value="${group.ItemID}" ${group.selected}>${group.ItemID}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyB" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyB" name="maxQtyB" value="" readonly >
+                                    <input type="hidden" class="form-control" id="maxQtyB1" name="maxQtyB1" value="0" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="pcbBQtydiv" hidden>
                                 <label for="pcbBQty" class="col-lg-2 control-label">Quantity Qual B *</label>
                                 <div class="col-lg-2">
-                                    <input type="text" class="form-control" id="pcbBQty" name="pcbBQty" value="">
+                                    <input type="text" class="form-control" id="pcbBQty" name="pcbBQty" value="0">
                                 </div>
                             </div>    
                             <div class="form-group" id="pcbClistdiv" hidden>
                                 <label for="equipmentIdpcbC" class="col-lg-2 control-label">PCB ID Qual C * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbC" name="equipmentIdpcbC" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${pcbItemListC}" var="group">
-                                            <option value="${group.ItemID}" ${group.selected}>${group.ItemID} &emsp;(Quantity: ${group.OnHandQty})</option>
+                                            <option pcbCquantity="${group.OnHandQty}" value="${group.ItemID}" ${group.selected}>${group.ItemID}</option>
                                         </c:forEach>
                                     </select>
+                                </div>
+                                <label for="maxQtyC" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="maxQtyC" name="maxQtyC" value="" readonly >
+                                    <input type="hidden" class="form-control" id="maxQtyC1" name="maxQtyC1" value="0" readonly >
                                 </div>
                             </div>
                             <div class="form-group" id="pcbCQtydiv" hidden>
                                 <label for="pcbCQty" class="col-lg-2 control-label">Quantity Qual C *</label>
                                 <div class="col-lg-2">
-                                    <input type="text" class="form-control" id="pcbCQty" name="pcbCQty" value="">
+                                    <input type="text" class="form-control" id="pcbCQty" name="pcbCQty" value="0">
                                 </div>
                             </div>    
 
                             <div class="form-group" id="inventorypcblistdiv" hidden>
                                 <label for="inventoryIdPcb" class="col-lg-2 control-label">PCB ID * </label>
-                                <div class="col-lg-8">                                      
+                                <div class="col-lg-7">                                      
                                     <select id="inventoryIdPcb" name="inventoryIdPcb" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${inventoryListPCB}" var="group">
-                                            <option value="${group.id}" ${group.selected}>${group.equipmentId}  &emsp;(Quantity: ${group.quantity})</option>
+                                            <option invQtyPcbValue="${group.quantity}" 
+                                                    invQtyPcbAValue="${group.pcbAQty}" 
+                                                    invQtyPcbBValue="${group.pcbBQty}" 
+                                                    invQtyPcbCValue="${group.pcbCQty}" 
+                                                    invQtyPcbCtrValue="${group.pcbCtrQty}"
+                                                    value="${group.id}" ${group.selected}>${group.equipmentId}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
+                                <label for="invQtyPcb" class="col-lg-1 control-label">Quantity:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="invQtyPcb" name="invQtyPcb" value="" readonly >
+                                </div>
                             </div> 
+                            <div class="form-group" id="quantityABdiv" hidden>
+                                <div class="col-lg-1"></div>      
+                                <label for="quantityA" class="col-lg-2 control-label">Quantity Qual A:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="quantityA" name="quantityA" value="" readonly>
+                                </div>
+                                <label for="quantityB" class="col-lg-2 control-label">Quantity Qual B:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="quantityB" name="quantityB" value="" readonly>
+                                </div>
+                            </div>  
+                            <div class="form-group" id="quantityCCtrdiv" hidden>
+                                <div class="col-lg-1"></div>      
+                                <label for="quantityC" class="col-lg-2 control-label">Quantity Qual C:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="quantityC" name="quantityC" value="" readonly>
+                                </div>
+                                <label for="quantityCtr" class="col-lg-2 control-label">Quantity Control:</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="quantityCtr" name="quantityCtr" value="" readonly>
+                                </div>
+                            </div>  
                             <div class="form-group" id="quantitydiv" hidden>
                                 <label for="quantity" class="col-lg-2 control-label">Quantity *</label>
                                 <div class="col-lg-2">
                                     <input type="text" class="form-control" id="quantity" name="quantity" value="">
                                 </div>
-                            </div>      
+                            </div>  
+
+                            <div class="form-group" id="quantitytestdiv" hidden>
+                                <label for="quantitytest" class="col-lg-2 control-label">Total Quantity</label>
+                                <div class="col-lg-1">
+                                    <input type="text" class="form-control" id="quantitytest" name="quantitytest" value="0" readonly>
+                                </div>
+                            </div> 
                             <div class="form-group" id="remarksdiv">
                                 <label for="remarks" class="col-lg-2 control-label">Remarks </label>
-                                <div class="col-lg-8">
+                                <div class="col-lg-7">
                                     <textarea class="form-control" rows="5" id="remarks" name="remarks">${WhRequest.remarks}</textarea>
                                 </div>
                             </div>
                             <a href="${contextPath}/wh/whRequest" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>
                             <div class="pull-right">
                                 <button type="reset" class="btn btn-secondary cancel">Reset</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="submit" id="submit" class="btn btn-primary">Send</button>
                             </div>
                             <div class="clearfix"></div>
                         </form>
@@ -281,8 +368,98 @@
         <script>
             $(document).ready(function () {
 
-                $(".js-example-basic-single").select2();
+                $("form").keyup(function () {
+////                    if ($('#equipmentType').val() === "PCB" && $('#requestType').val() === "Ship" && $("#quantitytest").val() === "0") {
+                    if (!($('#equipmentType').val() === "PCB" && $('#requestType').val() === "Ship" && $("#quantitytest").val() === "0")) {
+                        $("#submit").removeAttr('disabled');
+////            $("#submit").attr("disabled", true);
+                    } else {
+////                        $("#submit").removeAttr('disabled');
+                        $("#submit").attr("disabled", true);
+                    }
+                });
 
+                $("form").mouseup(function () {
+                    if (!($('#equipmentType').val() === "PCB" && $('#requestType').val() === "Ship" && $("#quantitytest").val() === "0")) {
+                        $("#submit").removeAttr('disabled');
+                    } else {
+                        $("#submit").attr("disabled", true);
+                    }
+                });
+
+                $('#pcbCtrQty').change(function () {
+                    $('#quantitytest').val(parseInt($('#pcbCtrQty').val()) + parseInt($('#pcbAQty').val()) + parseInt($('#pcbBQty').val()) + parseInt($('#pcbCQty').val()));
+                });
+                $('#pcbAQty').change(function () {
+                    $('#quantitytest').val(parseInt($('#pcbCtrQty').val()) + parseInt($('#pcbAQty').val()) + parseInt($('#pcbBQty').val()) + parseInt($('#pcbCQty').val()));
+                });
+                $('#pcbBQty').change(function () {
+                    $('#quantitytest').val(parseInt($('#pcbCtrQty').val()) + parseInt($('#pcbAQty').val()) + parseInt($('#pcbBQty').val()) + parseInt($('#pcbCQty').val()));
+                });
+                $('#pcbCQty').change(function () {
+                    $('#quantitytest').val(parseInt($('#pcbCtrQty').val()) + parseInt($('#pcbAQty').val()) + parseInt($('#pcbBQty').val()) + parseInt($('#pcbCQty').val()));
+                });
+                $('#pcbType').change(function () {
+                    $('#maxQtyPcbType').val($('option:selected', this).attr('pcbTypeQty'));
+                });
+                $('#equipmentIdpcbCtr').change(function () {
+                    $('#maxQtyCtr').val($('option:selected', this).attr('pcbCtrquantity'));
+                    $('#maxQtyCtr1').val($('option:selected', this).attr('pcbCtrquantity'));
+                    if($(this).val() === ""){
+                         $('#maxQtyCtr1').val("0");
+                    }
+                });
+                $('#equipmentIdpcbA').change(function () {
+                    $('#maxQtyA').val($('option:selected', this).attr('pcbAquantity'));
+                    $('#maxQtyA1').val($('option:selected', this).attr('pcbAquantity'));
+                     if($(this).val() === ""){
+                         $('#maxQtyA1').val("0");
+                    }
+                });
+                $('#equipmentIdpcbB').change(function () {
+                    $('#maxQtyB').val($('option:selected', this).attr('pcbBquantity'));
+                    $('#maxQtyB1').val($('option:selected', this).attr('pcbBquantity'));
+                     if($(this).val() === ""){
+                         $('#maxQtyB1').val("0");
+                    }
+                });
+                $('#equipmentIdpcbC').change(function () {
+                    $('#maxQtyC').val($('option:selected', this).attr('pcbCquantity'));
+                    $('#maxQtyC1').val($('option:selected', this).attr('pcbCquantity'));
+                     if($(this).val() === ""){
+                         $('#maxQtyC1').val("0");
+                    }
+                });
+                $('#equipmentIdMb').change(function () {
+                    $('#maxQtyMb').val($('option:selected', this).attr('mbquantity'));
+                });
+                $('#equipmentIdTray').change(function () {
+                    $('#maxQtyTray').val($('option:selected', this).attr('trayquantity'));
+                });
+                $('#equipmentIdStencil').change(function () {
+                    $('#maxQtyStencil').val($('option:selected', this).attr('stencilquantity'));
+                });
+                $('#inventoryIdPcb').change(function () {
+                    $('#invQtyPcb').val($('option:selected', this).attr('invQtyPcbValue'));
+                    $('#quantityA').val($('option:selected', this).attr('invQtyPcbAValue'));
+                    $('#quantityB').val($('option:selected', this).attr('invQtyPcbBValue'));
+                    $('#quantityC').val($('option:selected', this).attr('invQtyPcbCValue'));
+                    $('#quantityCtr').val($('option:selected', this).attr('invQtyPcbCtrValue'));
+                });
+                $('#inventoryIdMb').change(function () {
+                    $('#invQtyMb').val($('option:selected', this).attr('invQtyMbValue'));
+                });
+                $('#inventoryIdTray').change(function () {
+                    $('#invQtyTray').val($('option:selected', this).attr('invQtyTrayValue'));
+                });
+                $('#inventoryIdStencil').change(function () {
+                    $('#invQtyStencil').val($('option:selected', this).attr('invQtyStencilValue'));
+                });
+
+                $(".js-example-basic-single").select2({
+                    placeholder: "Choose one",
+                    allowClear: true
+                });
                 var validator = $("#add_hardwarequest_form").validate({
                     rules: {
                         requestType: {
@@ -318,42 +495,65 @@
                         equipmentIdTray: {
                             required: true
                         },
-                        equipmentIdpcbCtr: {
-                            required: true
-                        },
+//                        equipmentIdpcbCtr: {
+//                            required: true
+//                        },
                         pcbCtrQty: {
-                            required: true
+//                            required: true,
+                            number: true,
+                            max: function () {
+                                return parseInt($('#maxQtyCtr1').val());
+                            }
                         },
-                        equipmentIdpcbA: {
-                            required: true
-                        },
+//                        equipmentIdpcbA: {
+//                            required: true
+//                        },
                         pcbAQty: {
-                            required: true
+//                            required: true,
+                            number: true,
+                            max: function () {
+                                return parseInt($('#maxQtyA1').val());
+                            }
                         },
-                        equipmentIdpcbB: {
-                            required: true
-                        },
+//                        equipmentIdpcbB: {
+//                            required: true
+//                        },
                         pcbBQty: {
-                            required: true
+//                            required: true,
+                            number: true,
+                            max: function () {
+                                return parseInt($('#maxQtyB1').val());
+                            }
                         },
-                        equipmentIdpcbC: {
-                            required: true
-                        },
+//                        equipmentIdpcbC: {
+//                            required: true
+//                        },
                         pcbCQty: {
-                            required: true
+//                            required: true,
+                            number: true,
+                            max: function () {
+                                return parseInt($('#maxQtyC1').val());
+                            }
+                        },
+                        quantitytest: {
+                            number: true,
+                            max: function () {
+                                return parseInt($('#maxQtyPcbType').val());
+                            }
                         },
                         quantity: {
                             required: true,
-                            number: true
+                            number: true,
+                            max: function () {
+                                return parseInt($('#maxQtyTray').val());
+                            }
                         }
                     }
                 });
                 $(".cancel").click(function () {
                     validator.resetForm();
                 });
-
             });
-
             $('#equipmentType').on('change', function () {
                 var element1 = $('#requestType');
                 if ($(this).val() === "Motherboard" && element1.val() === "Ship") {
@@ -371,20 +571,23 @@
                     $("#pcbCtrlistdiv").hide();
                     $("#pcbCtrQtydiv").hide();
                     $("#quantity").val("");
+                    $("#quantitytest").val("0");
                     $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
                     $("#equipmentIdpcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdpcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdpcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdpcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
+                    $("#pcbCtrQty").val("0");
                     $("#quantity").val("");
-
                     $("#inventorypcblistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorystencillistdiv").hide();
@@ -393,6 +596,10 @@
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
                     $("#inventoryIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Stencil" && element1.val() === "Ship") {
                     $("#stencillistdiv").show();
                     $("#pcbTypeDiv").hide();
@@ -407,22 +614,23 @@
                     $("#pcbCQtydiv").hide();
                     $("#pcbCtrlistdiv").hide();
                     $("#pcbCtrQtydiv").hide();
-                    //                    $("#typediv").hide();
                     $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
                     $("#equipmentIdpcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdpcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdpcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdpcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
+                    $("#pcbCtrQty").val("0");
                     $("#quantity").val("");
-                    //                    $("#type").val("");
-
+                    $("#quantitytest").val("0");
                     $("#inventorypcblistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorystencillistdiv").hide();
@@ -431,9 +639,16 @@
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
                     $("#inventoryIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Tray" && element1.val() === "Ship") {
                     $("#traylistdiv").show();
                     $("#quantitydiv").show();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
                     $("#stencillistdiv").hide();
@@ -446,20 +661,18 @@
                     $("#pcbCQtydiv").hide();
                     $("#pcbCtrlistdiv").hide();
                     $("#pcbCtrQtydiv").hide();
-                    //                    $("#typediv").hide();
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdpcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdpcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdpcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdpcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
-                    //                    $("#type").val("");
-
+                    $("#pcbCtrQty").val("0");
+                    $("#quantitytest").val("0");
                     $("#inventorypcblistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorystencillistdiv").hide();
@@ -468,7 +681,14 @@
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
                     $("#inventoryIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "PCB" && element1.val() === "Ship") {
+//                    if ($("#quantitytest").val() === "0") {
+//                        $("#submit").attr("disabled", true);
+//                    }
                     $("#pcbTypeDiv").show();
                     $("#pcbAlistdiv").show();
                     $("#pcbAQtydiv").show();
@@ -478,8 +698,9 @@
                     $("#pcbCQtydiv").show();
                     $("#pcbCtrlistdiv").show();
                     $("#pcbCtrQtydiv").show();
-                    //                    $("#typediv").hide();
-                    //                    $("#quantitydiv").show();
+                    $("#quantitytestdiv").show();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#quantitydiv").hide();
                     $("#listdiv").hide();
                     $("#stencillistdiv").hide();
@@ -488,7 +709,6 @@
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
-
                     $("#inventorypcblistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorystencillistdiv").hide();
@@ -505,19 +725,23 @@
                     $("#inventorytraylistdiv").hide();
                     $("#inventorypcblistdiv").hide();
                     $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
                     $("#equipmentIdpcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdpcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdpcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdpcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
+                    $("#pcbCtrQty").val("0");
                     $("#quantity").val("");
-
+                    $("#quantitytest").val("0");
                     $("#pcbAlistdiv").hide();
                     $("#pcbAQtydiv").hide();
                     $("#pcbBlistdiv").hide();
@@ -533,6 +757,10 @@
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
                     $("#equipmentIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Stencil" && element1.val() === "Retrieve") {
                     $("#inventorystencillistdiv").show();
                     $("#pcbTypeDiv").hide();
@@ -541,19 +769,23 @@
                     $("#inventorytraylistdiv").hide();
                     $("#inventorypcblistdiv").hide();
                     $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
                     $("#equipmentIdpcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdpcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdpcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdpcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
+                    $("#pcbCtrQty").val("0");
                     $("#quantity").val("");
-
+                    $("#quantitytest").val("0");
                     $("#pcbAlistdiv").hide();
                     $("#pcbAQtydiv").hide();
                     $("#pcbBlistdiv").hide();
@@ -569,11 +801,17 @@
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
                     $("#equipmentIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Tray" && element1.val() === "Retrieve") {
                     $("#inventorytraylistdiv").show();
                     $("#pcbTypeDiv").hide();
-                    //                    $("#quantitydiv").show();
                     $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#listdiv").hide();
                     $("#inventorystencillistdiv").hide();
                     $("#inventorymblistdiv").hide();
@@ -581,15 +819,16 @@
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
                     $("#equipmentIdpcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdpcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdpcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdpcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
-
+                    $("#pcbCtrQty").val("0");
+                    $("#quantitytest").val("0");
                     $("#pcbAlistdiv").hide();
                     $("#pcbAQtydiv").hide();
                     $("#pcbBlistdiv").hide();
@@ -605,11 +844,17 @@
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
                     $("#equipmentIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "PCB" && element1.val() === "Retrieve") {
                     $("#inventorypcblistdiv").show();
                     $("#pcbTypeDiv").hide();
-                    //                    $("#quantitydiv").show();
                     $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").show();
+                    $("#quantityCCtrdiv").show();
                     $("#listdiv").hide();
                     $("#inventorystencillistdiv").hide();
                     $("#inventorymblistdiv").hide();
@@ -617,8 +862,6 @@
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
-
-
                     $("#pcbAlistdiv").hide();
                     $("#pcbAQtydiv").hide();
                     $("#pcbBlistdiv").hide();
@@ -634,13 +877,14 @@
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
                     $("#equipmentIdPcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdPcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdPcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdPcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
+                    $("#pcbCtrQty").val("0");
+                    $("#quantitytest").val("0");
                 } else {
                     $("#listdiv").show();
                     $("#pcbTypeDiv").hide();
@@ -655,21 +899,24 @@
                     $("#mblistdiv").hide();
                     $("#stencillistdiv").hide();
                     $("#traylistdiv").hide();
-                    //                    $("#typediv").hide();
                     $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
                     $("#equipmentIdpcbA").val("").trigger('change');
-                    $("#pcbAQty").val("");
+                    $("#pcbAQty").val("0");
                     $("#equipmentIdpcbB").val("").trigger('change');
-                    $("#pcbBQty").val("");
+                    $("#pcbBQty").val("0");
                     $("#equipmentIdpcbC").val("").trigger('change');
-                    $("#pcbCQty").val("");
+                    $("#pcbCQty").val("0");
                     $("#equipmentIdpcbCtr").val("").trigger('change');
-                    $("#pcbCtrQty").val("");
+                    $("#pcbCtrQty").val("0");
                     $("#quantity").val("");
+                    $("#quantitytest").val("0");
                     $("#inventorypcblistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorystencillistdiv").hide();
@@ -678,48 +925,14 @@
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
                     $("#inventoryIdPcb").val("").trigger('change');
-                    //                    $("#type").val("");
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
                 }
 
             });
-
-            $('#equipmentIdpcbCtr').on('change', function () {
-                var elementA = $('#equipmentIdpcbA');
-                var elementB = $('#equipmentIdpcbB');
-                var elementC = $('#equipmentIdpcbC');
-                if ($(this).val() !== "" && ($(this).val() === elementA.val() || ($(this).val() === elementB.val()) || ($(this).val() === elementC.val()))) {
-                    $('#equipmentIdpcbCtr').select2('val', '');
-                }
-            });
-
-            $('#equipmentIdpcbA').on('change', function () {
-                var elementCtr = $('#equipmentIdpcbCtr');
-                var elementB = $('#equipmentIdpcbB');
-                var elementC = $('#equipmentIdpcbC');
-                if ($(this).val() !== "" && ($(this).val() === elementCtr.val() || ($(this).val() === elementB.val()) || ($(this).val() === elementC.val()))) {
-                    $('#equipmentIdpcbA').select2('val', '');
-                }
-            });
-
-            $('#equipmentIdpcbB').on('change', function () {
-                var elementA = $('#equipmentIdpcbA');
-                var elementC = $('#equipmentIdpcbC');
-                var elementCtr = $('#equipmentIdpcbCtr');
-                if ($(this).val() !== "" && ($(this).val() === elementA.val() || ($(this).val() === elementCtr.val()) || ($(this).val() === elementC.val()))) {
-                    //                    alert("This pcb already selected");
-                    $('#equipmentIdpcbB').select2('val', '');
-                }
-            });
-
-            $('#equipmentIdpcbC').on('change', function () {
-                var elementA = $('#equipmentIdpcbA');
-                var elementB = $('#equipmentIdpcbB');
-                var elementCtr = $('#equipmentIdpcbCtr');
-                if ($(this).val() !== "" && ($(this).val() === elementA.val() || ($(this).val() === elementCtr.val()) || ($(this).val() === elementB.val()))) {
-                    //                    alert("This pcb already selected");
-                    $('#equipmentIdpcbC').select2('val', '');
-                }
-            });
+//           
 
 
 

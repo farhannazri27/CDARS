@@ -57,7 +57,6 @@ public class HmsFtpConfig {
              *
              */
 
-//            File file = new File("C:\\Users\\fg79cj\\Documents\\inventory\\hms_inventory.csv");
             String username = System.getProperty("user.name");
             File file = new File("C:\\Users\\" + username + "\\Documents\\HMS\\hms_inventory.csv");
 
@@ -81,7 +80,8 @@ public class HmsFtpConfig {
                             inventory[15], inventory[16],
                             inventory[17], inventory[18],
                             inventory[19], inventory[20],
-                            inventory[21], inventory[22]);
+                            inventory[21], inventory[22],
+                            inventory[23]);
                     empList.add(emp);
                 }
 
@@ -105,7 +105,6 @@ public class HmsFtpConfig {
                             updateftp.setRequestId(e.getRequestId());
                             updateftp.setInventoryDate(e.getInventoryDate());
                             updateftp.setInventoryBy(e.getInventoryBy());
-//                            updateftp.setInventoryLocation(e.getInventoryLocation());
                             updateftp.setInventoryRack(e.getInventoryRack());
                             updateftp.setInventoryShelf(e.getInventoryShelf());
                             updateftp.setFlag("0");
@@ -303,6 +302,7 @@ public class HmsFtpConfig {
                         insertftp.setRequestedDate(e.getRequestedDate());
                         insertftp.setRemarks(e.getRemarks());
                         insertftp.setVerifiedDate(e.getVerifiedDate());
+                        insertftp.setReceivalDate(e.getReceivalDate());
                         insertftp.setInventoryDate(e.getInventoryDate());
                         insertftp.setInventoryBy(e.getInventoryBy());
                         insertftp.setInventoryRack(e.getInventoryRack());
@@ -312,136 +312,24 @@ public class HmsFtpConfig {
                         QueryResult add = insertDao.insertWhInventory(insertftp);
                         if (add.getResult() == 1) {
                             LOGGER.info("insert file");
-                            
+
                             //update spts location
-                                //get item pkid and version
-                                if ("PCB".equals(e.getEquipmentType())) {
-                                    if (!"0".equals(e.getPcbAQty())) {
-                                        System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
-                                        JSONObject paramsQualA = new JSONObject();
-                                        String itemID = e.getPcbA();
-                                        paramsQualA.put("itemID", itemID);
-                                        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
-                                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
-                                        int itemApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
-                                        String versionA = getItemByParamA.getJSONObject(0).getString("Version");
-                                        LOGGER.info("itemApkid............." + itemApkid);
+                            //get item pkid and version
+                            if ("PCB".equals(e.getEquipmentType())) {
+                                if (!"0".equals(e.getPcbAQty())) {
+                                    System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+                                    JSONObject paramsQualA = new JSONObject();
+                                    String itemID = e.getPcbA();
+                                    paramsQualA.put("itemID", itemID);
+                                    JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+                                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+                                    int itemApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+                                    String versionA = getItemByParamA.getJSONObject(0).getString("Version");
+                                    LOGGER.info("itemApkid............." + itemApkid);
 
-                                        JSONObject params3 = new JSONObject();
-                                        params3.put("pkID", itemApkid);
-                                        params3.put("version", versionA);
-                                        params3.put("sfItemStatus", "0");
-                                        params3.put("sfRack", e.getInventoryRack());
-                                        params3.put("sfShelf", e.getInventoryShelf());
-                                        SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
-
-                                        System.out.println("status: " + sfPkid.getStatus());
-
-                                        if (sfPkid.getStatus()) {
-                                            LOGGER.info("done update spts PCB A");
-                                        } else {
-                                            LOGGER.info("failed to update spts PCB A");
-                                        }
-                                    }
-                                    if (!"0".equals(e.getPcbBQty())) {
-                                        System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
-                                        JSONObject paramsQualB = new JSONObject();
-                                        String itemID = e.getPcbB();
-                                        paramsQualB.put("itemID", itemID);
-                                        JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
-                                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
-                                        int itemBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
-                                        String versionB = getItemByParamB.getJSONObject(0).getString("Version");
-                                        LOGGER.info("itemApkid............." + itemBpkid);
-
-                                        JSONObject params3 = new JSONObject();
-                                        params3.put("pkID", itemBpkid);
-                                        params3.put("version", versionB);
-                                        params3.put("sfItemStatus", "0");
-                                        params3.put("sfRack", e.getInventoryRack());
-                                        params3.put("sfShelf", e.getInventoryShelf());
-                                        SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
-
-                                        System.out.println("status: " + sfPkid.getStatus());
-
-                                        if (sfPkid.getStatus()) {
-                                            LOGGER.info("done update spts PCB B");
-                                        } else {
-                                            LOGGER.info("failed to update spts PCB B");
-                                        }
-                                    }
-                                    if (!"0".equals(e.getPcbCQty())) {
-                                        System.out.println("GET SFITEM PCB QUAL C BY PARAM...");
-                                        JSONObject paramsQualC = new JSONObject();
-                                        String itemID = e.getPcbC();
-                                        paramsQualC.put("itemID", itemID);
-                                        JSONArray getItemByParamC = SPTSWebService.getSFItemByParam(paramsQualC);
-                                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamC.length());
-                                        int itemCpkid = getItemByParamC.getJSONObject(0).getInt("PKID");
-                                        String versionC = getItemByParamC.getJSONObject(0).getString("Version");
-                                        LOGGER.info("itemCpkid............." + itemCpkid);
-
-                                        JSONObject params3 = new JSONObject();
-                                        params3.put("pkID", itemCpkid);
-                                        params3.put("version", versionC);
-                                        params3.put("sfItemStatus", "0");
-                                        params3.put("sfRack", e.getInventoryRack());
-                                        params3.put("sfShelf", e.getInventoryShelf());
-                                        SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
-
-                                        System.out.println("status: " + sfPkid.getStatus());
-
-                                        if (sfPkid.getStatus()) {
-                                            LOGGER.info("done update spts PCB C");
-                                        } else {
-                                            LOGGER.info("failed to update spts PCB C");
-                                        }
-                                    }
-                                    if (!"0".equals(e.getPcbCtrQty())) {
-                                        System.out.println("GET SFITEM PCB CONTROL BY PARAM...");
-                                        JSONObject paramsQualCtr = new JSONObject();
-                                        String itemID = e.getPcbCtr();
-                                        paramsQualCtr.put("itemID", itemID);
-                                        JSONArray getItemByParamCtr = SPTSWebService.getSFItemByParam(paramsQualCtr);
-                                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamCtr.length());
-                                        int itemCtrpkid = getItemByParamCtr.getJSONObject(0).getInt("PKID");
-                                        String versionCtr = getItemByParamCtr.getJSONObject(0).getString("Version");
-                                        LOGGER.info("itemCtrpkid............." + itemCtrpkid);
-
-                                        JSONObject params3 = new JSONObject();
-                                        params3.put("pkID", itemCtrpkid);
-                                        params3.put("version", versionCtr);
-                                        params3.put("sfItemStatus", "0");
-                                        params3.put("sfRack", e.getInventoryRack());
-                                        params3.put("sfShelf", e.getInventoryShelf());
-                                        SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
-
-                                        System.out.println("status: " + sfPkid.getStatus());
-
-                                        if (sfPkid.getStatus()) {
-                                            LOGGER.info("done update spts PCB Ctr");
-                                        } else {
-                                            LOGGER.info("failed to update spts PCB Ctr");
-                                        }
-                                    }
-                                } else {
-                                    System.out.println("GET SFITEM BY PARAM...");
-                                    JSONObject paramsSfItem = new JSONObject();
-                                    String itemID = e.getEquipmentId();
-                                    paramsSfItem.put("itemID", itemID);
-                                    JSONArray getItemByParam = SPTSWebService.getSFItemByParam(paramsSfItem);
-//                                    for (int i = 0; i < getItemByParam.length(); i++) {
-//                                        System.out.println(getItemByParam.getJSONObject(i));
-//                                    }
-                                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
-                                    int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
-                                    String version = getItemByParam.getJSONObject(0).getString("Version");
-                                    LOGGER.info("itempkid............." + itempkid);
-
-//                                public bool UpdateSFItemLocation(int pkID, string version, int sfItemStatus, string sfRack, string sfShelf)
                                     JSONObject params3 = new JSONObject();
-                                    params3.put("pkID", itempkid);
-                                    params3.put("version", version);
+                                    params3.put("pkID", itemApkid);
+                                    params3.put("version", versionA);
                                     params3.put("sfItemStatus", "0");
                                     params3.put("sfRack", e.getInventoryRack());
                                     params3.put("sfShelf", e.getInventoryShelf());
@@ -450,11 +338,123 @@ public class HmsFtpConfig {
                                     System.out.println("status: " + sfPkid.getStatus());
 
                                     if (sfPkid.getStatus()) {
-                                        LOGGER.info("done update spts");
+                                        LOGGER.info("done update spts PCB A");
                                     } else {
-                                        LOGGER.info("failed to update spts");
+                                        LOGGER.info("failed to update spts PCB A");
                                     }
                                 }
+                                if (!"0".equals(e.getPcbBQty())) {
+                                    System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
+                                    JSONObject paramsQualB = new JSONObject();
+                                    String itemID = e.getPcbB();
+                                    paramsQualB.put("itemID", itemID);
+                                    JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
+                                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
+                                    int itemBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
+                                    String versionB = getItemByParamB.getJSONObject(0).getString("Version");
+                                    LOGGER.info("itemApkid............." + itemBpkid);
+
+                                    JSONObject params3 = new JSONObject();
+                                    params3.put("pkID", itemBpkid);
+                                    params3.put("version", versionB);
+                                    params3.put("sfItemStatus", "0");
+                                    params3.put("sfRack", e.getInventoryRack());
+                                    params3.put("sfShelf", e.getInventoryShelf());
+                                    SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
+
+                                    System.out.println("status: " + sfPkid.getStatus());
+
+                                    if (sfPkid.getStatus()) {
+                                        LOGGER.info("done update spts PCB B");
+                                    } else {
+                                        LOGGER.info("failed to update spts PCB B");
+                                    }
+                                }
+                                if (!"0".equals(e.getPcbCQty())) {
+                                    System.out.println("GET SFITEM PCB QUAL C BY PARAM...");
+                                    JSONObject paramsQualC = new JSONObject();
+                                    String itemID = e.getPcbC();
+                                    paramsQualC.put("itemID", itemID);
+                                    JSONArray getItemByParamC = SPTSWebService.getSFItemByParam(paramsQualC);
+                                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamC.length());
+                                    int itemCpkid = getItemByParamC.getJSONObject(0).getInt("PKID");
+                                    String versionC = getItemByParamC.getJSONObject(0).getString("Version");
+                                    LOGGER.info("itemCpkid............." + itemCpkid);
+
+                                    JSONObject params3 = new JSONObject();
+                                    params3.put("pkID", itemCpkid);
+                                    params3.put("version", versionC);
+                                    params3.put("sfItemStatus", "0");
+                                    params3.put("sfRack", e.getInventoryRack());
+                                    params3.put("sfShelf", e.getInventoryShelf());
+                                    SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
+
+                                    System.out.println("status: " + sfPkid.getStatus());
+
+                                    if (sfPkid.getStatus()) {
+                                        LOGGER.info("done update spts PCB C");
+                                    } else {
+                                        LOGGER.info("failed to update spts PCB C");
+                                    }
+                                }
+                                if (!"0".equals(e.getPcbCtrQty())) {
+                                    System.out.println("GET SFITEM PCB CONTROL BY PARAM...");
+                                    JSONObject paramsQualCtr = new JSONObject();
+                                    String itemID = e.getPcbCtr();
+                                    paramsQualCtr.put("itemID", itemID);
+                                    JSONArray getItemByParamCtr = SPTSWebService.getSFItemByParam(paramsQualCtr);
+                                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamCtr.length());
+                                    int itemCtrpkid = getItemByParamCtr.getJSONObject(0).getInt("PKID");
+                                    String versionCtr = getItemByParamCtr.getJSONObject(0).getString("Version");
+                                    LOGGER.info("itemCtrpkid............." + itemCtrpkid);
+
+                                    JSONObject params3 = new JSONObject();
+                                    params3.put("pkID", itemCtrpkid);
+                                    params3.put("version", versionCtr);
+                                    params3.put("sfItemStatus", "0");
+                                    params3.put("sfRack", e.getInventoryRack());
+                                    params3.put("sfShelf", e.getInventoryShelf());
+                                    SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
+
+                                    System.out.println("status: " + sfPkid.getStatus());
+
+                                    if (sfPkid.getStatus()) {
+                                        LOGGER.info("done update spts PCB Ctr");
+                                    } else {
+                                        LOGGER.info("failed to update spts PCB Ctr");
+                                    }
+                                }
+                            } else {
+                                System.out.println("GET SFITEM BY PARAM...");
+                                JSONObject paramsSfItem = new JSONObject();
+                                String itemID = e.getEquipmentId();
+                                paramsSfItem.put("itemID", itemID);
+                                JSONArray getItemByParam = SPTSWebService.getSFItemByParam(paramsSfItem);
+//                                    for (int i = 0; i < getItemByParam.length(); i++) {
+//                                        System.out.println(getItemByParam.getJSONObject(i));
+//                                    }
+                                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                                int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                                String version = getItemByParam.getJSONObject(0).getString("Version");
+                                LOGGER.info("itempkid............." + itempkid);
+
+//                                public bool UpdateSFItemLocation(int pkID, string version, int sfItemStatus, string sfRack, string sfShelf)
+                                JSONObject params3 = new JSONObject();
+                                params3.put("pkID", itempkid);
+                                params3.put("version", version);
+                                params3.put("sfItemStatus", "0");
+                                params3.put("sfRack", e.getInventoryRack());
+                                params3.put("sfShelf", e.getInventoryShelf());
+                                SPTSResponse sfPkid = SPTSWebService.updateSFItemLocation(params3);
+
+                                System.out.println("status: " + sfPkid.getStatus());
+
+                                if (sfPkid.getStatus()) {
+                                    LOGGER.info("done update spts");
+                                } else {
+                                    LOGGER.info("failed to update spts");
+                                }
+                            }
 
                             //update shipping table
                             WhShippingDAO shipD = new WhShippingDAO();

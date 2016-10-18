@@ -206,4 +206,35 @@ public class EmailConfigDAO {
         }
         return count;
     }
+    public EmailConfig getEmailConfigByTask(String task) {
+        String sql = "SELECT * FROM cdars_email_config WHERE task_pdetails_code = '" + task + "'";
+        EmailConfig emailConfig = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                emailConfig = new EmailConfig();
+                emailConfig.setId(rs.getString("id"));
+                emailConfig.setTaskPdetailsCode(rs.getString("task_pdetails_code"));
+                emailConfig.setUserOncid(rs.getString("user_oncid"));
+                emailConfig.setUserName(rs.getString("user_name"));
+                emailConfig.setEmail(rs.getString("email"));
+                emailConfig.setFlag(rs.getString("flag"));
+                emailConfig.setRemarks(rs.getString("remarks"));
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return emailConfig;
+    }
 }

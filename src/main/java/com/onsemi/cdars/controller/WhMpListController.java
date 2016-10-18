@@ -64,6 +64,19 @@ public class WhMpListController {
         return "whMpList/whMpList";
     }
 
+    @RequestMapping(value = "/s", method = RequestMethod.GET)
+    public String whMpList1(
+            Model model
+    ) {
+        WhMpListDAO whMpListDAO = new WhMpListDAO();
+        QueryResult queryResult = whMpListDAO.updateWhMpListtoFlag1();
+
+        whMpListDAO = new WhMpListDAO();
+        List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+        model.addAttribute("whMpListList", whMpListList);
+        return "whMpList/whMpList";
+    }
+
     @RequestMapping(value = "/add", method = RequestMethod.GET)
     public String add(Model model) {
         return "whMpList/add";
@@ -361,7 +374,7 @@ public class WhMpListController {
                                 System.out.println("sfPKID: " + sfPkid.getResponseId());
 
                             } else if ("PCB".equals(whship.getRequestEquipmentType())) {
-                                if (!"0".equals(whship.getPcbAQty())) {
+                                if (!"0".equals(whship.getPcbAQty()) && !"".equals(whship.getPcbA())) {
                                     //get pkid for pcb qual a
                                     System.out.println("GET ITEM BY PARAM...");
                                     JSONObject paramsA = new JSONObject();
@@ -398,7 +411,7 @@ public class WhMpListController {
                                     SPTSResponse sfPkidQualA = SPTSWebService.insertSFItem(paramsA3);
                                     System.out.println("sfPkidQualA: " + sfPkidQualA.getResponseId());
                                 }
-                                if (!"0".equals(whship.getPcbBQty())) {
+                                if (!"0".equals(whship.getPcbBQty()) && !"".equals(whship.getPcbB())) {
                                     //get pkid for pcb qual b
                                     System.out.println("GET ITEM BY PARAM...");
                                     JSONObject paramsB = new JSONObject();
@@ -435,7 +448,7 @@ public class WhMpListController {
                                     SPTSResponse sfPkidQualB = SPTSWebService.insertSFItem(paramsB3);
                                     System.out.println("sfPkidQualB: " + sfPkidQualB.getResponseId());
                                 }
-                                if (!"0".equals(whship.getPcbCQty())) {
+                                if (!"0".equals(whship.getPcbCQty()) && !"".equals(whship.getPcbC())) {
                                     //get pkid for pcb qual c
                                     System.out.println("GET ITEM BY PARAM...");
                                     JSONObject paramsC = new JSONObject();
@@ -472,7 +485,7 @@ public class WhMpListController {
                                     SPTSResponse sfPkidQualC = SPTSWebService.insertSFItem(paramsC3);
                                     System.out.println("sfPkidQualC: " + sfPkidQualC.getResponseId());
                                 }
-                                if (!"0".equals(whship.getPcbCtrQty())) {
+                                if (!"0".equals(whship.getPcbCtrQty())&& !"".equals(whship.getPcbCtr())) {
                                     //get pkid for pcb qual ctr
                                     System.out.println("GET ITEM BY PARAM...");
                                     JSONObject paramsCtr = new JSONObject();
