@@ -338,6 +338,14 @@ public class WhRetrievalDAO {
                 whRetrieval.setBarcodeVerification(rs.getString("barcode_verification"));
                 whRetrieval.setBarcodeVerifiedBy(rs.getString("barcode_verified_by"));
                 whRetrieval.setBarcodeVerifiedDate(rs.getString("barcode_verified_date"));
+                whRetrieval.setTtDisposition(rs.getString("tt_disposition"));
+                whRetrieval.setTtDispositionBy(rs.getString("tt_disposition_by"));
+                whRetrieval.setTtDispositionDate(rs.getString("tt_disposition_date"));
+                whRetrieval.setTtDispositionRemarks(rs.getString("tt_disposition_remarks"));
+                whRetrieval.setBarcodeDisposition(rs.getString("barcode_disposition"));
+                whRetrieval.setBarcodeDispositionBy(rs.getString("barcode_disposition_by"));
+                whRetrieval.setBarcodeDispositionDate(rs.getString("barcode_disposition_date"));
+                whRetrieval.setBarcodeDispositionRemarks(rs.getString("barcode_disposition_remarks"));
 
                 //date view
                 whRetrieval.setViewRequestedDate(rs.getString("view_requested_date"));
@@ -512,7 +520,7 @@ public class WhRetrievalDAO {
                 + "DATE_FORMAT(received_date,'%d %M %Y %h:%i %p') AS view_received_date, "
                 + "DATE_FORMAT(tt_verified_date,'%d %M %Y %h:%i %p') AS view_tt_verified_date, "
                 + "DATE_FORMAT(barcode_verified_date,'%d %M %Y %h:%i %p') AS view_tt_barcode_verified_date "
-                + "FROM cdars_wh_retrieval WHERE status <> 'Closed' ORDER BY id DESC";
+                + "FROM cdars_wh_retrieval WHERE status <> 'Closed' AND status <> 'Closed. Verified By Supervisor' ORDER BY id DESC";
         List<WhRetrieval> whRetrievalList = new ArrayList<WhRetrieval>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -554,6 +562,14 @@ public class WhRetrievalDAO {
                 whRetrieval.setBarcodeVerification(rs.getString("barcode_verification"));
                 whRetrieval.setBarcodeVerifiedBy(rs.getString("barcode_verified_by"));
                 whRetrieval.setBarcodeVerifiedDate(rs.getString("barcode_verified_date"));
+                whRetrieval.setTtDisposition(rs.getString("tt_disposition"));
+                whRetrieval.setTtDispositionBy(rs.getString("tt_disposition_by"));
+                whRetrieval.setTtDispositionDate(rs.getString("tt_disposition_date"));
+                whRetrieval.setTtDispositionRemarks(rs.getString("tt_disposition_remarks"));
+                whRetrieval.setBarcodeDisposition(rs.getString("barcode_disposition"));
+                whRetrieval.setBarcodeDispositionBy(rs.getString("barcode_disposition_by"));
+                whRetrieval.setBarcodeDispositionDate(rs.getString("barcode_disposition_date"));
+                whRetrieval.setBarcodeDispositionRemarks(rs.getString("barcode_disposition_remarks"));
 
                 //date view
                 whRetrieval.setViewRequestedDate(rs.getString("view_requested_date"));
@@ -633,5 +649,93 @@ public class WhRetrievalDAO {
             }
         }
         return id;
+    }
+
+    public QueryResult updateWhRetrievalDispositionForBarcode(WhRetrieval whRetrieval) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_retrieval SET request_id = ?, barcode_verification = ?, barcode_verified_by = ?, barcode_verified_date = NOW(), barcode_disposition = ?, barcode_disposition_by = ?, barcode_disposition_remarks = ?, barcode_disposition_date = NOW(), status = ? WHERE id = ?"
+            );
+            ps.setString(1, whRetrieval.getRequestId());
+            ps.setString(2, whRetrieval.getBarcodeVerification());
+            ps.setString(3, whRetrieval.getBarcodeVerifiedBy());
+            ps.setString(4, whRetrieval.getBarcodeDisposition());
+            ps.setString(5, whRetrieval.getBarcodeDispositionBy());
+            ps.setString(6, whRetrieval.getBarcodeDispositionRemarks());
+            ps.setString(7, whRetrieval.getStatus());
+            ps.setString(8, whRetrieval.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhRetrievalDispositionForTt(WhRetrieval whRetrieval) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_retrieval SET request_id = ?, tt_verification = ?, tt_verified_by = ?, tt_verified_date = NOW(), tt_disposition = ?, tt_disposition_by = ?, tt_disposition_remarks = ?, tt_disposition_date = NOW(), status = ?, flag = ? WHERE id = ?"
+            );
+            ps.setString(1, whRetrieval.getRequestId());
+            ps.setString(2, whRetrieval.getTtVerification());
+            ps.setString(3, whRetrieval.getTtVerifiedBy());
+            ps.setString(4, whRetrieval.getTtDisposition());
+            ps.setString(5, whRetrieval.getTtDispositionBy());
+            ps.setString(6, whRetrieval.getTtDispositionRemarks());
+            ps.setString(7, whRetrieval.getStatus());
+            ps.setString(8, whRetrieval.getFlag());
+            ps.setString(9, whRetrieval.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+    
+    public QueryResult updateWhRetrievalStatus(WhRetrieval whRetrieval) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_retrieval SET status = ? WHERE id = ?"
+            );     
+            ps.setString(1, whRetrieval.getStatus());
+            ps.setString(2, whRetrieval.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
     }
 }

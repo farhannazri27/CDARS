@@ -22,6 +22,7 @@
                         <h2>Details</h2>
                         <form id="detail_form" class="form-horizontal" role="form">
                             <div class="form-group">
+                                <input type="hidden" name="groupId" id="groupId" value="${groupId}" />
                                 <label for=" hardwareType" class="col-lg-4 control-label">Hardware Type </label>
                                 <div class="col-lg-5">
                                     <input type="text" class="form-control" id="hardwareType" name="hardwareType" value="${whRetrieval.hardwareType}" readonly>
@@ -89,6 +90,7 @@
                 <ul class="nav nav-tabs">
                     <li class="${bsActive}"><a data-toggle="tab" href="#bs">Scan Barcode Sticker </a></li>
                     <li class="${ttActive}"><a data-toggle="tab" href="#tt">Scan Trip Ticket</a></li>
+                    <li class="${disActive}" id="disTab"><a data-toggle="tab" href="#dis">Supervisor Verification</a></li>
                 </ul>
                 <div class="tab-content">
 
@@ -101,18 +103,24 @@
                             <div class="main-box">
                                 <h2>Scan Barcode Sticker</h2>
                                 <form id="bs_form" class="form-horizontal" role="form" action="${contextPath}/wh/whRetrieval/updateScanBs" method="post">
-                                    <input type="hidden" name="id" value="${whRetrieval.id}" />
-                                    <input type="hidden" name="status" value="${whRetrieval.status}" />
+                                    <input type="hidden" name="id" id="id" value="${whRetrieval.id}" />
+                                    <input type="hidden" name="status" id="statusBs" value="${whRetrieval.status}" />
                                     <input type="hidden" name="tab" value="${bsActiveTab}" />
                                     <input type="hidden" id="mpNoV" name="mpNoV" value="${whRetrieval.mpNo}">
                                     <div class="form-group">
                                         <label for=" barcodeVerification" class="col-lg-4 control-label">Barcode Sticker(MP No) *</label>
                                         <div class="col-lg-5">
-                                            <input type="text" class="form-control" id="barcodeVerification" name="barcodeVerification" autofocus="autofocus" placeholder="Please scan barcode sticker" value="${whRetrieval.barcodeVerification}">                                        
+                                            <input type="text" class="form-control" id="barcodeVerification" name="barcodeVerification" autofocus="autofocus" placeholder="Please scan barcode sticker" value="${whRetrieval.barcodeVerification}">   
+                                            <small id="noteBs" class="form-text text-muted">Verified by Supervisor.</small>
+                                            <small id="noteBsEmail" class="form-text text-muted">Email has been sent to supervisor.</small>
                                         </div>
                                     </div>
                                     <!--<div id = "alert_placeholder"></div>-->
-
+                                    <div class="filter-block pull-left" id="sendEmailBs" hidden>
+                                        <a href="${contextPath}/wh/whRetrieval/emailWrongBs/${whRetrieval.id}" class="btn btn-danger pull-right">
+                                            <i class="fa fa-envelope fa-lg"></i> Send Email to Supervisor
+                                        </a>
+                                    </div>
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel2">Reset</button>
                                         <button type="submit" id="submit2" name="submit2" class="btn btn-primary">Verify</button>
@@ -133,20 +141,89 @@
                             <div class="main-box">
                                 <h2>Scan Trip Ticket</h2>
                                 <form id="tt_form" class="form-horizontal" role="form" action="${contextPath}/wh/whRetrieval/updateScanTt" method="post">
-                                    <input type="hidden" name="id" value="${whRetrieval.id}" />
-                                    <input type="hidden" name="status" value="${whRetrieval.status}" />
+                                    <input type="hidden" name="id" id="id" value="${whRetrieval.id}" />
+                                    <input type="hidden" name="status" id="statusTt" value="${whRetrieval.status}" />
                                     <input type="hidden" name="tab" value="${ttActiveTab}" />
                                     <div class="form-group">
                                         <label for=" ttVerification" class="col-lg-4 control-label">${IdLabel} *</label>
                                         <div class="col-lg-5">
                                             <input type="text" class="form-control" id="ttVerification" name="ttVerification" autofocus="autofocus" placeholder="Please scan trip ticket" value="${whRetrieval.ttVerification}">
+                                            <small id="noteTt" class="form-text text-muted">Verified by Supervisor.</small>
+                                            <small id="noteTtEmail" class="form-text text-muted">Email has been sent to supervisor.</small>
                                         </div>
                                     </div>
                                     <input type="hidden" id="hardwareIdV" name="hardwareIdV" value="${whRetrieval.hardwareId}">
-                                    <input type="hidden" id="barcodeVe" name="barcodeVe" value="${whRetrieval.barcodeVerification}">  
+                                    <input type="hidden" id="barcodeVe" name="barcodeVe" value="${whRetrieval.barcodeVerification}">
+                                    <div class="filter-block pull-left" id="sendEmailTt" hidden>
+                                        <a href="${contextPath}/wh/whRetrieval/emailWrongTt/${whRetrieval.id}" class="btn btn-danger pull-right">
+                                            <i class="fa fa-envelope fa-lg"></i> Send Email to Supervisor
+                                        </a>
+                                    </div>
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel1">Reset</button>
                                         <button type="submit" id="submit1" name="submit1" class="btn btn-primary">Verify</button>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--tab for supervisor verification-->
+
+                    <div id="dis" class="tab-pane fade ${disActiveTab}">
+                        <!--<br>-->
+                        <h6></h6>
+                        <div class="col-lg-7">
+                            <div class="main-box">
+                                <h2>Supervisor Verification</h2>
+                                <form id="dis_form" class="form-horizontal" role="form" action="${contextPath}/wh/whRetrieval/updateBarcodeAndTtDisposition" method="post">
+                                    <input type="hidden" name="id" id="id" value="${whRetrieval.id}" />
+                                    <input type="hidden" name="statusforDisposition" id="statusforDisposition" value="${whRetrieval.status}" />
+                                    <input type="hidden" name="requestId" id="requestId" value="${whRetrieval.requestId}" />
+                                    <input type="hidden" name="tab" value="${disActiveTab}" />
+                                    <div class="form-group" id="barcodeDispositionDiv">
+                                        <input type="hidden" class="form-control" id="mpNoBySupervisor" name="mpNoBySupervisor" value="${whRetrieval.mpNo}">
+                                        <label for=" barcodeDisposition" class="col-lg-3 control-label">Barcode Sticker Disposition *</label>
+                                        <div class="col-lg-5">
+                                            <select id="barcodeDisposition" name="barcodeDisposition" class="form-control">
+                                                <option value="" selected=""></option>
+                                                <c:forEach items="${SupervisorDispositionBarcode}" var="group">
+                                                    <option value="${group.name}" ${group.selected}>${group.name}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="remarksBarcodediv">
+                                        <label for="barcodeDispositionRemarks" class="col-lg-3 control-label">Remarks </label>
+                                        <div class="col-lg-7">
+                                            <textarea class="form-control" rows="5" id="barcodeDispositionRemarks" name="barcodeDispositionRemarks">${whRetrieval.barcodeDispositionRemarks}</textarea>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="form-group" id="ttDispositionDiv">
+                                        <input type="hidden" class="form-control" id="hardwareIdBySupervisor" name="hardwareIdBySupervisor" value="${whRetrieval.hardwareId}">
+                                        <label for=" ttDisposition" class="col-lg-3 control-label">Trip Ticket Disposition *</label>
+                                        <div class="col-lg-5">
+                                            <select id="ttDisposition" name="ttDisposition" class="form-control">
+                                                <option value="" selected=""></option>
+                                                <c:forEach items="${SupervisorDispositionTt}" var="group">
+                                                    <option value="${group.name}" ${group.selected}>${group.name}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="remarksTtdiv">
+                                        <label for="ttDispositionRemarks" class="col-lg-3 control-label">Remarks </label>
+                                        <div class="col-lg-7">
+                                            <textarea class="form-control" rows="5" id="ttDispositionRemarks" name="ttDispositionRemarks">${whRetrieval.ttDispositionRemarks}</textarea>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="mpNoBySupervisor" name="hardwareIdV" value="${whRetrieval.mpNo}">
+                                    <input type="hidden" id="hardwareIdBySupervisor" name="barcodeVe" value="${whRetrieval.hardwareId}">
+                                    <div class="pull-right">
+                                        <button type="reset" class="btn btn-secondary cancel3">Reset</button>
+                                        <button type="submit" id="submitdispose" name="submitdispose" class="btn btn-primary">Verify</button>
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>
@@ -165,6 +242,116 @@
     <s:layout-component name="page_js_inline">
         <script>
             $(document).ready(function () {
+
+//                if ($("#barcodeDisposition").val() === "") {
+//                    $("#disTab").addClass("disabled", true);
+//                    $('a[data-toggle="tab"]').on('click', function () {
+//                        if ($(this).parent('li').hasClass('disabled')) {
+//                            return false;
+//                        }
+//                        ;
+//                    });
+//                }
+
+
+
+                $('#barcodeVerification').bind('copy paste cut', function (e) {
+                    e.preventDefault(); //this line will help us to disable cut,copy,paste		
+                });
+
+                $('#ttVerification').bind('copy paste cut', function (e) {
+                    e.preventDefault(); //this line will help us to disable cut,copy,paste		
+                });
+
+                $('#barcodeVerification').change(function () {
+                    if ($('#barcodeVerification').val() !== "" && $('#barcodeVerification').val() !== $('#mpNoV').val()) {
+                        $("#sendEmailBs").show();
+                    } else {
+                        $("#sendEmailBs").hide();
+                    }
+                });
+
+                $('#submit2').click(function () {
+                    if ($('#barcodeVerification').val() !== "" && $('#barcodeVerification').val() !== $('#mpNoV').val()) {
+                        $("#sendEmailBs").show();
+                    } else {
+                        $("#sendEmailBs").hide();
+                    }
+                });
+
+                $('#ttVerification').change(function () {
+                    if ($('#ttVerification').val() !== "" && $('#ttVerification').val() !== $('#hardwareIdV').val()) {
+                        $("#sendEmailTt").show();
+                    } else {
+                        $("#sendEmailTt").hide();
+                    }
+                });
+
+                $('#submit1').click(function () {
+                    if ($('#ttVerification').val() !== "" && $('#ttVerification').val() !== $('#hardwareIdV').val()) {
+                        $("#sendEmailTt").show();
+                    } else {
+                        $("#sendEmailTt").hide();
+                    }
+                });
+
+                var egroup = $('#groupId');
+                if (egroup.val() !== "1" && egroup.val() !== "2" && egroup.val() !== "25" && egroup.val() !== "29") {
+                    $("#submitdispose").attr("disabled", true);
+                    $('#ttDisposition').attr("disabled", true);
+                    $("#barcodeDisposition").attr("disabled", true);
+                    $("#ttDispositionRemarks").attr("readonly", true);
+                    $("#barcodeDispositionRemarks").attr("readonly", true);
+                }
+
+                var ebs = $('#statusBs');
+                if (ebs.val() === "Barcode Sticker Scanning Mismatched") {
+                    $("#noteBsEmail").show();
+                } else {
+                    $("#noteBsEmail").hide();
+                }
+
+                var ett = $('#statusTt');
+                if (ett.val() === "Trip Ticket Scanning Mismatched") {
+                    $("#noteTtEmail").show();
+                } else {
+                    $("#noteTtEmail").hide();
+                }
+
+                var ebsDis = $('#barcodeDisposition');
+                if (ebsDis.val() === "Verified") {
+                    $("#noteBs").show();
+                } else {
+                    $("#noteBs").hide();
+                }
+
+                var ettDis = $('#ttDisposition');
+                if (ettDis.val() === "Verified") {
+                    $("#noteTt").show();
+                } else {
+                    $("#noteTt").hide();
+                }
+
+                var estatus = $('#statusforDisposition');
+                if (estatus.val() === "Barcode Sticker Scanning Mismatched" || estatus.val() === "Barcode Sticker - Unverified By Supervisor" || estatus.val() === "Barcode Sticker - Hold By Supervisor") {
+                    $('#ttDisposition').attr("disabled", true);
+                    $("#barcodeDisposition").focus();
+                    $("#ttDispositionRemarks").attr("readonly", true);
+                    $("#ttDisposition").attr("required", false);
+                    $("#ttDispositionRemarks").attr("required", false);
+                } else if (estatus.val() === "Trip Ticket Scanning Mismatched" || estatus.val() === "Trip Ticket - Unverified By Supervisor" || estatus.val() === "Trip Ticket - Hold By Supervisor") {
+                    $("#ttDisposition").focus();
+                    $("#barcodeDisposition").attr("disabled", true);
+                    $("#barcodeDispositionRemarks").attr("readonly", true);
+                    $("#barcodeDisposition").attr("required", false);
+                    $("#barcodeDispositionRemarks").attr("required", false);
+                } else {
+                    $('#ttDisposition').attr("disabled", true);
+                    $("#barcodeDisposition").attr("disabled", true);
+                    $("#ttDispositionRemarks").attr("readonly", true);
+                    $("#barcodeDispositionRemarks").attr("readonly", true);
+                    $("#submitdispose").attr("disabled", true);
+                }
 
                 var element1 = $('#barcodeVerification');
                 var element2 = $('#mpNoV');
@@ -224,11 +411,32 @@
                         }
                     }
                 });
+
+                var validator3 = $("#dis_form").validate({
+                    rules: {
+                        barcodeDisposition: {
+                            required: true
+                        },
+                        barcodeDispositionRemarks: {
+                            required: true
+                        },
+                        ttDisposition: {
+                            required: true
+                        },
+                        ttDispositionRemarks: {
+                            required: true
+                        }
+                    }
+                });
+
                 $(".cancel1").click(function () {
                     validator1.resetForm();
                 });
                 $(".cancel2").click(function () {
                     validator2.resetForm();
+                });
+                $(".cancel3").click(function () {
+                    validator3.resetForm();
                 });
             });
 

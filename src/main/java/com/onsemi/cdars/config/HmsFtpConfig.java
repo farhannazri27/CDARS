@@ -523,7 +523,8 @@ public class HmsFtpConfig {
                         WhRetrievalDAO check = new WhRetrievalDAO();
                         String checkstatus = check.getWhRetrieval(id).getStatus();
 
-                        if (!"Ship".equals(checkstatus) && !"Closed".equals(checkstatus) && !"Barcode Verified".equals(checkstatus)) {
+//                        if (!"Ship".equals(checkstatus) && !"Closed".equals(checkstatus) && !"Barcode Verified".equals(checkstatus)) {
+                        if ("Requested".equals(checkstatus)) {
                             WhRetrieval update = new WhRetrieval();
                             update.setId(id);
                             update.setRequestId(e.getRequestId());

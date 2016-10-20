@@ -185,7 +185,7 @@
                                     <select id="inventoryIdTray" name="inventoryIdTray" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${inventoryListTray}" var="group">
-                                            <option invQtyTrayValue="${group.quantity}" value="${group.id}" ${group.selected}>${group.equipmentId}</option>
+                                            <option invQtyTrayValue="${group.quantity}" value="${group.id}" ${group.selected}>${group.equipmentId}/(mpNo: ${group.mpNo})</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -295,7 +295,7 @@
                                                     invQtyPcbBValue="${group.pcbBQty}" 
                                                     invQtyPcbCValue="${group.pcbCQty}" 
                                                     invQtyPcbCtrValue="${group.pcbCtrQty}"
-                                                    value="${group.id}" ${group.selected}>${group.equipmentId}</option>
+                                                    value="${group.id}" ${group.selected}>${group.equipmentId}/(${group.mpNo})</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -342,7 +342,7 @@
                             <div class="form-group" id="remarksdiv">
                                 <label for="remarks" class="col-lg-2 control-label">Remarks </label>
                                 <div class="col-lg-7">
-                                    <textarea class="form-control" rows="5" id="remarks" name="remarks">${WhRequest.remarks}</textarea>
+                                    <textarea class="form-control" rows="5" id="remarks" name="remarks">${whRequest.remarks}</textarea>
                                 </div>
                             </div>
                             <a href="${contextPath}/wh/whRequest" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>

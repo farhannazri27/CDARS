@@ -36,6 +36,14 @@ public class WhRetrieval {
     private String barcodeVerifiedDate;
     private String status;
     private String flag;
+    private String barcodeDisposition;
+    private String barcodeDispositionBy;
+    private String barcodeDispositionRemarks;
+    private String barcodeDispositionDate;
+    private String ttDisposition;
+    private String ttDispositionBy;
+    private String ttDispositionRemarks;
+    private String ttDispositionDate;
 
     //date view
     private String viewRequestedDate;
@@ -45,6 +53,8 @@ public class WhRetrieval {
     private String viewReceivedDate;
     private String viewTtVerifiedDate;
     private String viewBarcodeVerifiedDate;
+    private String viewBarcodeDispositionDate;
+    private String viewTtDispositionDate;
 
     public String getId() {
         return id;
@@ -372,6 +382,86 @@ public class WhRetrieval {
 
     public void setPcbCtrQty(String pcbCtrQty) {
         this.pcbCtrQty = pcbCtrQty;
+    }
+
+    public String getBarcodeDisposition() {
+        return barcodeDisposition;
+    }
+
+    public void setBarcodeDisposition(String barcodeDisposition) {
+        this.barcodeDisposition = barcodeDisposition;
+    }
+
+    public String getBarcodeDispositionBy() {
+        return barcodeDispositionBy;
+    }
+
+    public void setBarcodeDispositionBy(String barcodeDispositionBy) {
+        this.barcodeDispositionBy = barcodeDispositionBy;
+    }
+
+    public String getBarcodeDispositionRemarks() {
+        return barcodeDispositionRemarks;
+    }
+
+    public void setBarcodeDispositionRemarks(String barcodeDispositionRemarks) {
+        this.barcodeDispositionRemarks = barcodeDispositionRemarks;
+    }
+
+    public String getBarcodeDispositionDate() {
+        return barcodeDispositionDate;
+    }
+
+    public void setBarcodeDispositionDate(String barcodeDispositionDate) {
+        this.barcodeDispositionDate = barcodeDispositionDate;
+    }
+
+    public String getTtDisposition() {
+        return ttDisposition;
+    }
+
+    public void setTtDisposition(String ttDisposition) {
+        this.ttDisposition = ttDisposition;
+    }
+
+    public String getTtDispositionBy() {
+        return ttDispositionBy;
+    }
+
+    public void setTtDispositionBy(String ttDispositionBy) {
+        this.ttDispositionBy = ttDispositionBy;
+    }
+
+    public String getTtDispositionRemarks() {
+        return ttDispositionRemarks;
+    }
+
+    public void setTtDispositionRemarks(String ttDispositionRemarks) {
+        this.ttDispositionRemarks = ttDispositionRemarks;
+    }
+
+    public String getTtDispositionDate() {
+        return ttDispositionDate;
+    }
+
+    public void setTtDispositionDate(String ttDispositionDate) {
+        this.ttDispositionDate = ttDispositionDate;
+    }
+
+    public String getViewBarcodeDispositionDate() {
+        return viewBarcodeDispositionDate;
+    }
+
+    public void setViewBarcodeDispositionDate(String viewBarcodeDispositionDate) {
+        this.viewBarcodeDispositionDate = viewBarcodeDispositionDate;
+    }
+
+    public String getViewTtDispositionDate() {
+        return viewTtDispositionDate;
+    }
+
+    public void setViewTtDispositionDate(String viewTtDispositionDate) {
+        this.viewTtDispositionDate = viewTtDispositionDate;
     }
 
 }
