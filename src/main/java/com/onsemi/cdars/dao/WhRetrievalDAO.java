@@ -738,4 +738,247 @@ public class WhRetrievalDAO {
         }
         return queryResult;
     }
+    
+    public Integer getCountRequestFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Requested' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountShipFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Ship' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountBsVerifiedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Verified' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountBsMismatchedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Sticker Scanning Mismatched' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountBsUnverifiedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Sticker - Unverified By Supervisor' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+     public Integer getCountBsHoldFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Sticker - Hold By Supervisor' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+     
+     public Integer getCountTtMismatchedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Trip Ticket Scanning Mismatched' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountTtUnverifiedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Trip Ticket - Unverified By Supervisor' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+     
+     public Integer getCountTtHoldFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Trip Ticket - Hold By Supervisor' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
 }

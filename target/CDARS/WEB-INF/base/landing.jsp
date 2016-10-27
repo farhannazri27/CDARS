@@ -9,7 +9,7 @@
                     Page title
                 </s:layout-component>
             </title>
-            <link rel="SHORTCUT ICON" href="${contextPath}/resources/img/favicon.ico" />
+            <link rel="SHORTCUT ICON" href="${contextPath}/resources/img/favicondddd.ico" />
             <link rel="STYLESHEET" href="${contextPath}/resources/css/opensans.css" />
             <link rel="STYLESHEET" href="${contextPath}/resources/css/landing.css" />
         </head>

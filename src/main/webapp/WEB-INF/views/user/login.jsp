@@ -13,7 +13,7 @@
         <meta name="description" content="">
         <meta name="author" content="" />
 
-        <link rel="shortcut icon" href="${contextPath}/resources/img/favicon.ico" />
+        <link rel="shortcut icon" href="${contextPath}/resources/img/favicondddd.ico" />
         <link rel="stylesheet" href="${contextPath}/resources/css/opensans.css" />
         <!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,800italic,400,600,800" type="text/css">-->
         <link rel="stylesheet" href="${contextPath}/resources/css/font-awesome.min.css" type="text/css" />		

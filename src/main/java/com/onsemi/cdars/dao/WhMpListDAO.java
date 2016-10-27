@@ -237,7 +237,7 @@ public class WhMpListDAO {
     }
     
     public List<WhMpList> getWhMpListListDateDisplayWithFlag0() {
-        String sql = "SELECT *,DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date FROM cdars_wh_mp_list WHERE flag='0' ORDER BY id ASC";
+        String sql = "SELECT *,DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date FROM cdars_wh_mp_list WHERE flag='0' ORDER BY id DESC";
         List<WhMpList> whMpListList = new ArrayList<WhMpList>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -403,5 +403,33 @@ public class WhMpListDAO {
             }
         }
         return queryResult;
+    }
+    
+    public Integer getCountWithFlag0() {
+//        QueryResult queryResult = new QueryResult();
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_mp_list WHERE flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
     }
 }

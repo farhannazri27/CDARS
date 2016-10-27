@@ -104,19 +104,59 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
             cellHeader.setPhrase(new Phrase("Motherboard ID", fontHeader));
             table.addCell(cellHeader);
             table.addCell(barcode);
+
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity(), fontContent));
+            table.addCell(cellContent);
         } else if ("Stencil".equals(whShipping.getRequestEquipmentType())) {
             cellHeader.setPhrase(new Phrase("Stencil ID", fontHeader));
             table.addCell(cellHeader);
             table.addCell(barcode);
+
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity(), fontContent));
+            table.addCell(cellContent);
         } else if ("Tray".equals(whShipping.getRequestEquipmentType())) {
             cellHeader.setPhrase(new Phrase("Tray ID", fontHeader));
             table.addCell(cellHeader);
             table.addCell(barcode);
 
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity(), fontContent));
+            table.addCell(cellContent);
+
         } else if ("PCB".equals(whShipping.getRequestEquipmentType())) {
             cellHeader.setPhrase(new Phrase("PCB ID", fontHeader));
             table.addCell(cellHeader);
             table.addCell(barcode);
+
+            cellHeader.setPhrase(new Phrase("Quantity Qual A", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getPcbAQty(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Quantity Qual B", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getPcbBQty(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Quantity Qual C", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getPcbCQty(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Quantity CONTROL", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getPcbCtrQty(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Total Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity(), fontContent));
+            table.addCell(cellContent);
 
         } else {
             cellHeader.setPhrase(new Phrase("Equipment ID", fontHeader));
@@ -126,11 +166,10 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
             table.addCell(barcode);
         }
 
-        cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
-        table.addCell(cellHeader);
-        cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity(), fontContent));
-        table.addCell(cellContent);
-
+//        cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+//        table.addCell(cellHeader);
+//        cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity(), fontContent));
+//        table.addCell(cellContent);
         cellHeader.setPhrase(new Phrase("Material Pass Number", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whShipping.getMpNo(), fontContent));

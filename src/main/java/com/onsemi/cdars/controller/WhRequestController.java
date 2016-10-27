@@ -23,17 +23,12 @@ import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
 import com.onsemi.cdars.tools.SPTSWebService;
-import com.onsemi.cdars.tools.SptsClass;
 import com.onsemi.cdars.tools.SystemUtil;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -431,7 +426,18 @@ public class WhRequestController {
         }
 
         whRequest.setRequestedBy(userSession.getFullname());
-        whRequest.setRequestorEmail(userSession.getEmail());
+
+        EmailConfigDAO econfD = new EmailConfigDAO();
+        int count = econfD.getCountTask(equipmentType);
+        if (count == 1) {
+            econfD = new EmailConfigDAO();
+            EmailConfig econ = econfD.getEmailConfigByTask(equipmentType);
+            String email = econ.getEmail();
+            whRequest.setRequestorEmail(email);//email supervisor base on equipment type 
+        } else {
+            whRequest.setRequestorEmail(userSession.getEmail()); //email requestor
+        }
+
         whRequest.setRemarks(remarks);
         whRequest.setCreatedBy(userSession.getId());
         whRequest.setFlag("0");
@@ -453,19 +459,28 @@ public class WhRequestController {
 
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
-                user.setFullname(userSession.getFullname());
+
+                econfD = new EmailConfigDAO();
+                EmailConfig econ = econfD.getEmailConfigByTask("Approver 1");
+                String email = econ.getEmail();
+                String name = econ.getUserName();
+
+                LOGGER.info(".........test email ship.....");
+
+                user.setFullname(name);
                 emailSender.htmlEmail(
                         servletContext,
                         //                    user name
                         user,
                         //                    to
                         //                        "farhannazri27@yahoo.com",
-                        "fg79cj@onsemi.com",
+                        //                        "fg79cj@onsemi.com",
+                        email,
                         //                    subject
-                        "New Hardware Request from CDARS",
+                        "New Hardware Request from HIMS",
                         //                    msg
-                        "New Hardware Request has been added to CDARS. Please go to this link "
-                        + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">CDARS</a>"
+                        "New Hardware Request has been added to HIMS. Please go to this link "
+                        + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">HIMS</a>"
                         + " for approval process."
                 );
             }
@@ -656,9 +671,9 @@ public class WhRequestController {
                         // attachment file
                         new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv"),
                         //                    subject
-                        "New Hardware Request from CDARS",
+                        "New Hardware Request from HIMS",
                         //                    msg
-                        "New Hardware Request has been added to CDARS"
+                        "New Hardware Request has been added to HIMS"
                 );
                 return "redirect:/wh/whRetrieval";
             }
@@ -829,7 +844,7 @@ public class WhRequestController {
             if (!"".equals(equipmentIdpcbA)) {
                 String[] qualA = equipmentIdpcbA.split(" - ");
                 if (!pcbName[0].equals(qualA[0])) {
-                   redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
+                    redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
                     return "redirect:/wh/whRequest/edit/" + id;
                 }
             }
@@ -869,7 +884,7 @@ public class WhRequestController {
             whRequest.setPcbCQty("0");
             whRequest.setPcbCtrQty("0");
         } else if ("Tray".equals(equipmentType)) {
-             whRequest.setEquipmentId(equipmentIdTray);
+            whRequest.setEquipmentId(equipmentIdTray);
             whRequest.setQuantity(quantity);
             whRequest.setPcbAQty("0");
             whRequest.setPcbBQty("0");
@@ -1011,6 +1026,7 @@ public class WhRequestController {
             whRequestDAO = new WhRequestDAO();
             WhRequest whRequest1 = whRequestDAO.getWhRequest(id);
             String fullname = whRequest1.getRequestedBy();
+            String emailRequestor = whRequest1.getRequestorEmail();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
             user.setFullname(fullname);
             EmailConfigDAO emailD = new EmailConfigDAO();
@@ -1023,12 +1039,12 @@ public class WhRequestController {
                     user,
                     //                    to
                     //                    "farhannazri27@yahoo.com",
-                    approver,
+                    emailRequestor,
                     //                    subject
-                    "Approval Status for New Hardware Request from CDARS",
+                    "Approval Status for New Hardware Request from HIMS",
                     //                    msg
                     "Approval status for New Hardware Request has been made. Please go to this link "
-                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">CDARS</a>"
+                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">HIMS</a>"
                     + " for approval status checking."
             );
 

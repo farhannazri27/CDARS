@@ -80,8 +80,9 @@
                                                         <i class="fa fa-ticket fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <c:if test="${whShipping.status == 'No Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Ship'}">
-                                                    <a href="${contextPath}/wh/whShipping/viewBarcodeSticker/${whShipping.id}" class="table-link" title="Barcode Sticker">
+                                                <c:if test="${whShipping.status == 'Not Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Ship'}">
+                                                    <!--<a href="${contextPath}/wh/whShipping/viewBarcodeSticker/${whShipping.id}" class="table-link" title="Barcode Sticker">-->
+                                                        <a class="table-link" href="#" title="Barcode Sticker" onclick="window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}','Barcode Sticker','width=720,height=800').print()">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-barcode fa-stack-1x fa-inverse"></i>
@@ -113,67 +114,76 @@
     </s:layout-component>
     <s:layout-component name="page_js_inline">
         <script>
-                                                    $(document).ready(function () {
+                                                        $(document).ready(function () {
 
-//            var element = $('#groupIdName');
-//            if (element.val() === "1") {
-//                 $("#approval").show();
-//            }
 
-                                                        oTable = $('#dt_spml').DataTable({
-                                                            "pageLength": 10,
-                                                            "order": [],
-                                                            "aoColumnDefs": [
-                                                                {"bSortable": false, "aTargets": [0]},
-                                                                {"bSortable": false, "aTargets": [8]}
-                                                            ],
-                                                            "sDom": "tp"
+                                                            oTable = $('#dt_spml').DataTable({
+                                                                "pageLength": 10,
+                                                                "order": [],
+                                                                "aoColumnDefs": [
+                                                                    {"bSortable": false, "aTargets": [0]},
+                                                                    {"bSortable": false, "aTargets": [8]}
+                                                                ],
+                                                                "sDom": "tp"
+                                                            });
+                                                            var exportTitle = "Hardware Shipping List";
+                                                            var tt = new $.fn.dataTable.TableTools(oTable, {
+                                                                "sSwfPath": "${contextPath}/resources/private/datatables/swf/copy_csv_xls_pdf.swf",
+                                                                "aButtons": [
+                                                                    {
+                                                                        "sExtends": "copy",
+                                                                        "sButtonText": "Copy",
+                                                                        "sTitle": exportTitle,
+                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
+                                                                    },
+                                                                    {
+                                                                        "sExtends": "xls",
+                                                                        "sButtonText": "Excel",
+                                                                        "sTitle": exportTitle,
+                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
+                                                                    },
+                                                                    {
+                                                                        "sExtends": "pdf",
+                                                                        "sButtonText": "PDF",
+                                                                        "sTitle": exportTitle,
+                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
+                                                                    },
+                                                                    {
+                                                                        "sExtends": "print",
+                                                                        "sButtonText": "Print"
+                                                                    }
+                                                                ]
+                                                            });
+                                                            $(tt.fnContainer()).appendTo("#dt_spml_tt");
+                                                            $('#dt_spml_search').keyup(function () {
+                                                                oTable.search($(this).val()).draw();
+                                                            });
+                                                            $("#dt_spml_rows").change(function () {
+                                                                oTable.page.len($(this).val()).draw();
+                                                            });
                                                         });
-                                                        var exportTitle = "Hardware Shipping List";
-                                                        var tt = new $.fn.dataTable.TableTools(oTable, {
-                                                            "sSwfPath": "${contextPath}/resources/private/datatables/swf/copy_csv_xls_pdf.swf",
-                                                            "aButtons": [
-                                                                {
-                                                                    "sExtends": "copy",
-                                                                    "sButtonText": "Copy",
-                                                                    "sTitle": exportTitle,
-                                                                    "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
-                                                                },
-                                                                {
-                                                                    "sExtends": "xls",
-                                                                    "sButtonText": "Excel",
-                                                                    "sTitle": exportTitle,
-                                                                    "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
-                                                                },
-                                                                {
-                                                                    "sExtends": "pdf",
-                                                                    "sButtonText": "PDF",
-                                                                    "sTitle": exportTitle,
-                                                                    "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
-                                                                },
-                                                                {
-                                                                    "sExtends": "print",
-                                                                    "sButtonText": "Print"
-                                                                }
-                                                            ]
-                                                        });
-                                                        $(tt.fnContainer()).appendTo("#dt_spml_tt");
-                                                        $('#dt_spml_search').keyup(function () {
-                                                            oTable.search($(this).val()).draw();
-                                                        });
-                                                        $("#dt_spml_rows").change(function () {
-                                                            oTable.page.len($(this).val()).draw();
-                                                        });
-                                                    });
 
-                                                    function modalDelete(e) {
-                                                        var deleteId = $(e).attr("modaldeleteid");
-                                                        var deleteInfo = $("#modal_delete_info_" + deleteId).html();
-                                                        var deleteUrl = "${contextPath}/wh/whShipping/delete/" + deleteId;
-                                                        var deleteMsg = "<f:message key='general.label.delete.confirmation'><f:param value='" + deleteInfo + "'/></f:message>";
-                                                        $("#delete_modal .modal-body").html(deleteMsg);
-                                                        $("#modal_delete_button").attr("href", deleteUrl);
-                                                    }
+                                                        function printDiv() {
+                                                           location.href = 'http://localhost:8080/CDARS/wh/whShipping/viewWhBarcodeStickerPdf/19';
+                                                            newWin = window.open("");
+                                                            newWin.document.write(location.href);
+//                                                            newWin.print();
+//                                                            newWin.close();
+
+                                                        }
+
+                                                        $('.printAndEmail').on('click', function () {
+                                                            printDiv();
+                                                        })
+
+                                                        function modalDelete(e) {
+                                                            var deleteId = $(e).attr("modaldeleteid");
+                                                            var deleteInfo = $("#modal_delete_info_" + deleteId).html();
+                                                            var deleteUrl = "${contextPath}/wh/whShipping/delete/" + deleteId;
+                                                            var deleteMsg = "<f:message key='general.label.delete.confirmation'><f:param value='" + deleteInfo + "'/></f:message>";
+                                                            $("#delete_modal .modal-body").html(deleteMsg);
+                                                            $("#modal_delete_button").attr("href", deleteUrl);
+                                                        }
             </script>
     </s:layout-component>
 </s:layout-render>

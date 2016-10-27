@@ -5,9 +5,10 @@
     <head>
         <meta charset="utf-8">
         <!--<title>HMS - Login</title>-->
-        <title>CDARS - Login</title>
+        <title>HIMS - Login</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Sistem Pengurusan Maklumat Latihan">
+        <meta name="description" content="Hardware and Inventory Management System">
         <meta name="author" content="FTC">
 
         <!-- Le styles -->
@@ -22,7 +23,7 @@
         <![endif]-->
 
         <!-- Le favicon -->
-        <link rel="shortcut icon" href="${contextPath}/resources/img/favicon.ico">
+        <link rel="shortcut icon" href="${contextPath}/resources/img/favicondddd.ico">
 
     </head>
 
@@ -37,7 +38,7 @@
                         <span class="icon-bar"></span>
                     </a>
                     <!--<center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Hardware Management System (HMS) - Rel Lab</a></center>-->
-                    <center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Contamination Database and Reaction System (CDARS)</a></center>
+                    <center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Hardware and Inventory Management System (HIMS)</a></center>
 
                 </div>
             </div>
@@ -51,7 +52,7 @@
                         <img src="${contextPath}/resources/img/cdars_logo.png" alt="FTC" width="35%" />
                     </a>
                     <!--<legend>Sign in to <span class="blue">HMS</span></legend>-->
-                    <legend>Sign in to <span class="blue">CDARS</span></legend>
+                    <legend>Sign in to <span class="blue">HIMS</span></legend>
 
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger">

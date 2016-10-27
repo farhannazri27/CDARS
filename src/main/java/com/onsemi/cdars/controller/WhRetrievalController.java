@@ -1305,7 +1305,7 @@ public class WhRetrievalController {
                     "Mismatched Barcode Sticker Scanning",
                     //                    msg
                     "There is a mismatch barcode sticker scanning for hardware retrieval. Please go to this link "
-                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">CDARS</a>"
+                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
                     + " for verification process."
             );
         } else {
@@ -1357,11 +1357,11 @@ public class WhRetrievalController {
                     "Mismatched Trip Ticket Scanning",
                     //                    msg
                     "There is a mismatch trip ticket scanning for hardware retrieval. Please go to this link "
-                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">CDARS</a>"
+                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
                     + " for verification process."
             );
         } else {
-            redirectAttrs.addFlashAttribute("error", "Fail to send email.Please contact CDARS Administrator");
+            redirectAttrs.addFlashAttribute("error", "Fail to send email.Please contact HIMS Administrator");
         }
         return "redirect:/wh/whRetrieval/edit/" + id;
     }

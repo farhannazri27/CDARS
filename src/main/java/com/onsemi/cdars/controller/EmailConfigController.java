@@ -85,7 +85,8 @@ public class EmailConfigController {
 
         LDAPUserDAO ldap = new LDAPUserDAO();
         LDAPUser lu = ldap.getByOncid(userOncid);
-        emailConfig.setEmail(lu.getEmail());
+//        emailConfig.setEmail(lu.getEmail());
+        emailConfig.setEmail(email);
         emailConfig.setUserName(lu.getFirstname() + " " + lu.getLastname());
         emailConfig.setFlag("0");
         emailConfig.setRemarks(remarks);
@@ -164,7 +165,8 @@ public class EmailConfigController {
 
         LDAPUserDAO ldap = new LDAPUserDAO();
         LDAPUser lu = ldap.getByOncid(userOncid);
-        emailConfig.setEmail(lu.getEmail());
+//        emailConfig.setEmail(lu.getEmail());
+        emailConfig.setEmail(email);
         emailConfig.setUserName(lu.getFirstname() + " " + lu.getLastname());
         emailConfig.setFlag("0");
         emailConfig.setRemarks(remarks);

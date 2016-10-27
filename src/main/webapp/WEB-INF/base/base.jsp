@@ -6,14 +6,16 @@
     <html>
         <head>
             <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
             <!--<title>HMS - Rel Lab</title>-->
-            <title>CDARS</title>
+            <title>HIMS</title>
 
             <!-- bootstrap -->
             <link href="${contextPath}/resources/private/css/bootstrap/bootstrap.css" rel="stylesheet" />
-            
+
             <!--lighter readonly form-control-->
             <link href="${contextPath}/resources/private/css/bootstrap/readonly.css" rel="stylesheet" />
 
@@ -80,7 +82,7 @@
             </s:layout-component>
 
             <!-- Favicon -->
-            <link type="image/x-icon" href="${contextPath}/resources/img/favicon.ico" rel="shortcut icon"/>
+            <link type="image/x-icon" href="${contextPath}/resources/img/favicondddd.ico" rel="shortcut icon"/>
 
             <!-- google font libraries -->
             <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300|Titillium+Web:200,300,400' rel='stylesheet' type='text/css'>
@@ -90,7 +92,7 @@
                     <script src="${contextPath}/resources/private/js/respond.min.js"></script>
             <![endif]-->
             <!--[if lt IE 8]>
-                    <link href="${contextPath}/resources/private/css/libs/font-awesome-ie7.css" type="text/css" rel="stylesheet" />
+                    <link href="${contextPath}/resources/private/css/libs/font-awesome-ie7.min.css" type="text/css" rel="stylesheet" />
             <![endif]-->
         </head>
         <body>
@@ -98,7 +100,7 @@
                 <div class="container">
                     <a href="${contextPath}/" id="logo" class="navbar-brand col-md-6 col-sm-6 col-xs-12">
                         <!--<span>Hardware Management System (HMS) - Rel Lab</span>-->
-                        <span>Contamination Database and Reaction System (CDARS)</span>
+                        <span>Hardware and Inventory Management System (HIMS)</span>
                     </a>
 
                     <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button">
@@ -212,6 +214,8 @@
             <!-- global scripts -->
             <script src="${contextPath}/resources/private/js/jquery.js"></script>
             <script src="${contextPath}/resources/private/js/bootstrap.js"></script>
+            <!--latest-->
+            <script src="${contextPath}/resources/private/js/css3-mediaqueries.js"></script> 
 
             <!-- this page specific scripts -->
             <s:layout-component name="page_js">

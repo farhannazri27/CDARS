@@ -267,6 +267,14 @@
             <version>3.1</version>
         </dependency>
         
+        <!--zebra printer-->
+        <dependency>
+            <groupId>fr.w3blog</groupId>
+            <artifactId>zebra-zpl</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
+        </dependency>
+        
         <!-- Simple JSON -->
         <!--<dependency>
             <groupId>com.googlecode.json-simple</groupId>

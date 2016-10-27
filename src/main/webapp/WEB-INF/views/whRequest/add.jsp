@@ -42,6 +42,8 @@
                 box-shadow: none; /* You may want to include this as bootstrap applies these styles too */
             }
 
+            span.tab-space {padding-left:20em;}
+
         </style>
     </s:layout-component>
     <s:layout-component name="page_container">
@@ -185,7 +187,7 @@
                                     <select id="inventoryIdTray" name="inventoryIdTray" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${inventoryListTray}" var="group">
-                                            <option invQtyTrayValue="${group.quantity}" value="${group.id}" ${group.selected}>${group.equipmentId}/(mpNo: ${group.mpNo})</option>
+                                            <option invQtyTrayValue="${group.quantity}" value="${group.id}" ${group.selected}>${group.equipmentId}&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;${group.mpNo}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -295,7 +297,7 @@
                                                     invQtyPcbBValue="${group.pcbBQty}" 
                                                     invQtyPcbCValue="${group.pcbCQty}" 
                                                     invQtyPcbCtrValue="${group.pcbCtrQty}"
-                                                    value="${group.id}" ${group.selected}>${group.equipmentId}/(${group.mpNo})</option>
+                                                    value="${group.id}" ${group.selected}>${group.equipmentId}&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;${group.mpNo}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
@@ -405,29 +407,29 @@
                 $('#equipmentIdpcbCtr').change(function () {
                     $('#maxQtyCtr').val($('option:selected', this).attr('pcbCtrquantity'));
                     $('#maxQtyCtr1').val($('option:selected', this).attr('pcbCtrquantity'));
-                    if($(this).val() === ""){
-                         $('#maxQtyCtr1').val("0");
+                    if ($(this).val() === "") {
+                        $('#maxQtyCtr1').val("0");
                     }
                 });
                 $('#equipmentIdpcbA').change(function () {
                     $('#maxQtyA').val($('option:selected', this).attr('pcbAquantity'));
                     $('#maxQtyA1').val($('option:selected', this).attr('pcbAquantity'));
-                     if($(this).val() === ""){
-                         $('#maxQtyA1').val("0");
+                    if ($(this).val() === "") {
+                        $('#maxQtyA1').val("0");
                     }
                 });
                 $('#equipmentIdpcbB').change(function () {
                     $('#maxQtyB').val($('option:selected', this).attr('pcbBquantity'));
                     $('#maxQtyB1').val($('option:selected', this).attr('pcbBquantity'));
-                     if($(this).val() === ""){
-                         $('#maxQtyB1').val("0");
+                    if ($(this).val() === "") {
+                        $('#maxQtyB1').val("0");
                     }
                 });
                 $('#equipmentIdpcbC').change(function () {
                     $('#maxQtyC').val($('option:selected', this).attr('pcbCquantity'));
                     $('#maxQtyC1').val($('option:selected', this).attr('pcbCquantity'));
-                     if($(this).val() === ""){
-                         $('#maxQtyC1').val("0");
+                    if ($(this).val() === "") {
+                        $('#maxQtyC1').val("0");
                     }
                 });
                 $('#equipmentIdMb').change(function () {
@@ -932,7 +934,382 @@
                 }
 
             });
-//           
+            
+            $('#requestType').on('change', function () {
+                var element1 = $('#equipmentType');
+                if ($(this).val() === "Ship" && element1.val() === "Motherboard") {
+                    $("#mblistdiv").show();
+                    $("#pcbTypeDiv").hide();
+                    $("#listdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#quantity").val("");
+                    $("#quantitytest").val("0");
+                    $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#pcbType").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#equipmentIdpcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdpcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdpcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdpcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantity").val("");
+                    $("#inventorypcblistdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
+                } else if ($(this).val() === "Ship" && element1.val() === "Stencil") {
+                    $("#stencillistdiv").show();
+                    $("#pcbTypeDiv").hide();
+                    $("#listdiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#pcbType").val("").trigger('change');
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#equipmentIdpcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdpcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdpcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdpcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantity").val("");
+                    $("#quantitytest").val("0");
+                    $("#inventorypcblistdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
+                } else if ($(this).val() === "Ship" && element1.val() === "Tray") {
+                    $("#traylistdiv").show();
+                    $("#quantitydiv").show();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#pcbTypeDiv").hide();
+                    $("#listdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#pcbType").val("").trigger('change');
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdpcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdpcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdpcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdpcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantitytest").val("0");
+                    $("#inventorypcblistdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
+                } else if ($(this).val() === "Ship" && element1.val() === "PCB") {
+                    $("#pcbTypeDiv").show();
+                    $("#pcbAlistdiv").show();
+                    $("#pcbAQtydiv").show();
+                    $("#pcbBlistdiv").show();
+                    $("#pcbBQtydiv").show();
+                    $("#pcbClistdiv").show();
+                    $("#pcbCQtydiv").show();
+                    $("#pcbCtrlistdiv").show();
+                    $("#pcbCtrQtydiv").show();
+                    $("#quantitytestdiv").show();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#quantitydiv").hide();
+                    $("#listdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#inventorypcblistdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                } else if ($(this).val() === "Retrieve" && element1.val() === "Motherboard") {
+                    $("#inventorymblistdiv").show();
+                    $("#pcbTypeDiv").hide();
+                    $("#listdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventorypcblistdiv").hide();
+                    $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#pcbType").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                    $("#equipmentIdpcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdpcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdpcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdpcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantity").val("");
+                    $("#quantitytest").val("0");
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#equipmentIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
+                } else if ($(this).val() === "Retrieve" && element1.val() === "Stencil") {
+                    $("#inventorystencillistdiv").show();
+                    $("#pcbTypeDiv").hide();
+                    $("#listdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventorypcblistdiv").hide();
+                    $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#pcbType").val("").trigger('change');
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                    $("#equipmentIdpcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdpcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdpcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdpcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantity").val("");
+                    $("#quantitytest").val("0");
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#equipmentIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
+                } else if ($(this).val() === "Retrieve" && element1.val() === "Tray") {
+                    $("#inventorytraylistdiv").show();
+                    $("#pcbTypeDiv").hide();
+                    $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#listdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorypcblistdiv").hide();
+                    $("#pcbType").val("").trigger('change');
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                    $("#equipmentIdpcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdpcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdpcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdpcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantitytest").val("0");
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#equipmentIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
+                } else if ($(this).val() === "Retrieve" && element1.val() === "PCB") {
+                    $("#inventorypcblistdiv").show();
+                    $("#pcbTypeDiv").hide();
+                    $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").show();
+                    $("#quantityCCtrdiv").show();
+                    $("#listdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#equipmentIdPcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdPcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdPcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdPcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantitytest").val("0");
+                } else {
+                    $("#listdiv").show();
+                    $("#pcbTypeDiv").hide();
+                    $("#pcbAlistdiv").hide();
+                    $("#pcbAQtydiv").hide();
+                    $("#pcbBlistdiv").hide();
+                    $("#pcbBQtydiv").hide();
+                    $("#pcbClistdiv").hide();
+                    $("#pcbCQtydiv").hide();
+                    $("#pcbCtrlistdiv").hide();
+                    $("#pcbCtrQtydiv").hide();
+                    $("#mblistdiv").hide();
+                    $("#stencillistdiv").hide();
+                    $("#traylistdiv").hide();
+                    $("#quantitydiv").hide();
+                    $("#quantitytestdiv").hide();
+                    $("#quantityABdiv").hide();
+                    $("#quantityCCtrdiv").hide();
+                    $("#pcbType").val("").trigger('change');
+                    $("#equipmentIdMb").val("").trigger('change');
+                    $("#equipmentIdStencil").val("").trigger('change');
+                    $("#equipmentIdTray").val("").trigger('change');
+                    $("#equipmentIdpcbA").val("").trigger('change');
+                    $("#pcbAQty").val("0");
+                    $("#equipmentIdpcbB").val("").trigger('change');
+                    $("#pcbBQty").val("0");
+                    $("#equipmentIdpcbC").val("").trigger('change');
+                    $("#pcbCQty").val("0");
+                    $("#equipmentIdpcbCtr").val("").trigger('change');
+                    $("#pcbCtrQty").val("0");
+                    $("#quantity").val("");
+                    $("#quantitytest").val("0");
+                    $("#inventorypcblistdiv").hide();
+                    $("#inventorymblistdiv").hide();
+                    $("#inventorystencillistdiv").hide();
+                    $("#inventorytraylistdiv").hide();
+                    $("#inventoryIdMb").val("").trigger('change');
+                    $("#inventoryIdStencil").val("").trigger('change');
+                    $("#inventoryIdTray").val("").trigger('change');
+                    $("#inventoryIdPcb").val("").trigger('change');
+                    $("#maxQtyCtr1").val("0");
+                    $("#maxQtyA1").val("0");
+                    $("#maxQtyB1").val("0");
+                    $("#maxQtyC1").val("0");
+                }
+
+            });
 
 
 

@@ -523,5 +523,86 @@ public class WhRequestDAO {
         }
         return count;
     }
+    
+    public Integer getCountWaitingFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountApprovedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Approved' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountNotApprovedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Not Approved' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
 
 }

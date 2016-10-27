@@ -626,4 +626,112 @@ public class WhShippingDAO {
         }
         return count;
     }
+    
+    public Integer getCountNoMpNumFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'No Material Pass Number' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountBSFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Not Scan Barcode Sticker Yet' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountTtFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Not Scan Trip Ticket Yet' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+    
+    public Integer getCountShippedFlag0() {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Ship' AND flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
 }

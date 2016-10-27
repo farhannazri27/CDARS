@@ -21,7 +21,7 @@
         <![endif]-->
 
         <!-- Le favicon -->
-        <link rel="shortcut icon" href="${contextPath}/resources/img/favicon.ico">
+        <link rel="shortcut icon" href="${contextPath}/resources/img/favicondddd.ico">
 
     </head>
 

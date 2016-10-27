@@ -58,7 +58,7 @@ public class ApprovalCronConfig {
                         "Pending Approval Action for New Hardware Request",
                         //                    msg
                         "There are " + count + " hardware request still pending for approval action. Please go to this link "
-                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">CDARS</a>"
+                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">HIMS</a>"
                         + " to do the approval action. Thank you."
                 );
 
@@ -100,7 +100,7 @@ public class ApprovalCronConfig {
                         "Material Pass Will Expire Within 30 Days",
                         //                    msg
                         "There are " + count + " material pass that will be expire within 30 days. Please go to this link "
-                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">CDARS</a>"
+                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">HIMS</a>"
                         + " to request a retrieval from Sungai Gadut Warehouse. Thank you."
                 );
 
@@ -142,7 +142,7 @@ public class ApprovalCronConfig {
                         "Material Pass Has Expired",
                         //                    msg
                         "There are " + count + " material pass has expired. Please go to this link "
-                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">CDARS</a>"
+                        + "<a href=\"http://fg79cj-l1:8080" + servletContext.getContextPath() + "/wh/whRequest\">HIMS</a>"
                         + " to request a retrieval from Sungai Gadut Warehouse. Thank you."
                 );
 

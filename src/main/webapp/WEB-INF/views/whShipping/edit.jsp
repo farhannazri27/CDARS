@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel">Reset</button>
-                                        <button type="submit" id="submit" name="submit" class="btn btn-primary">Save & Print Trip Ticket</button>
+                                        <button type="submit" id="submit" name="submit" class="btn btn-primary">Save & View Trip Ticket</button>
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>

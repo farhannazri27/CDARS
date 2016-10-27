@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhMpListDAO;
+import com.onsemi.cdars.dao.WhRequestDAO;
+import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.dao.WhShippingDAO;
 import com.onsemi.cdars.model.WhMpList;
 import com.onsemi.cdars.model.UserSession;
@@ -60,8 +62,79 @@ public class WhMpListController {
     ) {
         WhMpListDAO whMpListDAO = new WhMpListDAO();
         List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+        whMpListDAO = new WhMpListDAO();
+        int count = whMpListDAO.getCountWithFlag0();
         model.addAttribute("whMpListList", whMpListList);
+        model.addAttribute("count", count);
         return "whMpList/whMpList";
+    }
+
+    @RequestMapping(value = "/22", method = RequestMethod.GET)
+    public String whMpList2(
+            Model model
+    ) {
+        WhMpListDAO whMpListDAO = new WhMpListDAO();
+        List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+        whMpListDAO = new WhMpListDAO();
+        int count = whMpListDAO.getCountWithFlag0();
+
+        //count dashboard ship
+        WhShippingDAO shipD = new WhShippingDAO();
+        int countMpShip = shipD.getCountNoMpNumFlag0();
+        shipD = new WhShippingDAO();
+        int countBsShip = shipD.getCountBSFlag0();
+        shipD = new WhShippingDAO();
+        int countTtShip = shipD.getCountTtFlag0();
+        shipD = new WhShippingDAO();
+        int countShippedShip = shipD.getCountShippedFlag0();
+        model.addAttribute("countMpShip", countMpShip);
+        model.addAttribute("countBsShip", countBsShip);
+        model.addAttribute("countTtShip", countTtShip);
+        model.addAttribute("countShippedShip", countShippedShip);
+
+        //count dashboard requests
+        WhRequestDAO reqD = new WhRequestDAO();
+        int countWaitReq = reqD.getCountWaitingFlag0();
+        reqD = new WhRequestDAO();
+        int countAppReq = reqD.getCountApprovedFlag0();
+        reqD = new WhRequestDAO();
+        int countNotAppReq = reqD.getCountNotApprovedFlag0();
+        model.addAttribute("countWaitReq", countWaitReq);
+        model.addAttribute("countAppReq", countAppReq);
+        model.addAttribute("countNotAppReq", countNotAppReq);
+
+        //count dashboard retrieval
+        WhRetrievalDAO retD = new WhRetrievalDAO();
+        int countReqRet = retD.getCountRequestFlag0();
+        retD = new WhRetrievalDAO();
+        int countShipRet = retD.getCountShipFlag0();
+        retD = new WhRetrievalDAO();
+        int countBsVerRet = retD.getCountBsVerifiedFlag0();
+        retD = new WhRetrievalDAO();
+        int countBsMisRet = retD.getCountBsMismatchedFlag0();
+        retD = new WhRetrievalDAO();
+        int countBsUnvRet = retD.getCountBsUnverifiedFlag0();
+        retD = new WhRetrievalDAO();
+        int countBsHoldRet = retD.getCountBsHoldFlag0();
+        retD = new WhRetrievalDAO();
+        int countTtMisRet = retD.getCountTtMismatchedFlag0();
+        retD = new WhRetrievalDAO();
+        int countTtUnvRet = retD.getCountTtUnverifiedFlag0();
+        retD = new WhRetrievalDAO();
+        int countTtHoldRet = retD.getCountTtHoldFlag0();
+        model.addAttribute("countReqRet", countReqRet);
+        model.addAttribute("countShipRet", countShipRet);
+        model.addAttribute("countBsVerRet", countBsVerRet);
+        model.addAttribute("countBsMisRet", countBsMisRet);
+        model.addAttribute("countBsUnvRet", countBsUnvRet);
+        model.addAttribute("countBsHoldRet", countBsHoldRet);
+        model.addAttribute("countTtMisRet", countTtMisRet);
+        model.addAttribute("countTtUnvRet", countTtUnvRet);
+        model.addAttribute("countTtHoldRet", countTtHoldRet);
+
+        model.addAttribute("whMpListList", whMpListList);
+        model.addAttribute("count", count);
+        return "whMpList/whMpList_2";
     }
 
     @RequestMapping(value = "/s", method = RequestMethod.GET)
@@ -73,6 +146,10 @@ public class WhMpListController {
 
         whMpListDAO = new WhMpListDAO();
         List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+
+        whMpListDAO = new WhMpListDAO();
+        int count = whMpListDAO.getCountWithFlag0();
+        model.addAttribute("count", count);
         model.addAttribute("whMpListList", whMpListList);
         return "whMpList/whMpList";
     }
@@ -262,12 +339,9 @@ public class WhMpListController {
                             // attachment file
                             new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv"),
                             //                    subject
-                            "New Hardware Shipping from CDARS",
+                            "New Hardware Shipping from HIMS",
                             //                    msg
                             "New hardware will be ship to storage factory. "
-                    //                                    + "Please go to this link "
-                    //                            + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">CDARS</a>"
-                    //                            + " to check the shipping list."
                     );
 
                     //update status at shipping list to "Ship"
@@ -485,7 +559,7 @@ public class WhMpListController {
                                     SPTSResponse sfPkidQualC = SPTSWebService.insertSFItem(paramsC3);
                                     System.out.println("sfPkidQualC: " + sfPkidQualC.getResponseId());
                                 }
-                                if (!"0".equals(whship.getPcbCtrQty())&& !"".equals(whship.getPcbCtr())) {
+                                if (!"0".equals(whship.getPcbCtrQty()) && !"".equals(whship.getPcbCtr())) {
                                     //get pkid for pcb qual ctr
                                     System.out.println("GET ITEM BY PARAM...");
                                     JSONObject paramsCtr = new JSONObject();
@@ -586,5 +660,68 @@ public class WhMpListController {
             redirectAttrs.addFlashAttribute("error", error);
         }
         return "redirect:/wh/whShipping/whMpList";
+    }
+
+    @RequestMapping(value = "/email", method = {RequestMethod.GET, RequestMethod.POST})
+    public String email(
+            Model model,
+            HttpServletRequest request,
+            Locale locale,
+            RedirectAttributes redirectAttrs,
+            @ModelAttribute UserSession userSession
+    ) throws IOException {
+        LOGGER.info("send email to person in charge");
+        EmailSender emailSender = new EmailSender();
+        com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+        user.setFullname(userSession.getFullname());
+        emailSender.htmlEmail(
+                servletContext,
+                user, //user name requestor
+                "fg79cj@onsemi.com",
+                //                "muhdfaizal@onsemi.com",                                   //to
+                "List of Hardware(s) Ready for Shipment", //subject
+                "The list of hardware(s) that have been ready for shipment has been made.<br /><br />"
+                + "<br /><br /> "
+                + "<style>table, th, td {border: 1px solid black;} </style>"
+                + "<table style=\"width:100%\">" //tbl
+                + "<tr>"
+                + "<th>MATERIAL PASS NO</th> "
+                + "<th>MATERIAL PASS EXPIRY DATE</th> "
+                + "<th>HARDWARE TYPE</th>"
+                + "<th>HARDWARE ID</th>"
+                + "<th>QUANTITY</th>"
+                + "</tr>"
+                + table()
+                + "</table>"
+                + "<br />Thank you." //msg
+        );
+        return "redirect:/wh/whShipping/whMpList";
+    }
+
+    private String table() {
+        WhMpListDAO whMpListDAO = new WhMpListDAO();
+        List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+        String materialPassNo = "";
+        String materialPassExp = "";
+        String hardwareType = "";
+        String hardwareId = "";
+        String quantity = "";
+        String text = "";
+
+        for (int i = 0; i < whMpListList.size(); i++) {
+            materialPassNo = whMpListList.get(i).getMpNo();
+            materialPassExp = whMpListList.get(i).getViewMpExpiryDate();
+            hardwareId = whMpListList.get(i).getHardwareId();
+            hardwareType = whMpListList.get(i).getHardwareType();
+            quantity = whMpListList.get(i).getQuantity();
+            text = text + "<tr align = \"center\">";
+            text = text + "<td>" + materialPassNo + "</td>";
+            text = text + "<td>" + materialPassExp + "</td>";
+            text = text + "<td>" + hardwareType + "</td>";
+            text = text + "<td>" + hardwareId + "</td>";
+            text = text + "<td>" + quantity + "</td>";
+            text = text + "</tr>";
+        }
+        return text;
     }
 }

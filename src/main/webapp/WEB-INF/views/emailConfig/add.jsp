@@ -15,7 +15,7 @@
                         <h2>Email management Information</h2>
                         <form id="add_hardwarequest_form" class="form-horizontal" role="form" action="${contextPath}/admin/emailConfig/save" method="post">
                             <div class="form-group">
-                                <label for="taskPdetailsCode" class="col-lg-4 control-label">For *</label>
+                                <label for="taskPdetailsCode" class="col-lg-3 control-label">For *</label>
                                 <div class="col-lg-5">
                                     <select id="taskPdetailsCode" name="taskPdetailsCode" class="form-control">
                                         <option value="" selected=""></option>
@@ -26,18 +26,24 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="userOncid" class="col-lg-4 control-label">User*</label>
+                                <label for="userOncid" class="col-lg-3 control-label">User*</label>
                                 <div class="col-lg-8">
                                     <select id="userOncid" name="userOncid" class="form-control">
                                         <option value="" selected=""></option>
                                         <c:forEach items="${user}" var="group">
-                                            <option value="${group.oncid}" ${group.selected}>${group.firstname} ${group.lastname}</option>
+                                            <option email="${group.email}" value="${group.oncid}" ${group.selected}>${group.firstname} ${group.lastname}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
-                            </div>      
+                            </div>   
+                            <div class="form-group">
+                                <label for="email" class="col-lg-3 control-label">Email*</label>
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" id="email" name="email" value="">
+                                </div>
+                            </div>
                             <div class="form-group" id="remarksdiv">
-                                <label for="remarks" class="col-lg-4 control-label">Remarks </label>
+                                <label for="remarks" class="col-lg-3 control-label">Remarks </label>
                                 <div class="col-lg-8">
                                     <textarea class="form-control" rows="5" id="remarks" name="remarks"></textarea>
                                 </div>
@@ -62,6 +68,10 @@
     <s:layout-component name="page_js_inline">
         <script>
             $(document).ready(function () {
+                
+                $('#userOncid').change(function () {
+                    $('#email').val($('option:selected', this).attr('email'));
+                });
 
                 var validator = $("#add_hardwarequest_form").validate({
                     rules: {
@@ -70,6 +80,10 @@
                         },
                         userOncid: {
                             required: true
+                        },
+                        email: {
+                            required: true,
+                            email: true
                         }
                     }
                 });

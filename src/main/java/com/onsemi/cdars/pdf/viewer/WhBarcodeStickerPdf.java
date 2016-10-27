@@ -42,6 +42,7 @@ public class WhBarcodeStickerPdf extends AbstractITextPdfViewPotraitBarcodeStick
 //        cellHeader.setBackgroundColor(BaseColor.DARK_GRAY);
         cellHeader.setPadding(cellPadding);
         cellHeader.setBorder(Rectangle.NO_BORDER);
+//        cellHeader.setPaddingLeft(60.0f);//jarak dari kiri
         cellHeader.setPaddingLeft(60.0f);//jarak dari kiri
 //        cellHeader.setPaddingLeft(120.0f);//jarak dari kiri
 
@@ -61,8 +62,9 @@ public class WhBarcodeStickerPdf extends AbstractITextPdfViewPotraitBarcodeStick
         Image code128Image = code128.createImageWithBarcode(cb, null, null);
         PdfPCell barcode = new PdfPCell(code128Image);
         barcode.setBorder(Rectangle.NO_BORDER);
+//        barcode.setPaddingLeft(60.0f); //jarak dari kiri
         barcode.setPaddingLeft(60.0f); //jarak dari kiri
-        barcode.setPaddingTop(5.0f);
+        barcode.setPaddingTop(0f);
 
         whShipping = (WhShipping) model.get("whShipping");
 
