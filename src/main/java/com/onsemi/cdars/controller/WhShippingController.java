@@ -7,18 +7,13 @@ import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhShippingDAO;
+import com.onsemi.cdars.dao.WhStatusLogDAO;
 import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhRequest;
+import com.onsemi.cdars.model.WhStatusLog;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
-import fr.w3blog.zpl.constant.ZebraFont;
-import fr.w3blog.zpl.model.ZebraLabel;
-import fr.w3blog.zpl.model.ZebraPrintException;
-import fr.w3blog.zpl.model.ZebraUtils;
-import fr.w3blog.zpl.model.element.ZebraBarCode;
-import fr.w3blog.zpl.model.element.ZebraBarCode39;
-import fr.w3blog.zpl.model.element.ZebraText;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +86,8 @@ public class WhShippingController {
             model.addAttribute("IdLabel", IdLabel);
         }
         //for check which tab should active
-        if ("No Material Pass Number".equals(whShipping.getStatus())) {
+//        if ("No Material Pass Number".equals(whShipping.getStatus())) { //orignial 3/11/16
+        if ("Pending Material Pass Number".equals(whShipping.getStatus())) { //as requested 2/11/16
             String mpActive = "active";
             String mpActiveTab = "in active";
             model.addAttribute("mpActive", mpActive);
@@ -102,7 +98,8 @@ public class WhShippingController {
             model.addAttribute("mpActive", mpActive);
             model.addAttribute("mpActiveTab", mpActiveTab);
         }
-        if ("Not Scan Trip Ticket Yet".equals(whShipping.getStatus())) {
+//        if ("Not Scan Trip Ticket Yet".equals(whShipping.getStatus())) { //original 3/11/16
+        if ("Pending Trip Ticket Scanning".equals(whShipping.getStatus())) { //as requested 2/11/16
             String ttActive = "active";
             String ttActiveTab = "in active";
             model.addAttribute("ttActive", ttActive);
@@ -113,7 +110,9 @@ public class WhShippingController {
             model.addAttribute("ttActive", ttActive);
             model.addAttribute("ttActiveTab", ttActiveTab);
         }
-        if ("Verified".equals(whShipping.getStatus()) || "Trip Ticket and Barcode Sticker Not Match".equals(whShipping.getStatus()) || "Not Scan Barcode Sticker Yet".equals(whShipping.getStatus()) || "Ship".equals(whShipping.getStatus())) {
+//        if ("Verified".equals(whShipping.getStatus()) || "Trip Ticket and Barcode Sticker Not Match".equals(whShipping.getStatus()) || "Not Scan Barcode Sticker Yet".equals(whShipping.getStatus()) || "Ship".equals(whShipping.getStatus())) { //original 3/11/16
+        if ("Pending Packing List".equals(whShipping.getStatus()) || "Trip Ticket and Barcode Sticker Not Match".equals(whShipping.getStatus())
+                || "Pending Box Barcode Scanning".equals(whShipping.getStatus()) || "Pending Shipment to Seremban Factory".equals(whShipping.getStatus())) { //as requested 2/11/16
             String bsActive = "active";
             String bsActiveTab = "in active";
             model.addAttribute("bsActive", bsActive);
@@ -145,22 +144,73 @@ public class WhShippingController {
         whShipping.setId(id);
         whShipping.setMpNo(mpNo);
         whShipping.setMpExpiryDate(mpExpiryDate);
-        if ("No Material Pass Number".equals(status)) {
-            whShipping.setStatus("Not Scan Trip Ticket Yet");
+//        if ("No Material Pass Number".equals(status)) {        //original 3/11/16
+//            whShipping.setStatus("Not Scan Trip Ticket Yet");  //original 3/11/16
+        if ("Pending Material Pass Number".equals(status)) {     //ass requested 2/11/16
+            whShipping.setStatus("Pending Trip Ticket Scanning");    //ass requested 2/11/16
         } else {
             whShipping.setStatus(status);
         }
         whShipping.setModifiedBy(userSession.getFullname());
         WhShippingDAO whShippingDAO = new WhShippingDAO();
-        QueryResult queryResult = whShippingDAO.updateWhShippingMp(whShipping);
-        args = new String[1];
-        args[0] = mpNo + " - " + mpExpiryDate;
-        if (queryResult.getResult() == 1) {
-            redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+        int countMp = whShippingDAO.getCountMpNoAndNotEqId(mpNo, id);
+        if (countMp != 0) {
+            redirectAttrs.addFlashAttribute("error", "Material Pass Number already existed! Please re-check.");
+            return "redirect:/wh/whShipping/edit/" + id;
         } else {
-            redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
+            whShippingDAO = new WhShippingDAO();
+            QueryResult queryResult = whShippingDAO.updateWhShippingMp(whShipping);
+            args = new String[1];
+            args[0] = mpNo + " - " + mpExpiryDate;
+            if (queryResult.getResult() == 1) {
+                redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+                //update statusLog
+                whShippingDAO = new WhShippingDAO();
+                WhShipping whs = whShippingDAO.getWhShipping(id);
+                WhStatusLog stat = new WhStatusLog();
+                stat.setRequestId(whs.getRequestId());
+                stat.setModule("cdars_wh_shipping");
+                stat.setStatus("Material Pass Number inserted");
+                stat.setCreatedBy(userSession.getFullname());
+                stat.setFlag("0");
+                WhStatusLogDAO statD = new WhStatusLogDAO();
+                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                if (queryResultStat.getGeneratedKey().equals("0")) {
+                    LOGGER.info("[WhShipping] - insert status log failed");
+                } else {
+                    LOGGER.info("[WhShipping] - insert status log done");
+                }
+
+                //update status at master table request
+                whShippingDAO = new WhShippingDAO();
+                WhShipping ret = whShippingDAO.getWhShipping(id);
+
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(ret.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setMpNo(mpNo);
+                    reqUpdate.setMpExpiryDate(mpExpiryDate);
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus(ret.getStatus());
+                    reqUpdate.setId(ret.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatusAndMpNo(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[whShipping] - update status at request table done");
+                    } else {
+                        LOGGER.info("[whShipping] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[whShipping] - requestId not found");
+                }
+            } else {
+                redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
+            }
         }
-        return "redirect:/wh/whShipping/viewTripTicket/" + id;
+
+        return "redirect:/wh/whShipping/viewTripTicket2/" + id;
     }
 
     @RequestMapping(value = "/updateScanTt", method = RequestMethod.POST)
@@ -176,8 +226,10 @@ public class WhShippingController {
         WhShipping whShipping = new WhShipping();
         whShipping.setId(id);
         whShipping.setHardwareBarcode1(hardwareBarcode1);
-        if ("Not Scan Trip Ticket Yet".equals(status)) {
-            whShipping.setStatus("Not Scan Barcode Sticker Yet");
+//        if ("Not Scan Trip Ticket Yet".equals(status)) {           //original 3/11/16
+//            whShipping.setStatus("Not Scan Barcode Sticker Yet");  //original 3/11/16
+        if ("Pending Trip Ticket Scanning".equals(status)) {             //as requested 2/11/16
+            whShipping.setStatus("Pending Box Barcode Scanning");    //as requested 2/11/16
         } else {
             whShipping.setStatus(status);
         }
@@ -191,10 +243,51 @@ public class WhShippingController {
             args[0] = hardwareBarcode1;
             if (queryResult.getResult() == 1) {
                 redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+                //update statusLog
+                whShippingDAO = new WhShippingDAO();
+                WhShipping whs = whShippingDAO.getWhShipping(id);
+                WhStatusLog stat = new WhStatusLog();
+                stat.setRequestId(whs.getRequestId());
+                stat.setModule("cdars_wh_shipping");
+                stat.setStatus("Trip Ticket Verified");
+                stat.setCreatedBy(userSession.getFullname());
+                stat.setFlag("0");
+                WhStatusLogDAO statD = new WhStatusLogDAO();
+                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                if (queryResultStat.getGeneratedKey().equals("0")) {
+                    LOGGER.info("[WhShipping] - insert status log failed");
+                } else {
+                    LOGGER.info("[WhShipping] - insert status log done");
+                }
+
+                //update status at master table request
+                whShippingDAO = new WhShippingDAO();
+                WhShipping ret = whShippingDAO.getWhShipping(id);
+
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(ret.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus(ret.getStatus());
+                    reqUpdate.setId(ret.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[whShipping] - update status at request table done");
+                    } else {
+                        LOGGER.info("[whShipping] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[whShipping] - requestId not found");
+                }
+
             } else {
                 redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
             }
-            return "redirect:/wh/whShipping/edit/" + id;
+//           
+            return "redirect:/wh/whShipping/viewBarcodeSticker2/" + id;
         } else {
             redirectAttrs.addFlashAttribute("error", "ID Not Match! Please re-check.");
             return "redirect:/wh/whShipping/edit/" + id;
@@ -220,7 +313,8 @@ public class WhShippingController {
         whShipping.setId(id);
         whShipping.setHardwareBarcode2(hardwareBarcode2);
         if (hardwareBarcode2 == null ? mpNoV == null : hardwareBarcode2.equals(mpNoV)) {
-            whShipping.setStatus("Verified");
+//            whShipping.setStatus("Verified"); //original 3/11/16
+            whShipping.setStatus("Pending Packing List"); //as requested 2/11/16
         } else {
             whShipping.setStatus("Trip Ticket and Barcode Sticker Not Match");
 
@@ -249,6 +343,46 @@ public class WhShippingController {
         args[0] = hardwareBarcode2;
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+            //update statusLog
+            whShippingDAO = new WhShippingDAO();
+            WhShipping whs = whShippingDAO.getWhShipping(id);
+            WhStatusLog stat = new WhStatusLog();
+            stat.setRequestId(whs.getRequestId());
+            stat.setModule("cdars_wh_shipping");
+            stat.setStatus("Barcode Sticker Verified");
+            stat.setCreatedBy(userSession.getFullname());
+            stat.setFlag("0");
+            WhStatusLogDAO statD = new WhStatusLogDAO();
+            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+            if (queryResultStat.getGeneratedKey().equals("0")) {
+                LOGGER.info("[WhShipping] - insert status log failed");
+            } else {
+                LOGGER.info("[WhShipping] - insert status log done");
+            }
+
+            //update status at master table request
+            whShippingDAO = new WhShippingDAO();
+            WhShipping ret = whShippingDAO.getWhShipping(id);
+
+            WhRequestDAO reqD = new WhRequestDAO();
+            int countReq = reqD.getCountRequestId(ret.getRequestId());
+            if (countReq == 1) {
+                WhRequest reqUpdate = new WhRequest();
+                reqUpdate.setModifiedBy(userSession.getFullname());
+                reqUpdate.setStatus(ret.getStatus());
+                reqUpdate.setId(ret.getRequestId());
+                reqD = new WhRequestDAO();
+                QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                if (ru.getResult() == 1) {
+                    LOGGER.info("[whShipping] - update status at request table done");
+                } else {
+                    LOGGER.info("[whShipping] - update status at request table failed");
+                }
+            } else {
+                LOGGER.info("[whShipping] - requestId not found");
+            }
+
             return "redirect:/wh/whShipping";
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
@@ -315,6 +449,7 @@ public class WhShippingController {
             Model model,
             Locale locale,
             RedirectAttributes redirectAttrs,
+            @ModelAttribute UserSession userSession,
             @PathVariable("whShippingId") String whShippingId
     ) {
         WhShippingDAO whShippingDAO = new WhShippingDAO();
@@ -325,6 +460,55 @@ public class WhShippingController {
         args[0] = whShipping.getRequestId() + " - " + whShipping.getBoxId();
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.delete.success", args, locale));
+
+            //update statusLog
+            whShippingDAO = new WhShippingDAO();
+            WhShipping whs = whShippingDAO.getWhShipping(whShippingId);
+            WhStatusLog stat = new WhStatusLog();
+//            stat.setRequestId(whs.getRequestId());
+            stat.setRequestId(whShipping.getRequestId());
+            stat.setModule("cdars_wh_shipping");
+            stat.setStatus("Deleted from Shipping List");
+            stat.setCreatedBy(userSession.getFullname());
+            stat.setFlag("0");
+            WhStatusLogDAO statD = new WhStatusLogDAO();
+            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+            if (queryResultStat.getGeneratedKey().equals("0")) {
+                LOGGER.info("[WhShipping] - insert status log failed");
+            } else {
+                LOGGER.info("[WhShipping] - insert status log done");
+            }
+
+            //change request to flag 1 - can request again
+            WhRequest req = new WhRequest();
+            req.setFlag("1");
+            req.setId(whShipping.getRequestId());
+            WhRequestDAO reqD = new WhRequestDAO();
+            QueryResult queryResult1 = reqD.updateWhRequestFlag1(req);
+            if (queryResult1.getResult() == 1) {
+                LOGGER.info("[Shipping Delete] - update request flag to 1 succeed");
+            } else {
+                LOGGER.info("[Shipping Delete] - update request flag to 1 failed");
+            }
+
+            //update status at master table request
+            reqD = new WhRequestDAO();
+            int countReq = reqD.getCountRequestId(whShipping.getRequestId());
+            if (countReq == 1) {
+                WhRequest reqUpdate = new WhRequest();
+                reqUpdate.setModifiedBy(userSession.getFullname());
+                reqUpdate.setStatus("Cancelled");
+                reqUpdate.setId(whShipping.getRequestId());
+                reqD = new WhRequestDAO();
+                QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                if (ru.getResult() == 1) {
+                    LOGGER.info("[whRetrieval] - update status at request table done");
+                } else {
+                    LOGGER.info("[whRetrieval] - update status at request table failed");
+                }
+            } else {
+                LOGGER.info("[whRetrieval] - requestId not found");
+            }
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.delete.error", args, locale));
         }
@@ -359,6 +543,20 @@ public class WhShippingController {
         return "pdf/viewer";
     }
 
+    @RequestMapping(value = "/viewTripTicket2/{whShippingId}", method = RequestMethod.GET)
+    public String viewTripTicket2(
+            Model model,
+            HttpServletRequest request,
+            @PathVariable("whShippingId") String whShippingId
+    ) throws UnsupportedEncodingException {
+        String pdfUrl = URLEncoder.encode(request.getContextPath() + "/wh/whShipping/viewWhShippingPdf/" + whShippingId, "UTF-8");
+        String backUrl = servletContext.getContextPath() + "/wh/whShipping/edit/" + whShippingId;
+        model.addAttribute("pdfUrl", pdfUrl);
+        model.addAttribute("backUrl", backUrl);
+        model.addAttribute("pageTitle", "general.label.whShipping");
+        return "pdf/viewerTripTicket";
+    }
+
     @RequestMapping(value = "/viewWhShippingPdf/{whShippingId}", method = RequestMethod.GET)
     public ModelAndView viewWhShippingPdf(
             Model model,
@@ -383,6 +581,20 @@ public class WhShippingController {
         return "pdf/viewer";
     }
 
+    @RequestMapping(value = "/viewBarcodeSticker2/{whShippingId}", method = RequestMethod.GET)
+    public String viewBarcodeSticker2(
+            Model model,
+            HttpServletRequest request,
+            @PathVariable("whShippingId") String whShippingId
+    ) throws UnsupportedEncodingException {
+        String pdfUrl = URLEncoder.encode(request.getContextPath() + "/wh/whShipping/viewWhBarcodeStickerPdf/" + whShippingId, "UTF-8");
+        String backUrl = servletContext.getContextPath() + "/wh/whShipping/edit/" + whShippingId;
+        model.addAttribute("pdfUrl", pdfUrl);
+        model.addAttribute("backUrl", backUrl);
+        model.addAttribute("pageTitle", "Barcode Sticker");
+        return "pdf/viewerBarcode";
+    }
+
     @RequestMapping(value = "/viewWhBarcodeStickerPdf/{whShippingId}", method = RequestMethod.GET)
     public ModelAndView viewWhBarcodeStickerPdf(
             Model model,
@@ -392,37 +604,4 @@ public class WhShippingController {
         WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
         return new ModelAndView("whBarcodeStickerPdf", "whShipping", whShipping);
     }
-
-    @RequestMapping(value = "/printzebra/{whShippingId}", method = RequestMethod.GET)
-    public String print(
-            Model model,
-            Locale locale,
-            RedirectAttributes redirectAttrs,
-            @PathVariable("whShippingId") String whShippingId
-    ) throws ZebraPrintException {
-        ZebraLabel zebraLabel = new ZebraLabel(912, 912);
-        zebraLabel.setDefaultZebraFont(ZebraFont.ZEBRA_ZERO);
-
-        zebraLabel.addElement(new ZebraText(10, 84, "Product:", 14));
-        zebraLabel.addElement(new ZebraText(395, 85, "Camera", 14));
-
-        zebraLabel.addElement(new ZebraText(10, 161, "CA201212AA", 14));
-
-        //Add Code Bar 39
-        zebraLabel.addElement(new ZebraBarCode39(10, 297, "CA201212AA", 118, 2, 2));
-
-        zebraLabel.addElement(new ZebraText(10, 365, "Qté:", 11));
-        zebraLabel.addElement(new ZebraText(180, 365, "3", 11));
-        zebraLabel.addElement(new ZebraText(317, 365, "QA", 11));
-
-        zebraLabel.addElement(new ZebraText(10, 520, "Ref log:", 11));
-        zebraLabel.addElement(new ZebraText(180, 520, "0035", 11));
-        zebraLabel.addElement(new ZebraText(10, 596, "Ref client:", 11));
-        zebraLabel.addElement(new ZebraText(180, 599, "1234", 11));
-
-        zebraLabel.getZplCode();
-        ZebraUtils.printZpl(zebraLabel, "", 9600);
-        return "redirect:/wh/whShipping";
-    }
-
 }

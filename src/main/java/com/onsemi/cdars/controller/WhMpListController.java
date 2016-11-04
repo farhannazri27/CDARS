@@ -7,9 +7,12 @@ import com.onsemi.cdars.dao.WhMpListDAO;
 import com.onsemi.cdars.dao.WhRequestDAO;
 import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.dao.WhShippingDAO;
+import com.onsemi.cdars.dao.WhStatusLogDAO;
 import com.onsemi.cdars.model.WhMpList;
 import com.onsemi.cdars.model.UserSession;
+import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.WhShipping;
+import com.onsemi.cdars.model.WhStatusLog;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
 import com.onsemi.cdars.tools.SPTSResponse;
@@ -17,6 +20,8 @@ import com.onsemi.cdars.tools.SPTSWebService;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -151,11 +157,19 @@ public class WhMpListController {
         int count = whMpListDAO.getCountWithFlag0();
         model.addAttribute("count", count);
         model.addAttribute("whMpListList", whMpListList);
-        return "whMpList/whMpList";
+        return "whMpList/add";
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.GET)
     public String add(Model model) {
+
+        WhMpListDAO whMpListDAO = new WhMpListDAO();
+        List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+
+        whMpListDAO = new WhMpListDAO();
+        int count = whMpListDAO.getCountWithFlag0();
+        model.addAttribute("count", count);
+        model.addAttribute("whMpListList", whMpListList);
         return "whMpList/add";
     }
 
@@ -168,9 +182,9 @@ public class WhMpListController {
             @ModelAttribute UserSession userSession,
             @RequestParam(required = false) String mpNo
     ) throws IOException {
-        //check ad material pass ke tidak dkt shipping.
+        //check ad material pass ke tidak dkt shipping n status = Verified or Ship
         WhShippingDAO whShipD = new WhShippingDAO();
-        int count = whShipD.getCountMpNo(mpNo);
+        int count = whShipD.getCountMpNoWithStatusinSF(mpNo);
         if (count != 0) {
             //check da ade ke mp_no dkt whmplist
             WhMpListDAO whMpListDAO = new WhMpListDAO();
@@ -196,10 +210,30 @@ public class WhMpListController {
                 args = new String[1];
                 args[0] = mpNo;
                 if (queryResult.getGeneratedKey().equals("0")) {
-                    model.addAttribute("error", messageSource.getMessage("general.label.save.error", args, locale));
+                    redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.save.error", args, locale));
+//                    model.addAttribute("error", messageSource.getMessage("general.label.save.error", args, locale));
                     model.addAttribute("whMpList", whMpList);
-                    return "whMpList/add";
+//                    return "whMpList/add";
                 } else {
+
+                    //update statusLog
+                    whshipD = new WhShippingDAO();
+                    WhShipping shipping = whshipD.getWhShipping(whship.getId());
+
+                    WhStatusLog stat = new WhStatusLog();
+                    stat.setRequestId(shipping.getRequestId());
+                    stat.setModule("cdars_wh_mp_list");
+                    stat.setStatus("Ship to Seremban Factory");
+                    stat.setCreatedBy(userSession.getFullname());
+                    stat.setFlag("0");
+                    WhStatusLogDAO statD = new WhStatusLogDAO();
+                    QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                    if (queryResultStat.getGeneratedKey().equals("0")) {
+                        LOGGER.info("[WhRequest] - insert status log failed");
+                    } else {
+                        LOGGER.info("[WhRequest] - insert status log done");
+                    }
+
                     String username = System.getProperty("user.name");
                     File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
 
@@ -351,13 +385,35 @@ public class WhMpListController {
                     WhShipping shipUpdate = new WhShipping();
                     shipUpdate.setId(ship.getId());
                     shipUpdate.setRequestId(ship.getRequestId());
-                    shipUpdate.setStatus("Ship");
+//                    shipUpdate.setStatus("Ship"); //original
+                    shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
                     WhShippingDAO shipDD = new WhShippingDAO();
                     QueryResult u = shipDD.updateWhShippingStatus(shipUpdate);
                     if (u.getResult() == 1) {
                         LOGGER.info("Status Ship updated");
                     } else {
                         LOGGER.info("Status Ship updated failed");
+                    }
+
+                    //update status dkt master *request table     
+                    WhRequestDAO reqD = new WhRequestDAO();
+                    int countReq = reqD.getCountRequestId(ship.getRequestId());
+                    if (countReq == 1) {
+//                         WhRequest req = reqD.getWhRequest(ship.getRequestId());
+                        WhRequest reqUpdate = new WhRequest();
+                        reqUpdate.setModifiedBy(userSession.getFullname());
+//                        reqUpdate.setStatus("Shipped to Seremban Factory");
+                        reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                        reqUpdate.setId(ship.getRequestId());
+                        reqD = new WhRequestDAO();
+                        QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                        if (ru.getResult() == 1) {
+                            LOGGER.info("[MpList] - update status at request table done");
+                        } else {
+                            LOGGER.info("[MpList] - update status at request table failed");
+                        }
+                    } else {
+                        LOGGER.info("[MpList] - requestId not found");
                     }
 
                     //check ada x duplication mpno utk update spts
@@ -607,21 +663,23 @@ public class WhMpListController {
 
                     redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.save.success", args, locale));
 //			return "redirect:/whMpList/edit/" + queryResult.getGeneratedKey();
-                    return "redirect:/wh/whShipping/whMpList/add";
+//                    return "redirect:/wh/whShipping/whMpList/add";
 //                    return "whMpList/add";
                 }
             } else {
+
                 String messageError = "Material Pass Number " + mpNo + " already added to the list!";
-                model.addAttribute("error", messageError);
-                return "whMpList/add";
+                redirectAttrs.addFlashAttribute("error", messageError);
+//                model.addAttribute("error", messageError);
+//                return "whMpList/add";
             }
 
         } else {
             String messageError = "Material Pass Number " + mpNo + " Not Exist!";
-            model.addAttribute("error", messageError);
-            return "whMpList/add";
+            redirectAttrs.addFlashAttribute("error", messageError);
+//            return "whMpList/add";
         }
-
+        return "redirect:/wh/whShipping/whMpList/add";
     }
 
     @RequestMapping(value = "/deleteAll", method = RequestMethod.GET)
@@ -659,7 +717,8 @@ public class WhMpListController {
         } else {
             redirectAttrs.addFlashAttribute("error", error);
         }
-        return "redirect:/wh/whShipping/whMpList";
+//        return "redirect:/wh/whShipping/whMpList";
+        return "redirect:/wh/whShipping/whMpList/add";
     }
 
     @RequestMapping(value = "/email", method = {RequestMethod.GET, RequestMethod.POST})
@@ -673,13 +732,15 @@ public class WhMpListController {
         LOGGER.info("send email to person in charge");
         EmailSender emailSender = new EmailSender();
         com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
-        user.setFullname(userSession.getFullname());
-        emailSender.htmlEmail(
+        user.setFullname("All");
+        String[] to = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+
+        emailSender.htmlEmailManyTo(
                 servletContext,
                 user, //user name requestor
-                "fg79cj@onsemi.com",
+                to,
                 //                "muhdfaizal@onsemi.com",                                   //to
-                "List of Hardware(s) Ready for Shipment", //subject
+                "List of Hardware(s) Ready for Sending to SBN Factory", //subject
                 "The list of hardware(s) that have been ready for shipment has been made.<br /><br />"
                 + "<br /><br /> "
                 + "<style>table, th, td {border: 1px solid black;} </style>"
@@ -723,5 +784,61 @@ public class WhMpListController {
             text = text + "</tr>";
         }
         return text;
+    }
+
+    @RequestMapping(value = "/print", method = RequestMethod.GET)
+    public String print(
+            Model model,
+            HttpServletRequest request
+    ) throws UnsupportedEncodingException {
+        LOGGER.info("Masuk view 1........");
+        String pdfUrl = URLEncoder.encode(request.getContextPath() + "/wh/whShipping/whMpList/viewPackingListPdf", "UTF-8");
+        String backUrl = servletContext.getContextPath() + "/wh/whShipping/whMpList/add";
+        model.addAttribute("pdfUrl", pdfUrl);
+        model.addAttribute("backUrl", backUrl);
+        model.addAttribute("pageTitle", "Hardware Packing List From Rel Lab ON Semiconductor to SBN Factory");
+
+        LOGGER.info("send email to person in charge");
+        EmailSender emailSender = new EmailSender();
+        com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+        user.setFullname("All");
+        String[] to = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+
+        emailSender.htmlEmailManyTo(
+                servletContext,
+                user, //user name requestor
+                to,
+                //                "muhdfaizal@onsemi.com",                                   //to
+                "List of Hardware(s) Ready for Sending to SBN Factory", //subject
+                "The list of hardware(s) that have been ready for shipment has been made.<br /><br />"
+                + "<br /><br /> "
+                + "<style>table, th, td {border: 1px solid black;} </style>"
+                + "<table style=\"width:100%\">" //tbl
+                + "<tr>"
+                + "<th>MATERIAL PASS NO</th> "
+                + "<th>MATERIAL PASS EXPIRY DATE</th> "
+                + "<th>HARDWARE TYPE</th>"
+                + "<th>HARDWARE ID</th>"
+                + "<th>QUANTITY</th>"
+                + "</tr>"
+                + table()
+                + "</table>"
+                + "<br />Thank you." //msg
+        );
+        return "pdf/viewer";
+    }
+
+    @RequestMapping(value = "/viewPackingListPdf", method = RequestMethod.GET)
+    public ModelAndView viewPackingListPdf(
+            Model model
+    ) {
+        WhMpListDAO whMpListDAO = new WhMpListDAO();
+        LOGGER.info("Masuk 1........");
+        List<WhMpList> packingList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+//        model.addAttribute("packingList", packingList);
+//        List<WhMpList> whMpList = whMpListDAO.getWhMpListMergeWithShippingAndRequestList();
+//        WhRequestLog whHistoryList = whRequestDAO.getWhRetLog(whRequestId);
+        LOGGER.info("Masuk 2........");
+        return new ModelAndView("packingListPdf", "packingList", packingList);
     }
 }

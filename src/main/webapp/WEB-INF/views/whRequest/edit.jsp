@@ -46,9 +46,9 @@
     </s:layout-component>
     <s:layout-component name="page_container">
         <div class="col-lg-12">
-            <h1>Add Hardware Request</h1>
+            <h1>Edit Hardware Request</h1>
             <div class="row">
-                <div class="col-lg-8">
+                <div class="col-lg-9">
                     <div class="main-box">
                         <h2>Hardware Request Information</h2>
                         <form id="edit_hardwarequest_form" class="form-horizontal" role="form" action="${contextPath}/wh/whRequest/update" method="post">
@@ -67,7 +67,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="equipmentType" class="col-lg-2 control-label">Hardware Category</label>
-                                <div class="col-lg-4">
+                                <div class="col-lg-5">
                                     <input type="text" class="form-control" id="equipmentType" name="equipmentType" value="${whRequest.equipmentType}" readonly>
                                 </div>
                             </div>
@@ -81,8 +81,8 @@
                                         </c:forEach>
                                     </select>
                                 </div>
-                                <label for="maxQtyPcbType" class="col-lg-1 control-label">Quantity:</label>
-                                <div class="col-lg-1">
+                                <label for="maxQtyPcbType" class="col-lg-2 control-label">Quantity per Box Limit</label>
+                                <div class="col-lg-2">
                                     <input type="text" class="form-control" id="maxQtyPcbType" name="maxQtyPcbType" value="${PcbLimitQty}" readonly >
                                 </div>
                             </div>
@@ -233,9 +233,12 @@
                                 </div>
                             </div> 
                             <div class="form-group" id="remarksdiv">
-                                <label for="remarks" class="col-lg-2 control-label">Remarks </label>
-                                <div class="col-lg-8">
-                                    <textarea class="form-control" rows="5" id="remarks" name="remarks">${whRequest.remarks}</textarea>
+                                <label for="remarks" class="col-lg-2 control-label" id="remarksLabel">Remarks </label>
+                                <div class="col-lg-5" id="remarksDiv2">
+                                    <textarea class="form-control" rows="5" id="remarks" name="remarks"></textarea>
+                                </div>
+                                <div class="col-lg-5">
+                                    <textarea class="form-control" rows="5" id="remarksLog" name="remarksLog" readonly>${whRequest.remarksLog}</textarea>
                                 </div>
                             </div>
                             <div class="form-group" id="statusDiv" hidden>
@@ -275,6 +278,8 @@
 
                 var element = $('#status');
                 if (element.val() === "Approved") {
+                    $("#remarksDiv2").hide();
+                    $("#statusDiv").show();
                     $("#submit").attr("disabled", true);
                     $("#status").attr("readonly", true);
                     $("#remarksApprover").attr("readonly", true);
@@ -287,12 +292,14 @@
                     $("#pcbCQty").attr("readonly", true);
                     $("#remarks").attr("readonly", true);
 
-                } else if (element.val() === "Waiting for Approval") {
+//                } else if (element.val() === "Waiting for Approval") { //original 3/11/16
+                } else if (element.val() === "Pending Approval") { //as requested 2/11/16
                     $("#statusDiv").hide();
                     $("#approvalRemarksDiv").hide();
                     $("#status").attr("readonly", true);
                     $("#remarksApprover").attr("readonly", true);
                 } else if (element.val() === "Not Approved") {
+                    $("#remarksDiv2").hide();
                     $("#statusDiv").show();
                     $("#approvalRemarksDiv").show();
                     $(".js-example-basic-single").prop("readonly", true);
@@ -359,7 +366,8 @@
 
 
                 $("form").keyup(function () {
-                    if ($('#equipmentType').val() === "PCB" && $("#quantitytest").val() === "0" && $('#status').val() === "Waiting for Approval") {
+//                    if ($('#equipmentType').val() === "PCB" && $("#quantitytest").val() === "0" && $('#status').val() === "Waiting for Approval") { //original 3/11/16
+                    if ($('#equipmentType').val() === "PCB" && $("#quantitytest").val() === "0" && $('#status').val() === "Pending Approval Approval") { //as requested 2/11/16
                         $("#submit").attr("disabled", true);
                     } else if ($('#status').val() === "Approved" || $('#status').val() === "Not Approved") {
                         $("#submit").attr("disabled", true);
@@ -370,7 +378,8 @@
                 });
 
                 $("form").mouseup(function () {
-                    if ($('#equipmentType').val() === "PCB" && $("#quantitytest").val() === "0" && $('#status').val() === "Waiting for Approval") {
+//                    if ($('#equipmentType').val() === "PCB" && $("#quantitytest").val() === "0" && $('#status').val() === "Waiting for Approval") { //original 3/11/16
+                    if ($('#equipmentType').val() === "PCB" && $("#quantitytest").val() === "0" && $('#status').val() === "Pending Approval") { //as requested 2/11/16
                         $("#submit").attr("disabled", true);
                     } else if ($('#status').val() === "Approved" || $('#status').val() === "Not Approved") {
                         $("#submit").attr("disabled", true);
@@ -396,21 +405,21 @@
                 });
                 $('#equipmentIdpcbCtr').change(function () {
                     $('#maxQtyCtr').val($('option:selected', this).attr('pcbCtrquantity'));
-                      $('#maxQtyCtr1').val($('option:selected', this).attr('pcbCtrquantity'));
+                    $('#maxQtyCtr1').val($('option:selected', this).attr('pcbCtrquantity'));
                     if ($(this).val() === "") {
                         $('#maxQtyCtr1').val("0");
                     }
                 });
                 $('#equipmentIdpcbA').change(function () {
                     $('#maxQtyA').val($('option:selected', this).attr('pcbAquantity'));
-                     $('#maxQtyA1').val($('option:selected', this).attr('pcbAquantity'));
+                    $('#maxQtyA1').val($('option:selected', this).attr('pcbAquantity'));
                     if ($(this).val() === "") {
                         $('#maxQtyA1').val("0");
                     }
                 });
                 $('#equipmentIdpcbB').change(function () {
                     $('#maxQtyB').val($('option:selected', this).attr('pcbBquantity'));
-                     $('#maxQtyB1').val($('option:selected', this).attr('pcbBquantity'));
+                    $('#maxQtyB1').val($('option:selected', this).attr('pcbBquantity'));
                     if ($(this).val() === "") {
                         $('#maxQtyB1').val("0");
                     }
@@ -450,9 +459,9 @@
                         equipmentIdTray: {
                             required: true
                         },
-//                        equipmentIdpcbCtr: {
-//                            required: true
-//                        },
+                        remarks: {
+                            required: true
+                        },
                         pcbCtrQty: {
 //                            required: true,
                             number: true,

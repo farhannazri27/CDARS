@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhRetrievalDAO;
+import com.onsemi.cdars.dao.WhStatusLogDAO;
 import com.onsemi.cdars.model.EmailConfig;
 import com.onsemi.cdars.model.ParameterDetails;
 import com.onsemi.cdars.model.WhRetrieval;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhInventory;
 import com.onsemi.cdars.model.WhRequest;
+import com.onsemi.cdars.model.WhStatusLog;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
 import com.onsemi.cdars.tools.SPTSResponse;
@@ -107,9 +109,11 @@ public class WhRetrievalController {
             String IdLabel = "Hardware ID";
             model.addAttribute("IdLabel", IdLabel);
         }
- 
+
         //for check which tab should active
-        if ("Barcode Verified".equals(whRetrieval.getStatus()) || "Closed".equals(whRetrieval.getStatus()) || "Closed. Verified By Supervisor".equals(whRetrieval.getStatus())) {
+//        if ("Barcode Verified".equals(whRetrieval.getStatus()) || "Closed".equals(whRetrieval.getStatus()) || "Closed. Verified By Supervisor".equals(whRetrieval.getStatus())) { //original 3/11/16
+        if ("Received".equals(whRetrieval.getStatus()) || "Closed".equals(whRetrieval.getStatus()) || "Closed. Verified By Supervisor".equals(whRetrieval.getStatus())) {
+
 //            LOGGER.info("........ttactive........");
             String ttActive = "active";
             String ttActiveTab = "in active";
@@ -122,7 +126,8 @@ public class WhRetrievalController {
             model.addAttribute("ttActive", ttActive);
             model.addAttribute("ttActiveTab", ttActiveTab);
         }
-        if ("Ship".equals(whRetrieval.getStatus()) || "Requested".equals(whRetrieval.getStatus()) || "Barcode Not Match".equals(whRetrieval.getStatus()) || "Barcode Sticker - Verified By Supervisor".equals(whRetrieval.getStatus())) {
+//            if ("Ship".equals(whRetrieval.getStatus()) || "Requested".equals(whRetrieval.getStatus()) || "Barcode Not Match".equals(whRetrieval.getStatus()) || "Barcode Sticker - Verified By Supervisor".equals(whRetrieval.getStatus())) { //original 3/11/16
+        if ("Shipped".equals(whRetrieval.getStatus()) || "Requested".equals(whRetrieval.getStatus()) || "Barcode Not Match".equals(whRetrieval.getStatus()) || "Barcode Sticker - Verified By Supervisor".equals(whRetrieval.getStatus())) { //as requested 2/11/16
 //            LOGGER.info("........bsactive........");
             String bsActive = "active";
             String bsActiveTab = "in active";
@@ -136,8 +141,8 @@ public class WhRetrievalController {
             model.addAttribute("bsActiveTab", bsActiveTab);
         }
         if ("Barcode Sticker Scanning Mismatched".equals(whRetrieval.getStatus()) || "Trip Ticket Scanning Mismatched".equals(whRetrieval.getStatus())
-                || "Barcode Sticker - Hold By Supervisor".equals(whRetrieval.getStatus()) || "Barcode Sticker - Unverified By Supervisor".equals(whRetrieval.getStatus())
-                || "Trip Ticket - Hold By Supervisor".equals(whRetrieval.getStatus()) || "Trip Ticket - Unverified By Supervisor".equals(whRetrieval.getStatus())) {
+                || "Barcode Sticker - Hold By Supervisor".equals(whRetrieval.getStatus()) || "Barcode Sticker - Not Verified By Supervisor".equals(whRetrieval.getStatus())
+                || "Trip Ticket - Hold By Supervisor".equals(whRetrieval.getStatus()) || "Trip Ticket - Not Verified By Supervisor".equals(whRetrieval.getStatus())) {
 //            LOGGER.info("........disactive........");
             String disActive = "active";
             String disActiveTab = "in active";
@@ -153,25 +158,6 @@ public class WhRetrievalController {
 
         String groupId = userSession.getGroup();
         model.addAttribute("groupId", groupId);
-
-//        if (("1".equals(groupId) || "2".equals(groupId) || "25".equals(groupId) || "29".equals(groupId)) && ("Trip Ticket Scanning Mismatched".equals(whRetrieval.getStatus()) || "Barcode Sticker - Hold By Supervisor".equals(whRetrieval.getStatus())
-//                || "Barcode Sticker - Unverified By Supervisor".equals(whRetrieval.getStatus()))) {
-////            LOGGER.info("........disactive........");
-//            String disActive = "active";
-//            String disActiveTab = "in active";
-//            model.addAttribute("disActive", disActive);
-//            model.addAttribute("disActiveTab", disActiveTab);
-//        } else {
-////            LOGGER.info("........disXactive........");
-//            String bsActive = "active";
-//            String bsActiveTab = "in active";
-//            model.addAttribute("bsActive", bsActive);
-//            model.addAttribute("bsActiveTab", bsActiveTab);
-//            String disActive = "";
-//            String disActiveTab = "";
-//            model.addAttribute("disActive", disActive);
-//            model.addAttribute("disActiveTab", disActiveTab);
-//        }
 
         if ("".equals(whRetrieval.getBarcodeDisposition()) || whRetrieval.getBarcodeDisposition() == null) {
             ParameterDetailsDAO sDAO = new ParameterDetailsDAO();
@@ -211,7 +197,8 @@ public class WhRetrievalController {
         whRetrieval.setId(id);
         whRetrieval.setBarcodeVerification(barcodeVerification);
         whRetrieval.setBarcodeVerifiedBy(userSession.getFullname());
-        whRetrieval.setStatus("Barcode Verified");
+//        whRetrieval.setStatus("Barcode Verified"); //original 3/11/16
+        whRetrieval.setStatus("Received"); //as requested 2/11/16
         whRetrieval.setFlag("0");
         WhRetrievalDAO whRetrievalDAO = new WhRetrievalDAO();
         QueryResult queryResult = whRetrievalDAO.updateWhRetrievalBarcode(whRetrieval);
@@ -219,6 +206,50 @@ public class WhRetrievalController {
         args[0] = barcodeVerification;
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+            //update statusLog
+            whRetrievalDAO = new WhRetrievalDAO();
+            WhRetrieval whRetrie = whRetrievalDAO.getWhRetrieval(id);
+
+            WhStatusLog stat = new WhStatusLog();
+            stat.setRequestId(whRetrie.getRequestId());
+            stat.setModule("cdars_wh_retrieval");
+//            stat.setStatus("Barcode Verified"); original 3/11/16
+            stat.setStatus("Received"); //as requested 2/11/16
+            stat.setCreatedBy(userSession.getFullname());
+            stat.setFlag("0");
+            WhStatusLogDAO statD = new WhStatusLogDAO();
+            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+            if (queryResultStat.getGeneratedKey().equals("0")) {
+                LOGGER.info("[WhRequest] - insert status log failed");
+            } else {
+                LOGGER.info("[WhRequest] - insert status log done");
+            }
+
+            //update status at master table request
+            whRetrievalDAO = new WhRetrievalDAO();
+            WhRetrieval ret = whRetrievalDAO.getWhRetrieval(id);
+
+            WhRequestDAO reqD = new WhRequestDAO();
+            int countReq = reqD.getCountRequestId(ret.getRequestId());
+            if (countReq == 1) {
+//                         WhRequest req = reqD.getWhRequest(ship.getRequestId());
+                WhRequest reqUpdate = new WhRequest();
+                reqUpdate.setModifiedBy(userSession.getFullname());
+//                reqUpdate.setStatus("Barcode Verified"); //original 3/11/16
+                reqUpdate.setStatus("Received"); //as requested 2/11/16
+                reqUpdate.setId(ret.getRequestId());
+                reqD = new WhRequestDAO();
+                QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                if (ru.getResult() == 1) {
+                    LOGGER.info("[whRetrieval] - update status at request table done");
+                } else {
+                    LOGGER.info("[whRetrieval] - update status at request table failed");
+                }
+            } else {
+                LOGGER.info("[whRetrieval] - requestId not found");
+            }
+
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
         }
@@ -248,6 +279,45 @@ public class WhRetrievalController {
         args[0] = ttVerification;
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+            //update statusLog
+            whRetrievalDAO = new WhRetrievalDAO();
+            WhRetrieval whRetrie = whRetrievalDAO.getWhRetrieval(id);
+            WhStatusLog stat = new WhStatusLog();
+            stat.setRequestId(whRetrie.getRequestId());
+            stat.setModule("cdars_wh_retrieval");
+            stat.setStatus("Closed");
+            stat.setCreatedBy(userSession.getFullname());
+            stat.setFlag("0");
+            WhStatusLogDAO statD = new WhStatusLogDAO();
+            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+            if (queryResultStat.getGeneratedKey().equals("0")) {
+                LOGGER.info("[WhRequest] - insert status log failed");
+            } else {
+                LOGGER.info("[WhRequest] - insert status log done");
+            }
+
+            //update status at master table request
+            whRetrievalDAO = new WhRetrievalDAO();
+            WhRetrieval ret = whRetrievalDAO.getWhRetrieval(id);
+
+            WhRequestDAO reqD = new WhRequestDAO();
+            int countReq = reqD.getCountRequestId(ret.getRequestId());
+            if (countReq == 1) {
+                WhRequest reqUpdate = new WhRequest();
+                reqUpdate.setModifiedBy(userSession.getFullname());
+                reqUpdate.setStatus("Closed");
+                reqUpdate.setId(ret.getRequestId());
+                reqD = new WhRequestDAO();
+                QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                if (ru.getResult() == 1) {
+                    LOGGER.info("[whRetrieval] - update status at request table done");
+                } else {
+                    LOGGER.info("[whRetrieval] - update status at request table failed");
+                }
+            } else {
+                LOGGER.info("[whRetrieval] - requestId not found");
+            }
 
             String username = System.getProperty("user.name");
             //SEND EMAIL
@@ -350,7 +420,7 @@ public class WhRetrievalController {
                     //                    msg
                     "Hardware already retrieved. Thank you."
             );
-
+            
             //update inventory - change flag to 1 (hide from list)
             WhRetrievalDAO whdao = new WhRetrievalDAO();
             WhRetrieval wh = whdao.getWhRetrieval(id);
@@ -690,8 +760,8 @@ public class WhRetrievalController {
             whRetrieval.setBarcodeDisposition(barcodeDisposition);
             whRetrieval.setBarcodeDispositionBy(userSession.getFullname());
             whRetrieval.setBarcodeDispositionRemarks(barcodeDispositionRemarks);
-            if ("unverified".equals(barcodeDisposition)) {
-                whRetrieval.setStatus("Barcode Sticker - Unverified By Supervisor");
+            if ("Not Verified".equals(barcodeDisposition)) {
+                whRetrieval.setStatus("Barcode Sticker - Not Verified By Supervisor");
             } else if ("Hold".equals(barcodeDisposition)) {
                 whRetrieval.setStatus("Barcode Sticker - Hold By Supervisor");
             } else {
@@ -705,6 +775,50 @@ public class WhRetrievalController {
             args[0] = mpNoBySupervisor;
             if (queryResult.getResult() == 1) {
                 redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+                //update statusLog
+                WhStatusLog stat = new WhStatusLog();
+                stat.setRequestId(requestId);
+                stat.setModule("cdars_wh_retrieval");
+                if ("Not Verified".equals(barcodeDisposition)) {
+                    stat.setStatus("Barcode Sticker - Not Verified By Supervisor");
+                } else if ("Hold".equals(barcodeDisposition)) {
+                    stat.setStatus("Barcode Sticker - Hold By Supervisor");
+                } else {
+                    stat.setStatus("Barcode Sticker - Verified By Supervisor");
+                }
+                stat.setCreatedBy(userSession.getFullname());
+                stat.setFlag("0");
+                WhStatusLogDAO statD = new WhStatusLogDAO();
+                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                if (queryResultStat.getGeneratedKey().equals("0")) {
+                    LOGGER.info("[WhRequest] - insert status log failed");
+                } else {
+                    LOGGER.info("[WhRequest] - insert status log done");
+                }
+
+                //update status at master table request
+                whRetrievalDAO = new WhRetrievalDAO();
+                WhRetrieval ret = whRetrievalDAO.getWhRetrieval(id);
+
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(ret.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus(ret.getStatus());
+                    reqUpdate.setId(ret.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[whRetrieval] - update status at request table done");
+                    } else {
+                        LOGGER.info("[whRetrieval] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[whRetrieval] - requestId not found");
+                }
+
             } else {
                 redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
             }
@@ -716,8 +830,8 @@ public class WhRetrievalController {
             whRetrieval.setTtDisposition(ttDisposition);
             whRetrieval.setTtDispositionBy(userSession.getFullname());
             whRetrieval.setTtDispositionRemarks(ttDispositionRemarks);
-            if ("unverified".equals(ttDisposition)) {
-                whRetrieval.setStatus("Trip Ticket - Unverified By Supervisor");
+            if ("Not Verified".equals(ttDisposition)) {
+                whRetrieval.setStatus("Trip Ticket - Not Verified By Supervisor");
                 whRetrieval.setFlag("0");
             } else if ("Hold".equals(ttDisposition)) {
                 whRetrieval.setStatus("Trip Ticket - Hold By Supervisor");
@@ -734,6 +848,49 @@ public class WhRetrievalController {
             args[0] = hardwareIdBySupervisor;
             if (queryResult.getResult() == 1) {
                 redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.update.success", args, locale));
+
+                //update statusLog
+                WhStatusLog stat = new WhStatusLog();
+                stat.setRequestId(requestId);
+                stat.setModule("cdars_wh_retrieval");
+                if ("Not Verified".equals(barcodeDisposition)) {
+                    stat.setStatus("Trip Ticket - Not Verified By Supervisor");
+                } else if ("Hold".equals(barcodeDisposition)) {
+                    stat.setStatus("Trip Ticket - Hold By Supervisor");
+                } else {
+                    stat.setStatus("Closed. Verified By Supervisor");
+                }
+                stat.setCreatedBy(userSession.getFullname());
+                stat.setFlag("0");
+                WhStatusLogDAO statD = new WhStatusLogDAO();
+                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                if (queryResultStat.getGeneratedKey().equals("0")) {
+                    LOGGER.info("[WhRequest] - insert status log failed");
+                } else {
+                    LOGGER.info("[WhRequest] - insert status log done");
+                }
+
+                //update status at master table request
+                whRetrievalDAO = new WhRetrievalDAO();
+                WhRetrieval ret = whRetrievalDAO.getWhRetrieval(id);
+
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(ret.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus(ret.getStatus());
+                    reqUpdate.setId(ret.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[whRetrieval] - update status at request table done");
+                    } else {
+                        LOGGER.info("[whRetrieval] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[whRetrieval] - requestId not found");
+                }
 
                 if ("Verified".equals(ttDisposition)) {
 
@@ -1222,6 +1379,7 @@ public class WhRetrievalController {
             Model model,
             Locale locale,
             RedirectAttributes redirectAttrs,
+            @ModelAttribute UserSession userSession,
             @PathVariable("whRetrievalId") String whRetrievalId
     ) {
         WhRetrievalDAO whRetrievalDAO = new WhRetrievalDAO();
@@ -1232,6 +1390,52 @@ public class WhRetrievalController {
         args[0] = whRetrieval.getRequestId() + " - " + whRetrieval.getHardwareType();
         if (queryResult.getResult() == 1) {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.delete.success", args, locale));
+
+            //update statusLog
+            WhStatusLog stat = new WhStatusLog();
+            stat.setRequestId(whRetrieval.getRequestId());
+            stat.setModule("cdars_wh_retrieval");
+            stat.setStatus("Deleted from Retrieval List");
+            stat.setCreatedBy(userSession.getFullname());
+            stat.setFlag("0");
+            WhStatusLogDAO statD = new WhStatusLogDAO();
+            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+            if (queryResultStat.getGeneratedKey().equals("0")) {
+                LOGGER.info("[WhRequest] - insert status log failed");
+            } else {
+                LOGGER.info("[WhRequest] - insert status log done");
+            }
+
+            //change request to flag 1 - can request again
+            WhRequest req = new WhRequest();
+            req.setFlag("1");
+            req.setId(whRetrieval.getRequestId());
+            WhRequestDAO reqD = new WhRequestDAO();
+            QueryResult queryResult1 = reqD.updateWhRequestFlag1(req);
+            if (queryResult1.getResult() == 1) {
+                LOGGER.info("[Retrieval Delete] - update request flag to 1 succeed");
+            } else {
+                LOGGER.info("[Retrieval Delete] - update request flag to 1 failed");
+            }
+
+            //update status at master table request
+            reqD = new WhRequestDAO();
+            int countReq = reqD.getCountRequestId(whRetrieval.getRequestId());
+            if (countReq == 1) {
+                WhRequest reqUpdate = new WhRequest();
+                reqUpdate.setModifiedBy(userSession.getFullname());
+                reqUpdate.setStatus("Cancelled");
+                reqUpdate.setId(whRetrieval.getRequestId());
+                reqD = new WhRequestDAO();
+                QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                if (ru.getResult() == 1) {
+                    LOGGER.info("[whRetrieval] - update status at request table done");
+                } else {
+                    LOGGER.info("[whRetrieval] - update status at request table failed");
+                }
+            } else {
+                LOGGER.info("[whRetrieval] - requestId not found");
+            }
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.delete.error", args, locale));
         }
@@ -1248,7 +1452,7 @@ public class WhRetrievalController {
         String backUrl = servletContext.getContextPath() + "/wh/whRetrieval";
         model.addAttribute("pdfUrl", pdfUrl);
         model.addAttribute("backUrl", backUrl);
-        model.addAttribute("pageTitle", "general.label.whRetrieval");
+        model.addAttribute("pageTitle", "HW for Retrieval from SBN Factory");
         return "pdf/viewer";
     }
 

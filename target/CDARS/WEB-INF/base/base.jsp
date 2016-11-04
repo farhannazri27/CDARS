@@ -11,7 +11,7 @@
 
 
             <!--<title>HMS - Rel Lab</title>-->
-            <title>HIMS</title>
+            <title>HIMS RL</title>
 
             <!-- bootstrap -->
             <link href="${contextPath}/resources/private/css/bootstrap/bootstrap.css" rel="stylesheet" />
@@ -100,7 +100,7 @@
                 <div class="container">
                     <a href="${contextPath}/" id="logo" class="navbar-brand col-md-6 col-sm-6 col-xs-12">
                         <!--<span>Hardware Management System (HMS) - Rel Lab</span>-->
-                        <span>Hardware and Inventory Management System (HIMS)</span>
+                        <span>Hardware and Inventory Management System (HIMS RL)</span>
                     </a>
 
                     <button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button">

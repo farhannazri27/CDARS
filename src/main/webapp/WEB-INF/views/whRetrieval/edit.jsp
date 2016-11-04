@@ -15,7 +15,7 @@
             }
         </style>
         <div class="col-lg-12">
-            <h1>Retrieval</h1>
+            <h1>HW Verification for Retrieval from SBN Factory</h1>
             <div class="row">
                 <div class="col-lg-6">
                     <div class="main-box">
@@ -38,6 +38,12 @@
                                 <label for=" quantity" class="col-lg-4 control-label">Quantity </label>
                                 <div class="col-lg-3">
                                     <input type="text" class="form-control" id="quantity" name="quantity" value="${whRetrieval.hardwareQty}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for=" retrievalReason" class="col-lg-4 control-label">Reason for Retrieval </label>
+                                <div class="col-lg-3">
+                                    <input type="text" class="form-control" id="retrievalReason" name="retrievalReason" value="${whRetrieval.retrievalReason}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -76,8 +82,11 @@
                                     <input type="text" class="form-control" id="requestedDate" name="requestedDate" value="${whRetrieval.viewRequestedDate}" readonly>
                                 </div>
                             </div>
-                            <a href="${contextPath}/wh/whRetrieval" class="btn btn-info pull-left"><i class="fa fa-reply"></i> Back</a>
-                            <div class="clearfix"></div>
+                            <div class="clearfix">           
+                                <a href="${contextPath}/wh/whRetrieval" class="btn btn-info pull-left" id="backBtn"><i class="fa fa-reply"></i> Back</a>
+                                <a href="${contextPath}/wh/whRetrieval" class="btn btn-primary pull-right finishBtn" id="finishBtn">Finish <i class="fa fa-arrow-right"></i></a>
+                                <div class="clearfix"></div>
+                            </div>
                         </form>
                     </div>
                 </div>	
@@ -111,7 +120,7 @@
                                         <label for=" barcodeVerification" class="col-lg-4 control-label">Barcode Sticker(MP No) *</label>
                                         <div class="col-lg-5">
                                             <input type="text" class="form-control" id="barcodeVerification" name="barcodeVerification" autofocus="autofocus" placeholder="Please scan barcode sticker" value="${whRetrieval.barcodeVerification}">   
-                                            <small id="noteBs" class="form-text text-muted">Verified by Supervisor.</small>
+                                            <small id="noteBs" class="form-text text-muted">Verified by ${whRetrieval.barcodeDispositionBy}.</small>
                                             <small id="noteBsEmail" class="form-text text-muted">Email has been sent to supervisor.</small>
                                         </div>
                                     </div>
@@ -148,7 +157,7 @@
                                         <label for=" ttVerification" class="col-lg-4 control-label">${IdLabel} *</label>
                                         <div class="col-lg-5">
                                             <input type="text" class="form-control" id="ttVerification" name="ttVerification" autofocus="autofocus" placeholder="Please scan trip ticket" value="${whRetrieval.ttVerification}">
-                                            <small id="noteTt" class="form-text text-muted">Verified by Supervisor.</small>
+                                            <small id="noteTt" class="form-text text-muted">Verified by ${whRetrieval.ttDispositionBy}.</small>
                                             <small id="noteTtEmail" class="form-text text-muted">Email has been sent to supervisor.</small>
                                         </div>
                                     </div>
@@ -253,6 +262,14 @@
 //                    });
 //                }
 
+                var statusF = $('#statusTt'); //for finish button
+                if (statusF.val() === "Closed" || statusF.val() === "Closed. Verified By Supervisor") {
+                    $(".finishBtn").show();
+                    $("#backBtn").hide();
+                } else {
+                    $("#finishBtn").hide();
+                    $("#backBtn").show();
+                }
 
 
                 $('#barcodeVerification').bind('copy paste cut', function (e) {
@@ -319,7 +336,7 @@
                 }
 
                 var ebsDis = $('#barcodeDisposition');
-                if (ebsDis.val() === "Verified") {
+                if (ebsDis.val() === "Verified") { //original 
                     $("#noteBs").show();
                 } else {
                     $("#noteBs").hide();
@@ -333,13 +350,15 @@
                 }
 
                 var estatus = $('#statusforDisposition');
-                if (estatus.val() === "Barcode Sticker Scanning Mismatched" || estatus.val() === "Barcode Sticker - Unverified By Supervisor" || estatus.val() === "Barcode Sticker - Hold By Supervisor") {
+//                if (estatus.val() === "Barcode Sticker Scanning Mismatched" || estatus.val() === "Barcode Sticker - Unverified By Supervisor" || estatus.val() === "Barcode Sticker - Hold By Supervisor") { //original 3/11/16
+                if (estatus.val() === "Barcode Sticker Scanning Mismatched" || estatus.val() === "Barcode Sticker - Not Verified By Supervisor" || estatus.val() === "Barcode Sticker - Hold By Supervisor") { //as requested 2/11/16
                     $('#ttDisposition').attr("disabled", true);
                     $("#barcodeDisposition").focus();
                     $("#ttDispositionRemarks").attr("readonly", true);
                     $("#ttDisposition").attr("required", false);
                     $("#ttDispositionRemarks").attr("required", false);
-                } else if (estatus.val() === "Trip Ticket Scanning Mismatched" || estatus.val() === "Trip Ticket - Unverified By Supervisor" || estatus.val() === "Trip Ticket - Hold By Supervisor") {
+//                } else if (estatus.val() === "Trip Ticket Scanning Mismatched" || estatus.val() === "Trip Ticket - Unverified By Supervisor" || estatus.val() === "Trip Ticket - Hold By Supervisor") { //original 3/11/16
+                } else if (estatus.val() === "Trip Ticket Scanning Mismatched" || estatus.val() === "Trip Ticket - Not Verified By Supervisor" || estatus.val() === "Trip Ticket - Hold By Supervisor") { //as requested 2/11/16
                     $("#ttDisposition").focus();
                     $("#barcodeDisposition").attr("disabled", true);
                     $("#barcodeDispositionRemarks").attr("readonly", true);

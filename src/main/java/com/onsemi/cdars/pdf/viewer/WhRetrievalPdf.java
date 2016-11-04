@@ -85,37 +85,42 @@ public class WhRetrievalPdf extends AbstractITextPdfViewPotrait {
             cellContent.setPhrase(new Phrase(whRetrieval.getHardwareId(), fontContent));
             table.addCell(cellContent);
         }
-        
+
         cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getHardwareQty(), fontContent));
         table.addCell(cellContent);
-        
+
+        cellHeader.setPhrase(new Phrase("Reason for Retrieval", fontHeader));
+        table.addCell(cellHeader);
+        cellContent.setPhrase(new Phrase(whRetrieval.getRetrievalReason(), fontContent));
+        table.addCell(cellContent);
+
         cellHeader.setPhrase(new Phrase("Material Pass No.", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getMpNo(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Material Pass Expiry Date", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getViewMpExpiryDate(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Rack", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getRack(), fontContent));
         table.addCell(cellContent);
-        
-         cellHeader.setPhrase(new Phrase("Shelf", fontHeader));
+
+        cellHeader.setPhrase(new Phrase("Shelf", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getShelf(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Requested By", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getRequestedBy(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Requested Date", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getRequestedDate(), fontContent));
@@ -125,7 +130,7 @@ public class WhRetrievalPdf extends AbstractITextPdfViewPotrait {
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getRemarks(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Status", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whRetrieval.getStatus(), fontContent));

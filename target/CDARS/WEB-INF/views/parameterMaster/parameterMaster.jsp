@@ -79,7 +79,7 @@
                                                         <i class="fa fa-bars fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <a modaldeleteid="${parameterMaster.id}" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
+                                                <a modaldeleteid="${parameterMaster.id}" title="Delete" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
                                                         <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>

@@ -9,7 +9,7 @@
     </s:layout-component>
     <s:layout-component name="page_container">
         <div class="col-lg-12">
-            <h1>Warehouse Management - Retrieval</h1>
+            <h1>Warehouse Management - HW for Retrieval from SBN Factory</h1>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="main-box clearfix">
@@ -44,6 +44,7 @@
                                         <th><span>Hardware Type</span></th>
                                         <th><span>Hardware ID</span></th>
                                         <th><span>Quantity</span></th>
+                                        <th><span>Reason for Retrieval</span></th>
                                         <th><span>Requested By</span></th>
                                         <th><span>Requested Date</span></th>
                                         <th><span>Material Pass No</span></th>
@@ -58,27 +59,28 @@
                                             <td><c:out value="${whRetrieval.hardwareType}"/></td>
                                             <td id="modal_delete_info_${whRetrieval.id}"><c:out value="${whRetrieval.hardwareId}"/></td>
                                             <td><c:out value="${whRetrieval.hardwareQty}"/></td>
+                                            <td><c:out value="${whRetrieval.retrievalReason}"/></td>
                                             <td><c:out value="${whRetrieval.requestedBy}"/></td>
                                             <td><c:out value="${whRetrieval.viewRequestedDate}"/></td>
                                             <td><c:out value="${whRetrieval.mpNo}"/></td>
                                             <td id="statusT"><c:out value="${whRetrieval.status}"/></td>
                                             <td align="left">
                                                 <c:if test="${whRetrieval.status != 'Requested'}">
-                                                    <a href="${contextPath}/wh/whRetrieval/edit/${whRetrieval.id}" id="editB" class="table-link" title="Edit">
+                                                    <a href="${contextPath}/wh/whRetrieval/edit/${whRetrieval.id}" id="editB" class="table-link" title="HW Verification">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
                                                         </span>
                                                     </a> 
                                                 </c:if>
-                                                <a href="${contextPath}/wh/whRetrieval/view/${whRetrieval.id}" class="table-link" title="View">
+                                                <a href="${contextPath}/wh/whRetrieval/view/${whRetrieval.id}" class="table-link" title="HW Information">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
                                                         <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
                                                 <c:if test="${groupId == '1' || groupId == '2' || groupId == '29'}">
-                                                    <a modaldeleteid="${whRetrieval.id}" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
+                                                    <a modaldeleteid="${whRetrieval.id}" title="Delete" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
@@ -110,7 +112,7 @@
                                                                 "order": [],
                                                                 "aoColumnDefs": [
                                                                     {"bSortable": false, "aTargets": [0]},
-                                                                    {"bSortable": false, "aTargets": [8]}
+                                                                    {"bSortable": false, "aTargets": [9]}
                                                                 ],
                                                                 "sDom": "tp"
                                                             });
@@ -122,19 +124,19 @@
                                                                         "sExtends": "copy",
                                                                         "sButtonText": "Copy",
                                                                         "sTitle": exportTitle,
-                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
+                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7,8]
                                                                     },
                                                                     {
                                                                         "sExtends": "xls",
                                                                         "sButtonText": "Excel",
                                                                         "sTitle": exportTitle,
-                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
+                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7,8]
                                                                     },
                                                                     {
                                                                         "sExtends": "pdf",
                                                                         "sButtonText": "PDF",
                                                                         "sTitle": exportTitle,
-                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7]
+                                                                        "mColumns": [0, 1, 2, 3, 4, 5, 6, 7,8]
                                                                     },
                                                                     {
                                                                         "sExtends": "print",

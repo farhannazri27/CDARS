@@ -20,6 +20,7 @@ public class WhShipping {
     private String modifiedDate;
     private String mpNo;
     private String mpExpiryDate;
+    private String mpCreatedDate;
 
     //to be merge with whRequest
     private String requestEquipmentType;
@@ -38,6 +39,7 @@ public class WhShipping {
     private String pcbCQty;
     private String pcbCtr;
     private String pcbCtrQty;
+    private String count;
 
     public String getId() {
         return id;
@@ -309,6 +311,22 @@ public class WhShipping {
 
     public void setPcbCtrQty(String pcbCtrQty) {
         this.pcbCtrQty = pcbCtrQty;
+    }
+
+    public String getMpCreatedDate() {
+        return mpCreatedDate;
+    }
+
+    public void setMpCreatedDate(String mpCreatedDate) {
+        this.mpCreatedDate = mpCreatedDate;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
     }
 
 }

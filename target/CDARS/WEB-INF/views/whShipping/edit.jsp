@@ -15,7 +15,7 @@
             }
         </style>
         <div class="col-lg-12">
-            <h1>Shipping</h1>
+            <h1>Process HW for Sending to SBN Factory</h1>
             <div class="row">
                 <div class="col-lg-6">
                     <div class="main-box">
@@ -149,7 +149,7 @@
                                     <input type="hidden" class="form-control" id="mpNoVe" name="mpNoVe" value="${whShipping.mpNo}">
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel1">Reset</button>
-                                        <button type="submit" id="submit1" name="submit1" class="btn btn-primary">Verify</button>
+                                        <button type="submit" id="submit1" name="submit1" class="btn btn-primary">Verify & View Barcode Sticker</button>
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>

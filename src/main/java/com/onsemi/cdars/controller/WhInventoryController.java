@@ -203,7 +203,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		String backUrl = servletContext.getContextPath() + "/wh/whInventory";
 		model.addAttribute("pdfUrl", pdfUrl);
 		model.addAttribute("backUrl", backUrl);
-		model.addAttribute("pageTitle", "Inventory");
+		model.addAttribute("pageTitle", "HW in SBN Factory");
 		return "pdf/viewer";
 	}
 

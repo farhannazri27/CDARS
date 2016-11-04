@@ -5,7 +5,7 @@
     <head>
         <meta charset="utf-8">
         <!--<title>HMS - Login</title>-->
-        <title>HIMS - Login</title>
+        <title>HIMS RL - Login</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Hardware and Inventory Management System">
@@ -38,7 +38,7 @@
                         <span class="icon-bar"></span>
                     </a>
                     <!--<center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Hardware Management System (HMS) - Rel Lab</a></center>-->
-                    <center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Hardware and Inventory Management System (HIMS)</a></center>
+                    <center style="margin-top: 30px;"><a href="${contextPath}/" style="font-family: 'Lato'; font-size: 22px;">Hardware and Inventory Management System (HIMS RL)</a></center>
 
                 </div>
             </div>
@@ -52,7 +52,7 @@
                         <img src="${contextPath}/resources/img/cdars_logo.png" alt="FTC" width="35%" />
                     </a>
                     <!--<legend>Sign in to <span class="blue">HMS</span></legend>-->
-                    <legend>Sign in to <span class="blue">HIMS</span></legend>
+                    <legend>Sign in to <span class="blue">HIMS RL</span></legend>
 
                     <c:if test="${not empty error}">
                         <div class="alert alert-danger">

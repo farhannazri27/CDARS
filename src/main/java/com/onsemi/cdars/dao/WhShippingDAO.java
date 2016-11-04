@@ -109,11 +109,38 @@ public class WhShippingDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ? WHERE id = ?"
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ?, shipping_date = NOW() WHERE id = ?"
             );
             ps.setString(1, whShipping.getRequestId());
             ps.setString(2, whShipping.getStatus());
             ps.setString(3, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhShippingStatusAndInventoryDate(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ?, flag = ?, inventory_date = NOW() WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getStatus());
+            ps.setString(3, whShipping.getFlag());
+            ps.setString(4, whShipping.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -161,7 +188,7 @@ public class WhShippingDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_shipping SET mp_no = ?, mp_expiry_date = ?,  status = ?,  modified_by = ?, modified_date = NOW() WHERE id = ?"
+                    "UPDATE cdars_wh_shipping SET mp_no = ?, mp_expiry_date = ?,  status = ?,  modified_by = ?, modified_date = NOW(), mp_created_date = NOW() WHERE id = ?"
             );
             ps.setString(1, whShipping.getMpNo());
             ps.setString(2, whShipping.getMpExpiryDate());
@@ -600,6 +627,61 @@ public class WhShippingDAO {
         return count;
     }
 
+    public Integer getCountMpNoAndNotEqId(String mpNo, String id) {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE mp_no = '" + mpNo + "' AND id !='" + id + "'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+
+    public Integer getCountMpNoWithStatusinSF(String mpNo) {
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    //                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE mp_no = '" + mpNo + "' AND status = 'Verified'" //original 3/11/16
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE mp_no = '" + mpNo + "' AND status = 'Pending Packing List'" //ass requested 2/11/16
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+
     public Integer getCountRequestId(String requestId) {
         Integer count = null;
         try {
@@ -626,12 +708,13 @@ public class WhShippingDAO {
         }
         return count;
     }
-    
+
     public Integer getCountNoMpNumFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'No Material Pass Number' AND flag = '0'"
+                    //                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'No Material Pass Number' AND flag = '0'" //original 3/11/16
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Pending Material Pass Number' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -653,12 +736,13 @@ public class WhShippingDAO {
         }
         return count;
     }
-    
+
     public Integer getCountBSFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Not Scan Barcode Sticker Yet' AND flag = '0'"
+                    //                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Not Scan Barcode Sticker Yet' AND flag = '0'" //original 3/11/16
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Pending Box Barcode Scanning' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -680,12 +764,13 @@ public class WhShippingDAO {
         }
         return count;
     }
-    
+
     public Integer getCountTtFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Not Scan Trip Ticket Yet' AND flag = '0'"
+                    //                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Not Scan Trip Ticket Yet' AND flag = '0'" //original 3/11/16
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Pending Trip Ticket Scanning' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -707,12 +792,13 @@ public class WhShippingDAO {
         }
         return count;
     }
-    
+
     public Integer getCountShippedFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Ship' AND flag = '0'"
+                    //                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Ship' AND flag = '0'" //original
+                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE status = 'Pending Shipment to Seremban Factory' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

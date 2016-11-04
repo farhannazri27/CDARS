@@ -67,7 +67,7 @@ public abstract class AbstractITextPdfViewPotrait extends AbstractView {
         Image image = Image.getInstance(bytes);
         event.setHeaderLogo(image);
         //Add Text
-        event.setHeader("CDARS");
+        event.setHeader("HIMS RL");
         event.setFooter("Copyright © 2016, ONSEMI");
         // Build PDF
         buildPdfDocument(model, document, writer, request, response);

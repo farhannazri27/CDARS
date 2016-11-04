@@ -6,6 +6,7 @@ public class WhRetrieval {
     private String requestId;
     private String hardwareType;
     private String hardwareId;
+    private String retrievalReason;
     private String pcbA;
     private String pcbAQty;
     private String pcbB;
@@ -462,6 +463,14 @@ public class WhRetrieval {
 
     public void setViewTtDispositionDate(String viewTtDispositionDate) {
         this.viewTtDispositionDate = viewTtDispositionDate;
+    }
+
+    public String getRetrievalReason() {
+        return retrievalReason;
+    }
+
+    public void setRetrievalReason(String retrievalReason) {
+        this.retrievalReason = retrievalReason;
     }
 
 }

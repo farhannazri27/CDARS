@@ -50,7 +50,7 @@
         <div class="col-lg-12">
             <h1>Add Hardware Request</h1>
             <div class="row">
-                <div class="col-lg-8">
+                <div class="col-lg-9">
                     <div class="main-box">
                         <h2>Hardware Request Information</h2>
                         <form id="add_hardwarequest_form" class="form-horizontal" role="form" action="${contextPath}/wh/whRequest/save" method="post">
@@ -93,8 +93,8 @@
                                         </c:forEach>
                                     </select>
                                 </div>
-                                <label for="maxQtyPcbType" class="col-lg-1 control-label">Quantity:</label>
-                                <div class="col-lg-1">
+                                <label for="maxQtyPcbType" class="col-lg-2 control-label">Quantity per Box Limit</label>
+                                <div class="col-lg-2">
                                     <input type="text" class="form-control" id="maxQtyPcbType" name="maxQtyPcbType" value="" readonly >
                                 </div>
                             </div>
@@ -198,7 +198,7 @@
                             </div>
 
                             <div class="form-group" id="pcbCtrlistdiv" hidden>
-                                <label for="equipmentIdpcbCtr" class="col-lg-2 control-label">PCB ID Control*  </label>
+                                <label for="equipmentIdpcbCtr" class="col-lg-2 control-label">PCB ID Control </label>
                                 <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbCtr" name="equipmentIdpcbCtr" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
@@ -220,7 +220,7 @@
                                 </div>
                             </div>    
                             <div class="form-group" id="pcbAlistdiv" hidden>
-                                <label for="equipmentIdpcbA" class="col-lg-2 control-label">PCB ID Qual A * </label>
+                                <label for="equipmentIdpcbA" class="col-lg-2 control-label">PCB ID Qual A  </label>
                                 <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbA" name="equipmentIdpcbA" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
@@ -242,7 +242,7 @@
                                 </div>
                             </div> 
                             <div class="form-group" id="pcbBlistdiv" hidden>
-                                <label for="equipmentIdpcbB" class="col-lg-2 control-label">PCB ID Qual B * </label>
+                                <label for="equipmentIdpcbB" class="col-lg-2 control-label">PCB ID Qual B  </label>
                                 <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbB" name="equipmentIdpcbB" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
@@ -264,7 +264,7 @@
                                 </div>
                             </div>    
                             <div class="form-group" id="pcbClistdiv" hidden>
-                                <label for="equipmentIdpcbC" class="col-lg-2 control-label">PCB ID Qual C * </label>
+                                <label for="equipmentIdpcbC" class="col-lg-2 control-label">PCB ID Qual C  </label>
                                 <div class="col-lg-7">                                      
                                     <select id="equipmentIdpcbC" name="equipmentIdpcbC" class="js-example-basic-single" style="width: 100%">
                                         <option value="" selected=""></option>
@@ -341,6 +341,17 @@
                                     <input type="text" class="form-control" id="quantitytest" name="quantitytest" value="0" readonly>
                                 </div>
                             </div> 
+                            <div class="form-group" id="retrievalReasonDiv" hidden>
+                                <label for="retrievalReason" class="col-lg-2 control-label">Reason for Retrieval *</label>
+                                <div class="col-lg-8">
+                                    <select id="retrievalReason" name="retrievalReason" class="js-example-basic-single" style="width: 30%" autofocus="autofocus">
+                                        <option value="" selected=""></option>
+                                        <c:forEach items="${retrievalReason}" var="group">
+                                            <option value="${group.name}" ${group.selected}>${group.name}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="form-group" id="remarksdiv">
                                 <label for="remarks" class="col-lg-2 control-label">Remarks </label>
                                 <div class="col-lg-7">
@@ -371,12 +382,9 @@
             $(document).ready(function () {
 
                 $("form").keyup(function () {
-////                    if ($('#equipmentType').val() === "PCB" && $('#requestType').val() === "Ship" && $("#quantitytest").val() === "0") {
                     if (!($('#equipmentType').val() === "PCB" && $('#requestType').val() === "Ship" && $("#quantitytest").val() === "0")) {
                         $("#submit").removeAttr('disabled');
-////            $("#submit").attr("disabled", true);
                     } else {
-////                        $("#submit").removeAttr('disabled');
                         $("#submit").attr("disabled", true);
                     }
                 });
@@ -473,6 +481,9 @@
                         equipmentType: {
                             required: true
                         },
+                        retrievalReason: {
+                            required: true
+                        },
                         equipmentId: {
                             required: true
                         },
@@ -497,9 +508,9 @@
                         equipmentIdTray: {
                             required: true
                         },
-//                        equipmentIdpcbCtr: {
-//                            required: true
-//                        },
+                        remarks: {
+                            required: true
+                        },
                         pcbCtrQty: {
 //                            required: true,
                             number: true,
@@ -559,6 +570,7 @@
             $('#equipmentType').on('change', function () {
                 var element1 = $('#requestType');
                 if ($(this).val() === "Motherboard" && element1.val() === "Ship") {
+                    $("#retrievalReasonDiv").hide();
                     $("#mblistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -578,6 +590,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
@@ -603,6 +616,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Stencil" && element1.val() === "Ship") {
+                    $("#retrievalReasonDiv").hide();
                     $("#stencillistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -620,6 +634,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
@@ -646,6 +661,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Tray" && element1.val() === "Ship") {
+                    $("#retrievalReasonDiv").hide();
                     $("#traylistdiv").show();
                     $("#quantitydiv").show();
                     $("#quantitytestdiv").hide();
@@ -663,6 +679,7 @@
                     $("#pcbCQtydiv").hide();
                     $("#pcbCtrlistdiv").hide();
                     $("#pcbCtrQtydiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
@@ -688,9 +705,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "PCB" && element1.val() === "Ship") {
-//                    if ($("#quantitytest").val() === "0") {
-//                        $("#submit").attr("disabled", true);
-//                    }
+                    $("#retrievalReasonDiv").hide();
                     $("#pcbTypeDiv").show();
                     $("#pcbAlistdiv").show();
                     $("#pcbAQtydiv").show();
@@ -708,6 +723,7 @@
                     $("#stencillistdiv").hide();
                     $("#mblistdiv").hide();
                     $("#traylistdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
@@ -720,6 +736,7 @@
                     $("#inventoryIdTray").val("").trigger('change');
                     $("#inventoryIdPcb").val("").trigger('change');
                 } else if ($(this).val() === "Motherboard" && element1.val() === "Retrieve") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorymblistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -730,6 +747,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
@@ -764,6 +782,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Stencil" && element1.val() === "Retrieve") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorystencillistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -774,6 +793,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
@@ -808,6 +828,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Tray" && element1.val() === "Retrieve") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorytraylistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#quantitydiv").hide();
@@ -818,6 +839,7 @@
                     $("#inventorystencillistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorypcblistdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
@@ -851,6 +873,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "PCB" && element1.val() === "Retrieve") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorypcblistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#quantitydiv").hide();
@@ -861,6 +884,7 @@
                     $("#inventorystencillistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorytraylistdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
@@ -888,6 +912,7 @@
                     $("#pcbCtrQty").val("0");
                     $("#quantitytest").val("0");
                 } else {
+                    $("#retrievalReasonDiv").hide();
                     $("#listdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#pcbAlistdiv").hide();
@@ -905,6 +930,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
@@ -934,10 +960,11 @@
                 }
 
             });
-            
+
             $('#requestType').on('change', function () {
                 var element1 = $('#equipmentType');
                 if ($(this).val() === "Ship" && element1.val() === "Motherboard") {
+                    $("#retrievalReasonDiv").hide();
                     $("#mblistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -957,6 +984,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
@@ -982,6 +1010,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Ship" && element1.val() === "Stencil") {
+                    $("#retrievalReasonDiv").hide();
                     $("#stencillistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -999,6 +1028,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
@@ -1025,6 +1055,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Ship" && element1.val() === "Tray") {
+                    $("#retrievalReasonDiv").hide();
                     $("#traylistdiv").show();
                     $("#quantitydiv").show();
                     $("#quantitytestdiv").hide();
@@ -1042,6 +1073,7 @@
                     $("#pcbCQtydiv").hide();
                     $("#pcbCtrlistdiv").hide();
                     $("#pcbCtrQtydiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
@@ -1067,6 +1099,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Ship" && element1.val() === "PCB") {
+                    $("#retrievalReasonDiv").hide();
                     $("#pcbTypeDiv").show();
                     $("#pcbAlistdiv").show();
                     $("#pcbAQtydiv").show();
@@ -1084,6 +1117,7 @@
                     $("#stencillistdiv").hide();
                     $("#mblistdiv").hide();
                     $("#traylistdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');
                     $("#equipmentIdTray").val("").trigger('change');
@@ -1096,6 +1130,7 @@
                     $("#inventoryIdTray").val("").trigger('change');
                     $("#inventoryIdPcb").val("").trigger('change');
                 } else if ($(this).val() === "Retrieve" && element1.val() === "Motherboard") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorymblistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -1106,6 +1141,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
@@ -1140,6 +1176,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Retrieve" && element1.val() === "Stencil") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorystencillistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#listdiv").hide();
@@ -1150,6 +1187,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
@@ -1184,6 +1222,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Retrieve" && element1.val() === "Tray") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorytraylistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#quantitydiv").hide();
@@ -1194,6 +1233,7 @@
                     $("#inventorystencillistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorypcblistdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
@@ -1227,6 +1267,7 @@
                     $("#maxQtyB1").val("0");
                     $("#maxQtyC1").val("0");
                 } else if ($(this).val() === "Retrieve" && element1.val() === "PCB") {
+                    $("#retrievalReasonDiv").show();
                     $("#inventorypcblistdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#quantitydiv").hide();
@@ -1237,6 +1278,7 @@
                     $("#inventorystencillistdiv").hide();
                     $("#inventorymblistdiv").hide();
                     $("#inventorytraylistdiv").hide();
+                     $("#retrievalReason").val("").trigger('change');
                     $("#inventoryIdMb").val("").trigger('change');
                     $("#inventoryIdStencil").val("").trigger('change');
                     $("#inventoryIdTray").val("").trigger('change');
@@ -1264,6 +1306,7 @@
                     $("#pcbCtrQty").val("0");
                     $("#quantitytest").val("0");
                 } else {
+                    $("#retrievalReasonDiv").hide();
                     $("#listdiv").show();
                     $("#pcbTypeDiv").hide();
                     $("#pcbAlistdiv").hide();
@@ -1281,6 +1324,7 @@
                     $("#quantitytestdiv").hide();
                     $("#quantityABdiv").hide();
                     $("#quantityCCtrdiv").hide();
+                    $("#retrievalReason").val("").trigger('change');
                     $("#pcbType").val("").trigger('change');
                     $("#equipmentIdMb").val("").trigger('change');
                     $("#equipmentIdStencil").val("").trigger('change');

@@ -93,7 +93,7 @@
                             <div class="form-group" id="remarksDiv" >
                                 <label for="remarks" class="col-lg-2 control-label">Remarks </label>
                                 <div class="col-lg-6">
-                                    <textarea class="form-control" rows="5" id="remarks" name="remarks" readonly>${whRequest.remarks}</textarea>
+                                    <textarea class="form-control" rows="5" id="remarks" name="remarks" readonly>${whRequest.remarksLog}</textarea>
                                 </div>
                             </div>
 
@@ -148,19 +148,13 @@
                     $("#typediv").hide();
                     $("#quantitydiv").hide();
                 } else if (element.val() === "Tray") {
-//                    $("#quantitydiv").show();
                     $("#typediv").hide();
                 } else if (element.val() === "PCB") {
                     $("#typediv").hide();
-//                    $("#quantitydiv").show();
                     $("#pcbADiv").show();
-//                    $("#pcbAQtyDiv").show();
                     $("#pcbBDiv").show();
-//                    $("#pcbBQtyDiv").show();
                     $("#pcbCDiv").show();
-//                    $("#pcbCQtyDiv").show();
                     $("#pcbCtrDiv").show();
-//                    $("#pcbCtrQtyDiv").show();
                 } else {
                     $("#typediv").hide();
                     $("#quantitydiv").hide();
@@ -179,10 +173,6 @@
                         finalApprovedStatus: {
                             required: true
                         }
-//                        ,
-//                        remarksApprover: {
-//                            required: true
-//                        }
                     }
                 });
                 $(".cancel").click(function () {

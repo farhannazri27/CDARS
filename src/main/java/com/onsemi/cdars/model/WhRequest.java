@@ -5,9 +5,10 @@ public class WhRequest {
     private String id;
     private String inventoryId;
     private String requestType;
+    private String retrievalReason;
     private String equipmentType;
     private String pcbType;
-     private String pcbLimitId;
+    private String pcbLimitId;
     private String equipmentId;
     private String pcbA;
     private String pcbAQty;
@@ -30,6 +31,7 @@ public class WhRequest {
     private String finalApprovedBy;
     private String finalApprovedDate;
     private String remarks;
+    private String remarksLog;
     private String remarksApprover;
     private String createdBy;
     private String createdDate;
@@ -37,10 +39,13 @@ public class WhRequest {
     private String modifiedDate;
     private String status;
     private String flag;
+    private String mpCreatedDate;
 
     /*Extra*/
     private String selected;
     private String requestedDateView;
+    private String mpExpiryDateView;
+    private String count;
 
     public String getId() {
         return id;
@@ -337,7 +342,45 @@ public class WhRequest {
     public void setPcbLimitId(String pcbLimitId) {
         this.pcbLimitId = pcbLimitId;
     }
-    
-    
+
+    public String getRemarksLog() {
+        return remarksLog;
+    }
+
+    public void setRemarksLog(String remarksLog) {
+        this.remarksLog = remarksLog;
+    }
+
+    public String getRetrievalReason() {
+        return retrievalReason;
+    }
+
+    public void setRetrievalReason(String retrievalReason) {
+        this.retrievalReason = retrievalReason;
+    }
+
+    public String getMpExpiryDateView() {
+        return mpExpiryDateView;
+    }
+
+    public void setMpExpiryDateView(String mpExpiryDateView) {
+        this.mpExpiryDateView = mpExpiryDateView;
+    }
+
+    public String getMpCreatedDate() {
+        return mpCreatedDate;
+    }
+
+    public void setMpCreatedDate(String mpCreatedDate) {
+        this.mpCreatedDate = mpCreatedDate;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
+    }
 
 }

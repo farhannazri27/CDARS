@@ -33,7 +33,7 @@ public class WhRetrievalDAO {
                     "INSERT INTO cdars_wh_retrieval (request_id, hardware_type, hardware_id, "
                     + "pcb_a, pcb_a_qty, pcb_b, pcb_b_qty, pcb_c, pcb_c_qty, pcb_ctr, pcb_ctr_qty,"
                     + "hardware_qty, mp_no, mp_expiry_date, location, shelf, rack, requested_by, "
-                    + "requested_date, remarks, status, flag) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS
+                    + "requested_date, remarks, status, flag, retrieval_reason) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whRetrieval.getRequestId());
             ps.setString(2, whRetrieval.getHardwareType());
@@ -57,6 +57,7 @@ public class WhRetrievalDAO {
             ps.setString(20, whRetrieval.getRemarks());
             ps.setString(21, whRetrieval.getStatus());
             ps.setString(22, whRetrieval.getFlag());
+            ps.setString(23, whRetrieval.getRetrievalReason());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -83,7 +84,7 @@ public class WhRetrievalDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE cdars_wh_retrieval SET request_id = ?, hardware_type = ?, hardware_id = ?, hardware_qty = ?, mp_no = ?, mp_expiry_date = ?, location = ?, shelf = ?, rack = ?, requested_by = ?, requested_date = ?, remarks = ?, status = ?, flag = ? WHERE id = ?"
+                    "UPDATE cdars_wh_retrieval SET request_id = ?, hardware_type = ?, hardware_id = ?, hardware_qty = ?, mp_no = ?, mp_expiry_date = ?, location = ?, shelf = ?, rack = ?, requested_by = ?, requested_date = ?, remarks = ?, status = ?, flag = ?, retrieval_reason = ? WHERE id = ?"
             );
             ps.setString(1, whRetrieval.getRequestId());
             ps.setString(2, whRetrieval.getHardwareType());
@@ -99,7 +100,8 @@ public class WhRetrievalDAO {
             ps.setString(12, whRetrieval.getRemarks());
             ps.setString(13, whRetrieval.getStatus());
             ps.setString(14, whRetrieval.getFlag());
-            ps.setString(15, whRetrieval.getId());
+            ps.setString(15, whRetrieval.getRetrievalReason());
+            ps.setString(16, whRetrieval.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -270,7 +272,7 @@ public class WhRetrievalDAO {
                 whRetrieval.setBarcodeVerification(rs.getString("barcode_verification"));
                 whRetrieval.setBarcodeVerifiedBy(rs.getString("barcode_verified_by"));
                 whRetrieval.setBarcodeVerifiedDate(rs.getString("barcode_verified_date"));
-
+                whRetrieval.setRetrievalReason(rs.getString("retrieval_reason"));
             }
             rs.close();
             ps.close();
@@ -346,6 +348,7 @@ public class WhRetrievalDAO {
                 whRetrieval.setBarcodeDispositionBy(rs.getString("barcode_disposition_by"));
                 whRetrieval.setBarcodeDispositionDate(rs.getString("barcode_disposition_date"));
                 whRetrieval.setBarcodeDispositionRemarks(rs.getString("barcode_disposition_remarks"));
+                whRetrieval.setRetrievalReason(rs.getString("retrieval_reason"));
 
                 //date view
                 whRetrieval.setViewRequestedDate(rs.getString("view_requested_date"));
@@ -415,6 +418,7 @@ public class WhRetrievalDAO {
                 whRetrieval.setBarcodeVerification(rs.getString("barcode_verification"));
                 whRetrieval.setBarcodeVerifiedBy(rs.getString("barcode_verified_by"));
                 whRetrieval.setBarcodeVerifiedDate(rs.getString("barcode_verified_date"));
+                whRetrieval.setRetrievalReason(rs.getString("retrieval_reason"));
                 whRetrievalList.add(whRetrieval);
             }
             rs.close();
@@ -484,6 +488,7 @@ public class WhRetrievalDAO {
                 whRetrieval.setBarcodeVerification(rs.getString("barcode_verification"));
                 whRetrieval.setBarcodeVerifiedBy(rs.getString("barcode_verified_by"));
                 whRetrieval.setBarcodeVerifiedDate(rs.getString("barcode_verified_date"));
+                whRetrieval.setRetrievalReason(rs.getString("retrieval_reason"));
 
                 //date view
                 whRetrieval.setViewRequestedDate(rs.getString("view_requested_date"));
@@ -570,6 +575,7 @@ public class WhRetrievalDAO {
                 whRetrieval.setBarcodeDispositionBy(rs.getString("barcode_disposition_by"));
                 whRetrieval.setBarcodeDispositionDate(rs.getString("barcode_disposition_date"));
                 whRetrieval.setBarcodeDispositionRemarks(rs.getString("barcode_disposition_remarks"));
+                whRetrieval.setRetrievalReason(rs.getString("retrieval_reason"));
 
                 //date view
                 whRetrieval.setViewRequestedDate(rs.getString("view_requested_date"));
@@ -713,13 +719,13 @@ public class WhRetrievalDAO {
         }
         return queryResult;
     }
-    
+
     public QueryResult updateWhRetrievalStatus(WhRetrieval whRetrieval) {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
                     "UPDATE cdars_wh_retrieval SET status = ? WHERE id = ?"
-            );     
+            );
             ps.setString(1, whRetrieval.getStatus());
             ps.setString(2, whRetrieval.getId());
             queryResult.setResult(ps.executeUpdate());
@@ -738,7 +744,7 @@ public class WhRetrievalDAO {
         }
         return queryResult;
     }
-    
+
     public Integer getCountRequestFlag0() {
         Integer count = null;
         try {
@@ -765,12 +771,13 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-    
+
     public Integer getCountShipFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Ship' AND flag = '0'"
+//                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Ship' AND flag = '0'" //original 3/11/16
+                     "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Shipped' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -792,12 +799,13 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-    
+
     public Integer getCountBsVerifiedFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Verified' AND flag = '0'"
+//                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Verified' AND flag = '0'" //original 3/11/16
+                     "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Received' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -819,7 +827,7 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-    
+
     public Integer getCountBsMismatchedFlag0() {
         Integer count = null;
         try {
@@ -846,12 +854,13 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-    
+
     public Integer getCountBsUnverifiedFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Sticker - Unverified By Supervisor' AND flag = '0'"
+//                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Sticker - Unverified By Supervisor' AND flag = '0'" //original 3/11/16
+                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Barcode Sticker - Not Verified By Supervisor' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -873,8 +882,8 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-    
-     public Integer getCountBsHoldFlag0() {
+
+    public Integer getCountBsHoldFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
@@ -900,8 +909,8 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-     
-     public Integer getCountTtMismatchedFlag0() {
+
+    public Integer getCountTtMismatchedFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
@@ -927,12 +936,13 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-    
+
     public Integer getCountTtUnverifiedFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Trip Ticket - Unverified By Supervisor' AND flag = '0'"
+//                    "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Trip Ticket - Unverified By Supervisor' AND flag = '0'" //original 3/11/16
+                     "SELECT count(*) AS count FROM cdars_wh_retrieval WHERE status = 'Trip Ticket - Not Verified By Supervisor' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -954,8 +964,8 @@ public class WhRetrievalDAO {
         }
         return count;
     }
-     
-     public Integer getCountTtHoldFlag0() {
+
+    public Integer getCountTtHoldFlag0() {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
@@ -981,4 +991,69 @@ public class WhRetrievalDAO {
         }
         return count;
     }
+
+//    public List<WhRetrieval> getWhRetrievalListWithoutInRequest() {
+//        String sql = "SELECT * FROM "
+//                + "cdars_wh_inventory inv "
+//                + "WHERE inv.flag = '0' AND inv.id NOT IN(SELECT re.inventory_id FROM cdars_wh_request re WHERE re.flag = '0')";
+//        List<WhRetrieval> whRetrievalList = new ArrayList<WhRetrieval>();
+//        try {
+//            PreparedStatement ps = conn.prepareStatement(sql);
+//            WhRetrieval whRetrieval;
+//            ResultSet rs = ps.executeQuery();
+//            while (rs.next()) {
+//                whRetrieval = new WhRetrieval();
+//                whRetrieval.setId(rs.getString("id"));
+//                whRetrieval.setRequestId(rs.getString("request_id"));
+//                whRetrieval.setHardwareType(rs.getString("hardware_type"));
+//                whRetrieval.setHardwareId(rs.getString("hardware_id"));
+//                whRetrieval.setPcbA(rs.getString("pcb_a"));
+//                whRetrieval.setPcbAQty(rs.getString("pcb_a_qty"));
+//                whRetrieval.setPcbB(rs.getString("pcb_b"));
+//                whRetrieval.setPcbBQty(rs.getString("pcb_b_qty"));
+//                whRetrieval.setPcbC(rs.getString("pcb_c"));
+//                whRetrieval.setPcbCQty(rs.getString("pcb_c_qty"));
+//                whRetrieval.setPcbCtr(rs.getString("pcb_ctr"));
+//                whRetrieval.setPcbCtrQty(rs.getString("pcb_ctr_qty"));
+//                whRetrieval.setHardwareQty(rs.getString("hardware_qty"));
+//                whRetrieval.setMpNo(rs.getString("mp_no"));
+//                whRetrieval.setMpExpiryDate(rs.getString("mp_expiry_date"));
+//                whRetrieval.setLocation(rs.getString("location"));
+//                whRetrieval.setShelf(rs.getString("shelf"));
+//                whRetrieval.setRack(rs.getString("rack"));
+//                whRetrieval.setRequestedBy(rs.getString("requested_by"));
+//                whRetrieval.setRequestedDate(rs.getString("requested_date"));
+//                whRetrieval.setVerifiedBy(rs.getString("verified_by"));
+//                whRetrieval.setVerifiedDate(rs.getString("verified_date"));
+//                whRetrieval.setShippingBy(rs.getString("shipping_by"));
+//                whRetrieval.setShippingDate(rs.getString("shipping_date"));
+//                whRetrieval.setReceivedDate(rs.getString("received_date"));
+//                whRetrieval.setRemarks(rs.getString("remarks"));
+//                whRetrieval.setStatus(rs.getString("status"));
+//                whRetrieval.setFlag(rs.getString("flag"));
+//                whRetrieval.setTtVerification(rs.getString("tt_verification"));
+//                whRetrieval.setTtVerifiedBy(rs.getString("tt_verified_by"));
+//                whRetrieval.setTtVerifiedDate(rs.getString("tt_verified_date"));
+//                whRetrieval.setBarcodeVerification(rs.getString("barcode_verification"));
+//                whRetrieval.setBarcodeVerifiedBy(rs.getString("barcode_verified_by"));
+//                whRetrieval.setBarcodeVerifiedDate(rs.getString("barcode_verified_date"));
+//                whRetrieval.setRetrievalReason(rs.getString("retrieval_reason"));
+//                whRetrievalList.add(whRetrieval);
+//            }
+//            rs.close();
+//            ps.close();
+//        } catch (SQLException e) {
+//            LOGGER.error(e.getMessage());
+//        } finally {
+//            if (conn != null) {
+//                try {
+//                    conn.close();
+//                } catch (SQLException e) {
+//                    LOGGER.error(e.getMessage());
+//                }
+//            }
+//        }
+//        return whRetrievalList;
+//    }
+
 }

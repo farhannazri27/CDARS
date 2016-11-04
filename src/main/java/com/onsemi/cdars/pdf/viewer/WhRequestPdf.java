@@ -27,31 +27,31 @@ public class WhRequestPdf extends AbstractITextPdfViewPotrait {
         WhRequest whRequest = (WhRequest) model.get("whRequest");
 
         if ("Motherboard".equals(whRequest.getEquipmentType())) {
-            String title = "MOTHERBOARD TRIP TICKET";
+            String title = "MOTHERBOARD INFORMATION";
             Paragraph viewTitle = new Paragraph(title, fontOpenSans(10f, Font.BOLD));
             viewTitle.setAlignment(Element.ALIGN_CENTER);
 
             doc.add(viewTitle);
         } else if ("Stencil".equals(whRequest.getEquipmentType())) {
-            String title = "STENCIL TRIP TICKET";
+            String title = "STENCIL INFORMATION";
             Paragraph viewTitle = new Paragraph(title, fontOpenSans(10f, Font.BOLD));
             viewTitle.setAlignment(Element.ALIGN_CENTER);
 
             doc.add(viewTitle);
         } else if ("Tray".equals(whRequest.getEquipmentType())) {
-            String title = "TRAY TRIP TICKET";
+            String title = "TRAY INFORMATION";
             Paragraph viewTitle = new Paragraph(title, fontOpenSans(10f, Font.BOLD));
             viewTitle.setAlignment(Element.ALIGN_CENTER);
 
             doc.add(viewTitle);
         } else if ("PCB".equals(whRequest.getEquipmentType())) {
-            String title = "PCB TRIP TICKET";
+            String title = "PCB INFORMATION";
             Paragraph viewTitle = new Paragraph(title, fontOpenSans(10f, Font.BOLD));
             viewTitle.setAlignment(Element.ALIGN_CENTER);
 
             doc.add(viewTitle);
         } else {
-            String title = "HARDWARE TRIP TICKET";
+            String title = "HARDWARE INFORMATION";
             Paragraph viewTitle = new Paragraph(title, fontOpenSans(10f, Font.BOLD));
             viewTitle.setAlignment(Element.ALIGN_CENTER);
 

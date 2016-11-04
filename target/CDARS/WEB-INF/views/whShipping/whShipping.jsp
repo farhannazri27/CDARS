@@ -9,7 +9,7 @@
     </s:layout-component>
     <s:layout-component name="page_container">
         <div class="col-lg-12">
-            <h1>Warehouse Management - Shipping</h1>
+            <h1>Warehouse Management - HW for Sending to SBN Factory</h1>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="main-box clearfix">
@@ -18,7 +18,7 @@
 
                             <div class="filter-block pull-right">
                                 <a href="${contextPath}/wh/whShipping/whMpList/s" class="btn btn-primary pull-right">
-                                    <i class="fa fa-bars fa-lg"></i> Create Shipping Material Pass List
+                                    <i class="fa fa-bars fa-lg"></i> Create Shipping Packing List
                                 </a>
                             </div>
                         </div>
@@ -80,9 +80,9 @@
                                                         <i class="fa fa-ticket fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <c:if test="${whShipping.status == 'Not Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Ship'}">
-                                                    <!--<a href="${contextPath}/wh/whShipping/viewBarcodeSticker/${whShipping.id}" class="table-link" title="Barcode Sticker">-->
-                                                        <a class="table-link" href="#" title="Barcode Sticker" onclick="window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}','Barcode Sticker','width=720,height=800').print()">
+                                                <%--<c:if test="${whShipping.status == 'Not Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Ship'}">--%>
+                                                <c:if test="${whShipping.status == 'Pending Box Barcode Scanning' || whShipping.status == 'Pending Packing List' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Pending Shipment to Seremban Factory'}">
+                                                    <a class="table-link" href="#" title="Barcode Sticker" onclick="window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}', 'Barcode Sticker', 'width=720,height=800').print()">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-barcode fa-stack-1x fa-inverse"></i>
@@ -90,7 +90,7 @@
                                                     </a>
                                                 </c:if>
                                                 <c:if test="${groupId == '1' || groupId == '2' || groupId == '29'}">
-                                                    <a modaldeleteid="${whShipping.id}" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
+                                                    <a modaldeleteid="${whShipping.id}" title="Delete" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
@@ -164,7 +164,7 @@
                                                         });
 
                                                         function printDiv() {
-                                                           location.href = 'http://localhost:8080/CDARS/wh/whShipping/viewWhBarcodeStickerPdf/19';
+                                                            location.href = 'http://localhost:8080/CDARS/wh/whShipping/viewWhBarcodeStickerPdf/19';
                                                             newWin = window.open("");
                                                             newWin.document.write(location.href);
 //                                                            newWin.print();

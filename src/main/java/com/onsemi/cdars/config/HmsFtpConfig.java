@@ -6,13 +6,17 @@
 package com.onsemi.cdars.config;
 
 import com.onsemi.cdars.dao.WhInventoryDAO;
+import com.onsemi.cdars.dao.WhRequestDAO;
 import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.dao.WhShippingDAO;
+import com.onsemi.cdars.dao.WhStatusLogDAO;
 import com.onsemi.cdars.model.WhInventory;
 import com.onsemi.cdars.model.WhInventoryTemp;
+import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.WhRetrieval;
 import com.onsemi.cdars.model.WhRetrievalTemp;
 import com.onsemi.cdars.model.WhShipping;
+import com.onsemi.cdars.model.WhStatusLog;
 import com.onsemi.cdars.tools.QueryResult;
 import com.onsemi.cdars.tools.SPTSResponse;
 import com.onsemi.cdars.tools.SPTSWebService;
@@ -111,6 +115,21 @@ public class HmsFtpConfig {
                             WhInventoryDAO updateDao = new WhInventoryDAO();
                             QueryResult update = updateDao.updateWhInventoryLocation(updateftp);
                             if (update.getResult() == 1) {
+
+                                //update statusLog
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(e.getRequestId());
+                                stat.setModule("cdars_wh_inventory");
+                                stat.setStatus("SF Inventory Updated");
+                                stat.setCreatedBy("-");
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                                if (queryResultStat.getGeneratedKey().equals("0")) {
+                                    LOGGER.info("[HmsFtpConfig] - insert status log failed");
+                                } else {
+                                    LOGGER.info("[HmsFtpConfig] - insert status log done");
+                                }
                                 LOGGER.info("update file");
 
                                 //update spts location
@@ -263,7 +282,7 @@ public class HmsFtpConfig {
                                 if (count == 1) {
                                     shipD = new WhShippingDAO();
                                     WhShipping ship = shipD.getWhShippingNyRequestId(e.getRequestId());
-                                    ship.setStatus("In Inventory");
+                                    ship.setStatus("In SF Inventory");
                                     ship.setFlag("1");
                                     shipD = new WhShippingDAO();
                                     QueryResult updateShip = shipD.updateWhShipping(ship);
@@ -274,6 +293,27 @@ public class HmsFtpConfig {
                                     }
                                 } else {
                                     LOGGER.info("[UPDATE Inventory] - no request id");
+                                }
+
+                                //update status at master table request
+                                WhRequestDAO reqD = new WhRequestDAO();
+                                int countReq = reqD.getCountRequestId(e.getRequestId());
+                                if (countReq == 1) {
+                                    reqD = new WhRequestDAO();
+                                    WhRequest req = reqD.getWhRequest(e.getRequestId());
+                                    WhRequest reqUpdate = new WhRequest();
+                                    reqUpdate.setModifiedBy(req.getModifiedBy());
+                                    reqUpdate.setStatus("In SF Inventory");
+                                    reqUpdate.setId(e.getRequestId());
+                                    reqD = new WhRequestDAO();
+                                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                                    if (ru.getResult() == 1) {
+                                        LOGGER.info("[CREATE Inventory] - update status at request table done");
+                                    } else {
+                                        LOGGER.info("[CREATE Inventory] - update status at request table failed");
+                                    }
+                                } else {
+                                    LOGGER.info("[CREATE Inventory] - requestId not found");
                                 }
 
                             } else {
@@ -312,6 +352,21 @@ public class HmsFtpConfig {
                         QueryResult add = insertDao.insertWhInventory(insertftp);
                         if (add.getResult() == 1) {
                             LOGGER.info("insert file");
+
+                            //update statusLog
+                            WhStatusLog stat = new WhStatusLog();
+                            stat.setRequestId(e.getRequestId());
+                            stat.setModule("cdars_wh_inventory");
+                            stat.setStatus("In SF Inventory");
+                            stat.setCreatedBy("-");
+                            stat.setFlag("0");
+                            WhStatusLogDAO statD = new WhStatusLogDAO();
+                            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                            if (queryResultStat.getGeneratedKey().equals("0")) {
+                                LOGGER.info("[HmsFtpConfig] - insert status log failed");
+                            } else {
+                                LOGGER.info("[HmsFtpConfig] - insert status log done");
+                            }
 
                             //update spts location
                             //get item pkid and version
@@ -463,10 +518,11 @@ public class HmsFtpConfig {
                             if (count == 1) {
                                 shipD = new WhShippingDAO();
                                 WhShipping ship = shipD.getWhShippingNyRequestId(e.getRequestId());
-                                ship.setStatus("In Inventory");
+                                ship.setStatus("In SF Inventory");
                                 ship.setFlag("1");
                                 shipD = new WhShippingDAO();
-                                QueryResult updateShip = shipD.updateWhShipping(ship);
+//                                QueryResult updateShip = shipD.updateWhShipping(ship);
+                                QueryResult updateShip = shipD.updateWhShippingStatusAndInventoryDate(ship);
                                 if (updateShip.getResult() == 1) {
                                     LOGGER.info("[CREATE Inventory] - update ship status and flag");
                                 } else {
@@ -474,6 +530,27 @@ public class HmsFtpConfig {
                                 }
                             } else {
                                 LOGGER.info("[CREATE Inventory] - no request id");
+                            }
+
+                            //update status at master table request
+                            WhRequestDAO reqD = new WhRequestDAO();
+                            int countReq = reqD.getCountRequestId(e.getRequestId());
+                            if (countReq == 1) {
+                                reqD = new WhRequestDAO();
+                                WhRequest req = reqD.getWhRequest(e.getRequestId());
+                                WhRequest reqUpdate = new WhRequest();
+                                reqUpdate.setModifiedBy(req.getModifiedBy());
+                                reqUpdate.setStatus("In SF Inventory");
+                                reqUpdate.setId(e.getRequestId());
+                                reqD = new WhRequestDAO();
+                                QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                                if (ru.getResult() == 1) {
+                                    LOGGER.info("[CREATE Inventory] - update status at request table done");
+                                } else {
+                                    LOGGER.info("[CREATE Inventory] - update status at request table failed");
+                                }
+                            } else {
+                                LOGGER.info("[CREATE Inventory] - requestId not found");
                             }
 
                         } else {
@@ -533,13 +610,50 @@ public class HmsFtpConfig {
                             update.setVerifiedDate(e.getVerifiedDate());
                             update.setShippingBy(e.getShippingBy());
                             update.setShippingDate(e.getShippingDate());
-                            update.setStatus(e.getStatus());
+//                            update.setStatus(e.getStatus()); //original 3/11/16
+                            update.setStatus("Shipped"); //as requested 2/11/16
                             update.setFlag("0");
 
                             WhRetrievalDAO updateDao = new WhRetrievalDAO();
                             QueryResult updateRetrieval = updateDao.updateWhRetrievalFromCsv(update);
                             if (updateRetrieval.getResult() == 1) {
                                 LOGGER.info("Update Done!");
+
+                                //update statusLog
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(e.getRequestId());
+                                stat.setModule("cdars_wh_retrieval");
+                                stat.setStatus("Shipped From Seremban Factory");
+                                stat.setCreatedBy("-");
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                                if (queryResultStat.getGeneratedKey().equals("0")) {
+                                    LOGGER.info("[HmsFtpConfig] - insert status log failed");
+                                } else {
+                                    LOGGER.info("[HmsFtpConfig] - insert status log done");
+                                }
+
+                                //update status at master table request
+                                WhRequestDAO reqD = new WhRequestDAO();
+                                int countReq = reqD.getCountRequestId(e.getRequestId());
+                                if (countReq == 1) {
+                                    reqD = new WhRequestDAO();
+                                    WhRequest req = reqD.getWhRequest(e.getRequestId());
+                                    WhRequest reqUpdate = new WhRequest();
+                                    reqUpdate.setModifiedBy(req.getModifiedBy());
+                                    reqUpdate.setStatus("Shipped From Seremban Factory");
+                                    reqUpdate.setId(e.getRequestId());
+                                    reqD = new WhRequestDAO();
+                                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                                    if (ru.getResult() == 1) {
+                                        LOGGER.info("[From SF] - update status at request table done");
+                                    } else {
+                                        LOGGER.info("[From SF] - update status at request table failed");
+                                    }
+                                } else {
+                                    LOGGER.info("[From SF] - requestId not found");
+                                }
                             } else {
                                 LOGGER.info("Update Failed!");
                             }

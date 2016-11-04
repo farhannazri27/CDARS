@@ -23,7 +23,7 @@
                                 <h2 class="pull-left">Unregistered User</h2>
                             </div>
                             <hr/>
-                            <p>Sorry, your ID is not registered with HMS, please contact our System Administrator for further help!</p>
+                            <p>Sorry, your ID is not registered with HIMS RL, please contact our System Administrator for further help!</p>
                         </div>
                     </div>
                 </div>
