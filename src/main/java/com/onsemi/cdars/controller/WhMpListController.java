@@ -60,7 +60,7 @@ public class WhMpListController {
     private static final String COMMA_DELIMITER = ",";
     private static final String LINE_SEPARATOR = "\n";
     private static final String HEADER = "id,hardware_type,hardware_id,pcb_a,pcb_a_qty,pcb_b,pcb_b_qty,pcb_c,pcb_c_qty,pcb_ctr,pcb_ctr_qty,quantity,material pass number,material pass expiry date,requested_by,"
-            + "requestor_email,requested_date,remarks,shipping_date";
+            + "requestor_email,requested_date,remarks,shipping_date,status";
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String whMpList(
@@ -285,6 +285,8 @@ public class WhMpListController {
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getCreatedDate());
                             fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append("Shipped");
+                            fileWriter.append(COMMA_DELIMITER);
                             System.out.println("append to CSV file Succeed!!!");
                         } catch (Exception ee) {
                             ee.printStackTrace();
@@ -345,6 +347,8 @@ public class WhMpListController {
                             fileWriter.append(COMMA_DELIMITER);
                             fileWriter.append(whship.getCreatedDate());
                             fileWriter.append(COMMA_DELIMITER);
+                             fileWriter.append("Shipped");
+                            fileWriter.append(COMMA_DELIMITER);
                             System.out.println("Write new to CSV file Succeed!!!");
                         } catch (Exception ee) {
                             ee.printStackTrace();
@@ -362,7 +366,7 @@ public class WhMpListController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname(userSession.getFullname());
-                    String[] to = {"farhannazri27@yahoo.com", "hmsrelon@gmail.com"};
+                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -833,12 +837,37 @@ public class WhMpListController {
             Model model
     ) {
         WhMpListDAO whMpListDAO = new WhMpListDAO();
-        LOGGER.info("Masuk 1........");
         List<WhMpList> packingList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
 //        model.addAttribute("packingList", packingList);
 //        List<WhMpList> whMpList = whMpListDAO.getWhMpListMergeWithShippingAndRequestList();
 //        WhRequestLog whHistoryList = whRequestDAO.getWhRetLog(whRequestId);
-        LOGGER.info("Masuk 2........");
+        LOGGER.info("send email to person in charge");
+        EmailSender emailSender = new EmailSender();
+        com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+        user.setFullname("All");
+        String[] to = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+
+        emailSender.htmlEmailManyTo(
+                servletContext,
+                user, //user name requestor
+                to,
+                //                "muhdfaizal@onsemi.com",                                   //to
+                "List of Hardware(s) Ready for Sending to SBN Factory", //subject
+                "The list of hardware(s) that have been ready for shipment has been made.<br /><br />"
+                + "<br /><br /> "
+                + "<style>table, th, td {border: 1px solid black;} </style>"
+                + "<table style=\"width:100%\">" //tbl
+                + "<tr>"
+                + "<th>MATERIAL PASS NO</th> "
+                + "<th>MATERIAL PASS EXPIRY DATE</th> "
+                + "<th>HARDWARE TYPE</th>"
+                + "<th>HARDWARE ID</th>"
+                + "<th>QUANTITY</th>"
+                + "</tr>"
+                + table()
+                + "</table>"
+                + "<br />Thank you." //msg
+        );
         return new ModelAndView("packingListPdf", "packingList", packingList);
     }
 }

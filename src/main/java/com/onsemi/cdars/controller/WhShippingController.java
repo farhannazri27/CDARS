@@ -11,9 +11,16 @@ import com.onsemi.cdars.dao.WhStatusLogDAO;
 import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhRequest;
+import com.onsemi.cdars.model.WhShippingCsvTemp;
 import com.onsemi.cdars.model.WhStatusLog;
+import com.onsemi.cdars.tools.CSV;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,7 +217,8 @@ public class WhShippingController {
             }
         }
 
-        return "redirect:/wh/whShipping/viewTripTicket2/" + id;
+//        return "redirect:/wh/whShipping/viewTripTicket2/" + id;
+        return "redirect:/wh/whShipping/edit/" + id;
     }
 
     @RequestMapping(value = "/updateScanTt", method = RequestMethod.POST)
@@ -287,7 +295,8 @@ public class WhShippingController {
                 redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
             }
 //           
-            return "redirect:/wh/whShipping/viewBarcodeSticker2/" + id;
+//            return "redirect:/wh/whShipping/viewBarcodeSticker2/" + id;
+            return "redirect:/wh/whShipping/edit/" + id;
         } else {
             redirectAttrs.addFlashAttribute("error", "ID Not Match! Please re-check.");
             return "redirect:/wh/whShipping/edit/" + id;
@@ -462,13 +471,11 @@ public class WhShippingController {
             redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.delete.success", args, locale));
 
             //update statusLog
-            whShippingDAO = new WhShippingDAO();
-            WhShipping whs = whShippingDAO.getWhShipping(whShippingId);
             WhStatusLog stat = new WhStatusLog();
 //            stat.setRequestId(whs.getRequestId());
             stat.setRequestId(whShipping.getRequestId());
             stat.setModule("cdars_wh_shipping");
-            stat.setStatus("Deleted from Shipping List");
+            stat.setStatus("Deleted from Sending to Seremban Factory");
             stat.setCreatedBy(userSession.getFullname());
             stat.setFlag("0");
             WhStatusLogDAO statD = new WhStatusLogDAO();
@@ -502,13 +509,116 @@ public class WhShippingController {
                 reqD = new WhRequestDAO();
                 QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
                 if (ru.getResult() == 1) {
-                    LOGGER.info("[whRetrieval] - update status at request table done");
+                    LOGGER.info("[whShipping] - update status at request table done");
                 } else {
-                    LOGGER.info("[whRetrieval] - update status at request table failed");
+                    LOGGER.info("[whShipping] - update status at request table failed");
                 }
             } else {
                 LOGGER.info("[whRetrieval] - requestId not found");
             }
+
+            //update csv file
+            String username = System.getProperty("user.name");
+
+            File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+            if (file.exists()) {
+                LOGGER.info("dh ada header");
+                FileWriter fileWriter = null;
+                FileReader fileReader = null;
+
+                try {
+                    fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv", true);
+                    fileReader = new FileReader("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+                    String targetLocation = "C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv";
+
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String data = bufferedReader.readLine();
+                    StringBuilder buff = new StringBuilder();
+
+                    int row = 0;
+                    while (data != null) {
+                        LOGGER.info("start reading file..........");
+                        buff.append(data).append(System.getProperty("line.separator"));
+                        System.out.println("dataaaaaaaaa : \n" + data);
+
+                        String[] split = data.split(",");
+                        WhShippingCsvTemp inventory = new WhShippingCsvTemp(
+                                split[0], split[1], split[2],
+                                split[3], split[4], split[5],
+                                split[6], split[7], split[8],
+                                split[9], split[10], split[11],
+                                split[12], split[13], split[14],
+                                split[15], split[16], split[17],
+                                split[18], split[19] //status = [19]
+                        );
+
+                        if (split[0].equals(whShipping.getRequestId())) {
+                            LOGGER.info(row + " : refId found...................." + data);
+                            CSV csv = new CSV();
+                            csv.open(new File(targetLocation));
+                            csv.put(19, row, "Cancelled");
+                            csv.save(new File(targetLocation));
+
+                            EmailSender emailSenderSbnFactory = new EmailSender();
+                            com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
+                            user2.setFullname("All");
+                            String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+                            emailSenderSbnFactory.htmlEmailManyTo(
+                                    servletContext,
+                                    //                    user name
+                                    user2,
+                                    //                    to
+                                    to2,
+                                    //                    subject
+                                    "Cancellation for Hardware Sending to Seremban Factory",
+                                    //                    msg
+                                    "CANCELLATION for hardware id : " + whShipping.getRequestEquipmentId() + " / material pass number : " + whShipping.getMpNo() + " from sending to Seremban Factory has been made. Please do not proceed with the shipment."
+                                    + "Thank you. "
+                            );
+
+                        } else {
+                            LOGGER.info("refId not found........" + data);
+                        }
+                        data = bufferedReader.readLine();
+                        row++;
+                    }
+                    bufferedReader.close();
+                    fileReader.close();
+                } catch (Exception ee) {
+                    System.out.println("Error 1 occured while append the fileWriter");
+                } finally {
+                    try {
+                        fileWriter.close();
+                    } catch (IOException ie) {
+                        System.out.println("Error 2 occured while closing the fileWriter");
+                    }
+                }
+                if ("In SF Inventory".equals(whShipping.getStatus()) || "Pending Shipment to Seremban Factory".equals(whShipping.getStatus())) {
+                    // send email to hmrelon
+                    EmailSender emailSender = new EmailSender();
+                    com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+                    user.setFullname(userSession.getFullname());
+                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
+                    emailSender.htmlEmailWithAttachment(
+                            servletContext,
+                            //                    user name
+                            user,
+                            //                    to
+                            to,
+                            //                         "farhannazri27@yahoo.com",
+                            // attachment file
+                            new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv"),
+                            //                    subject
+                            "Cancellation for Sending Hardware to Seremban Factory",
+                            //                    msg
+                            "Cancellation for sending hardware to Seremban Factory has been made through HIMS RL."
+                    );
+                }
+
+            } else {
+                LOGGER.info("File not exists.................");
+            }
+
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.delete.error", args, locale));
         }

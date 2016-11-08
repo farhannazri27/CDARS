@@ -802,7 +802,7 @@ public class WhRequestDAO {
     }
 
     public List<WhRequest> getWhRequestListStatus() {
-        String sql = "SELECT status,id FROM cdars_wh_request GROUP BY status ORDER BY status";
+        String sql = "SELECT status,id FROM cdars_wh_request WHERE status <> 'Requested for Retrieval' GROUP BY status ORDER BY status";
         List<WhRequest> whRequestList = new ArrayList<WhRequest>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);

@@ -17,12 +17,17 @@ import com.onsemi.cdars.model.WhRetrieval;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhInventory;
 import com.onsemi.cdars.model.WhRequest;
+import com.onsemi.cdars.model.WhRetrievalCsvTemp;
+import com.onsemi.cdars.model.WhShippingCsvTemp;
 import com.onsemi.cdars.model.WhStatusLog;
+import com.onsemi.cdars.tools.CSV;
 import com.onsemi.cdars.tools.EmailSender;
 import com.onsemi.cdars.tools.QueryResult;
 import com.onsemi.cdars.tools.SPTSResponse;
 import com.onsemi.cdars.tools.SPTSWebService;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -406,7 +411,7 @@ public class WhRetrievalController {
             EmailSender emailSender = new EmailSender();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
             user.setFullname("Sg. Gadut Warehouse");
-            String[] to = {"hmsrelon@gmail.com"};
+            String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
             emailSender.htmlEmailWithAttachment(
                     servletContext,
                     //                    user name
@@ -420,7 +425,7 @@ public class WhRetrievalController {
                     //                    msg
                     "Hardware already retrieved. Thank you."
             );
-            
+
             //update inventory - change flag to 1 (hide from list)
             WhRetrievalDAO whdao = new WhRetrievalDAO();
             WhRetrieval wh = whdao.getWhRetrieval(id);
@@ -981,7 +986,7 @@ public class WhRetrievalController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname("Sg. Gadut Warehouse");
-                    String[] to = {"hmsrelon@gmail.com"};
+                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -1436,6 +1441,107 @@ public class WhRetrievalController {
             } else {
                 LOGGER.info("[whRetrieval] - requestId not found");
             }
+
+            //update csv file
+            String username = System.getProperty("user.name");
+
+            File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv");
+            if (file.exists()) {
+                LOGGER.info("dh ada header");
+                FileWriter fileWriter = null;
+                FileReader fileReader = null;
+
+                try {
+                    fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv", true);
+                    fileReader = new FileReader("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv");
+                    String targetLocation = "C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv";
+
+                    BufferedReader bufferedReader = new BufferedReader(fileReader);
+                    String data = bufferedReader.readLine();
+                    StringBuilder buff = new StringBuilder();
+
+                    int row = 0;
+                    while (data != null) {
+                        LOGGER.info("start reading file..........");
+                        buff.append(data).append(System.getProperty("line.separator"));
+                        System.out.println("dataaaaaaaaa : \n" + data);
+
+                        String[] split = data.split(",");
+                        WhRetrievalCsvTemp retrieval = new WhRetrievalCsvTemp(
+                                split[0], split[1], split[2],
+                                split[3], split[4], split[5],
+                                split[6], split[7], split[8],
+                                split[9], split[10], split[11],
+                                split[12], split[13], split[14],
+                                split[15], split[16], split[17],
+                                split[18], split[19], split[20], split[21] //status = [21]
+                        );
+
+                        if (split[0].equals(whRetrieval.getRequestId())) {
+                            LOGGER.info(row + " : refId found...................." + data);
+                            CSV csv = new CSV();
+                            csv.open(new File(targetLocation));
+                            csv.put(21, row, "Cancelled,");
+                            csv.save(new File(targetLocation));
+
+                            EmailSender emailSenderSbnFactory = new EmailSender();
+                            com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
+                            user2.setFullname("All");
+                            String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+                            emailSenderSbnFactory.htmlEmailManyTo(
+                                    servletContext,
+                                    //                    user name
+                                    user2,
+                                    //                    to
+                                    to2,
+                                    //                    subject
+                                    "Cancellation for Hardware Retrieval from Seremban Factory",
+                                    //                    msg
+                                    "CANCELLATION for hardware retrieval from Seremban factory for hardware id : " + whRetrieval.getHardwareId() + " / material pass number : " + whRetrieval.getMpNo() + " has been made. Please do not proceed with the shipment."
+                                    + "Thank you. "
+                            );
+
+                        } else {
+                            LOGGER.info("refId not found........" + data);
+                        }
+                        data = bufferedReader.readLine();
+                        row++;
+                    }
+                    bufferedReader.close();
+                    fileReader.close();
+                } catch (Exception ee) {
+                    System.out.println("Error 1 occured while append the fileWriter");
+                } finally {
+                    try {
+                        fileWriter.close();
+                    } catch (IOException ie) {
+                        System.out.println("Error 2 occured while closing the fileWriter");
+                    }
+                }
+
+                // send email to hmrelon
+                EmailSender emailSender = new EmailSender();
+                com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+                user.setFullname(userSession.getFullname());
+                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
+                emailSender.htmlEmailWithAttachment(
+                        servletContext,
+                        //                    user name
+                        user,
+                        //                    to
+                        to,
+                        //                         "farhannazri27@yahoo.com",
+                        // attachment file
+                        new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv"),
+                        //                    subject
+                        "Cancellation for Hardware Retrieval from Seremban Factory",
+                        //                    msg
+                        "Cancellation for hardware retrieval from Seremban Factory has been made through HIMS RL."
+                );
+            } else {
+                LOGGER.info("File not exists.................");
+            }
+
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.delete.error", args, locale));
         }
@@ -1509,7 +1615,11 @@ public class WhRetrievalController {
                     "Mismatched Barcode Sticker Scanning",
                     //                    msg
                     "There is a mismatch barcode sticker scanning for hardware retrieval. Please go to this link "
-                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
+                    //local development
+                    //                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
+                    //                    + " for verification process."
+                    //server production
+                    + "<a href=\"" + request.getScheme() + "://mysed-rel-app03:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
                     + " for verification process."
             );
         } else {
@@ -1561,7 +1671,11 @@ public class WhRetrievalController {
                     "Mismatched Trip Ticket Scanning",
                     //                    msg
                     "There is a mismatch trip ticket scanning for hardware retrieval. Please go to this link "
-                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
+                    //local production
+                    //                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
+                    //                    + " for verification process."
+                    //production server
+                    + "<a href=\"" + request.getScheme() + "://mysed-rel-app03:" + request.getServerPort() + request.getContextPath() + "/wh/whRetrieval/edit/" + id + "\">HIMS</a>"
                     + " for verification process."
             );
         } else {

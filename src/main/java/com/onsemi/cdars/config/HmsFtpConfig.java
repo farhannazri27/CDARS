@@ -659,9 +659,10 @@ public class HmsFtpConfig {
                             }
                         }
 
-                    } else {
-                        LOGGER.info("No data found");
-                    }
+                    } 
+//                    else {
+//                        LOGGER.info("No data found");
+//                    }
                 }
 
             } else {

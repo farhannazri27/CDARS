@@ -365,7 +365,7 @@ public class WhStatusLogDAO {
     public WhStatusLog getTLReqToApproveAndApproveToMpCreated(String id) {
         String sql = "SELECT "
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), ' secs') AS req_to_approve, "
-                + "CONCAT(FLOOR(HOUR(TIMEDIFF(final_approved_date, re.mp_created_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(final_approved_date, re.mp_created_date)), 24), ' hours, ', MINUTE(TIMEDIFF(final_approved_date, re.mp_created_date)), ' mins, ', SECOND(TIMEDIFF(final_approved_date, re.mp_created_date)), ' secs') AS approve_to_mp_created "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(final_approved_date,  IFNULL(re.mp_created_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' secs') AS approve_to_mp_created "
                 + "FROM  cdars_wh_request re "
                 + "WHERE re.id = '" + id + "'";
         WhStatusLog whStatusLog = null;
@@ -468,7 +468,7 @@ public class WhStatusLogDAO {
     public WhStatusLog getTLReqToApproveAndApproveToMpCreatedForRetrievalShipment(String id) {
         String sql = "SELECT "
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), ' secs') AS req_to_approve, "
-                + "CONCAT(FLOOR(HOUR(TIMEDIFF(final_approved_date, re.mp_created_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(final_approved_date, re.mp_created_date)), 24), ' hours, ', MINUTE(TIMEDIFF(final_approved_date, re.mp_created_date)), ' mins, ', SECOND(TIMEDIFF(final_approved_date, re.mp_created_date)), ' secs') AS approve_to_mp_created "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' secs') AS approve_to_mp_created "
                 + "FROM  cdars_wh_request re, (SELECT DISTINCT Item.request_id AS request_id FROM "
                 + "(SELECT lo.* FROM cdars_wh_status_log lo, "
                 + "(SELECT re.id AS id FROM cdars_wh_request re, (SELECT inv.request_id AS ii FROM cdars_wh_request res, cdars_wh_inventory inv WHERE res.inventory_id = inv.id AND res.id = '" + id + "') AS invid "

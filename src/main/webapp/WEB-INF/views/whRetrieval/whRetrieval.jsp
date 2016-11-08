@@ -69,7 +69,7 @@
                                                     <a href="${contextPath}/wh/whRetrieval/edit/${whRetrieval.id}" id="editB" class="table-link" title="HW Verification">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
-                                                            <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                            <i class="fa fa-arrow-circle-right fa-stack-1x fa-inverse"></i>
                                                         </span>
                                                     </a> 
                                                 </c:if>
@@ -79,7 +79,8 @@
                                                         <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <c:if test="${groupId == '1' || groupId == '2' || groupId == '29'}">
+                                                <%--<c:if test="${groupId == '1' || groupId == '2' || groupId == '29'}">--%>
+                                                 <c:if test="${groupId == '1' || groupId == '2'}">
                                                     <a modaldeleteid="${whRetrieval.id}" title="Delete" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>

@@ -31,6 +31,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import javax.servlet.ServletContext;
@@ -66,7 +68,7 @@ public class WhRequestController {
     //File header
 //    private static final String HEADER = "id,hardware_type,hardware_id,quantity,material pass number,material pass expiry date,inventory location,requested_by,requested_email,requested_date,remarks";
     private static final String HEADER = "id,hardware_type,hardware_id,retrieval_reason,pcb a,pcb a qty,pcb b,pcb b qty, pcb c,pcb c qty, pcb ctr,pcb ctr qty,"
-            + "quantity,material pass number,material pass expiry date,rack,shelf,requested_by,requested_email,requested_date,remarks";
+            + "quantity,material pass number,material pass expiry date,rack,shelf,requested_by,requested_email,requested_date,remarks,status";
 
     @Autowired
     private MessageSource messageSource;
@@ -626,24 +628,66 @@ public class WhRequestController {
                 LOGGER.info("email will be send to approver");
 
                 EmailSender emailSender = new EmailSender();
-                com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
+                List<String> a = new ArrayList<String>();
 
-                econfD = new EmailConfigDAO();
-                EmailConfig approver = econfD.getEmailConfigByTask("Approver 1");
-
-                econfD = new EmailConfigDAO();
-                EmailConfig distList2 = econfD.getEmailConfigByTask("Dist List 2");
+                String emailApprover = "";
+                String emaildistList1 = "";
+                String emaildistList2 = "";
+                String emaildistList3 = "";
+                String emaildistList4 = "";
 
                 WhRequestDAO requestD = new WhRequestDAO();
                 WhRequest req2 = requestD.getWhRequest(queryResult.getGeneratedKey());
-
-                LOGGER.info("..........testId......" + queryResult.getGeneratedKey());
-
                 String requestor = req2.getRequestorEmail();
+                if (req2.getRequestorEmail() != null) {
+                    a.add(requestor);
+                }
 
-                String[] email = {approver.getEmail(), distList2.getEmail(), requestor};
-                String name = approver.getUserName();
-
+                econfD = new EmailConfigDAO();
+                int countApprover = econfD.getCountTask("Approver 1");
+                if (countApprover == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig approver = econfD.getEmailConfigByTask("Approver 1");
+                    emailApprover = approver.getEmail();
+                    a.add(emailApprover);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList1 = econfD.getCountTask("Dist List 1");
+                if (countDistList1 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList1 = econfD.getEmailConfigByTask("Dist List 1");
+                    emaildistList1 = distList1.getEmail();
+                    a.add(emaildistList1);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList2 = econfD.getCountTask("Dist List 2");
+                if (countDistList2 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList2 = econfD.getEmailConfigByTask("Dist List 2");
+                    emaildistList2 = distList2.getEmail();
+                    a.add(emaildistList2);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList3 = econfD.getCountTask("Dist List 3");
+                if (countDistList3 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList3 = econfD.getEmailConfigByTask("Dist List 3");
+                    emaildistList3 = distList3.getEmail();
+                    a.add(emaildistList3);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList4 = econfD.getCountTask("Dist List 4");
+                if (countDistList4 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList4 = econfD.getEmailConfigByTask("Dist List 4");
+                    emaildistList4 = distList4.getEmail();
+                    a.add(emaildistList4);
+                }
+                String[] myArray = new String[a.size()];
+                String[] emailTo = a.toArray(myArray);
+                LOGGER.info("+++++++emailTo+++++" + Arrays.toString(emailTo));
+                //                String[] email = {requestor, emailApprover, emaildistList1, emaildistList2, emaildistList3, emaildistList4};
+                com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname("All");
                 emailSender.htmlEmailManyTo(
                         servletContext,
@@ -652,17 +696,17 @@ public class WhRequestController {
                         //                    to
                         //                        "farhannazri27@yahoo.com",
                         //                        "fg79cj@onsemi.com",
-                        email,
+                        emailTo,
                         //                    subject
                         "New Hardware Request for Sending to SBN Factory",
                         //                    msg
-                        "New Hardware Request has been added to HIMS. Please go to this link "
+                        "New Hardware Request for id : " + req2.getEquipmentId() + " has been added to HIMS. Please go to this link "
                         //local pc
-                        + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">HIMS</a>"
+                        //                        + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">HIMS</a>"
+                        //                        + " for approval process."
+                        //for production server
+                        + "<a href=\"" + request.getScheme() + "://mysed-rel-app03:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">HIMS</a>"
                         + " for approval process."
-                //for production server
-                //                        + "<a href=\"" + request.getScheme() + "://mysed-rel-app03:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">HIMS</a>"
-                //                        + " for approval process."
                 );
             }
 
@@ -760,6 +804,8 @@ public class WhRequestController {
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getRemarks());
                         fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append("New Request");
+                        fileWriter.append(COMMA_DELIMITER);
                         System.out.println("append to CSV file Succeed!!!");
                     } catch (Exception ee) {
                         ee.printStackTrace();
@@ -827,6 +873,8 @@ public class WhRequestController {
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getRemarks());
                         fileWriter.append(COMMA_DELIMITER);
+                        fileWriter.append("New Request");
+                        fileWriter.append(COMMA_DELIMITER);
                         System.out.println("Write new to CSV file Succeed!!!");
                     } catch (Exception ee) {
                         ee.printStackTrace();
@@ -846,7 +894,7 @@ public class WhRequestController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-                String[] to = {"hmsrelon@gmail.com"};
+                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
@@ -860,17 +908,17 @@ public class WhRequestController {
                         //                    msg
                         "New Hardware Request has been added to HIMS"
                 );
-                
+
                 LOGGER.info("send email to sbnfactory");
 
                 EmailSender emailSenderSbnFactory = new EmailSender();
                 com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
                 user2.setFullname("All");
-                String[] to2 = {"sbnfactory@gmail.com","fg79cj@onsemi.com"};
+                String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
                 emailSenderSbnFactory.htmlEmailManyTo(
                         servletContext,
                         //                    user name
-                        user,
+                        user2,
                         //                    to
                         to2,
                         //                    subject
@@ -1340,15 +1388,16 @@ public class WhRequestController {
                     //                    "farhannazri27@yahoo.com",
                     emailRequestor,
                     //                    subject
-                    "Approval Status for New Hardware Request for Sending to SBN FactoryS",
+                    "Approval Status for New Hardware Request for Sending to SBN Factory",
                     //                    msg
                     "Approval status for New Hardware Request has been made. Please go to this link "
-                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">HIMS</a>"
-                    + " for approval status checking."
-            //for production server mysed-rel-app03
+                    //for testing development
+                    //                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">HIMS</a>"
+                    //                    + " for approval status checking."
 
-            //                     + "<a href=\"" + request.getScheme() + "://mysed-rel-app03:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">HIMS</a>"
-            //                    + " for approval status checking."
+                    //for production server mysed-rel-app03
+                    + "<a href=\"" + request.getScheme() + "://mysed-rel-app03:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">HIMS</a>"
+                    + " for approval status checking."
             );
 
             if ("Approved".equals(finalApprovedStatus)) {

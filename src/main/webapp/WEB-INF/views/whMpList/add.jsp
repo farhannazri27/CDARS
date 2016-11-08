@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <!--<div class="alert_placeholder col-lg-4" >-->
-                        <div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                             <b>*Please delete all data after print the packing list.</b>
 
                         </div>    
@@ -72,14 +72,13 @@
                             </div>
                         </div>
                         <div class="clearfix">
-                            <!--<div class ="btn btn-primary pull-left printAndEmail">Print & Send Email</div>-->
-                            <a href="${contextPath}/wh/whShipping/whMpList/print" class="btn btn-primary pull-left printAndEmail"><i class="fa fa-envelope"></i> Print & Send Email</a>
+                            <!--<a href="${contextPath}/wh/whShipping/whMpList/print" class="btn btn-primary pull-left printAndEmail"><i class="fa fa-envelope"></i> Print & Send Email</a>-->
+                            <button type="submit" id="submit1" name="submit1" class="btn btn-primary pull-left printAndEmail" onclick="window.open('${contextPath}/wh/whShipping/whMpList/viewPackingListPdf', 'Packing List', 'width=1600,height=1100').print()"><i class="fa fa-envelope"></i> Print & Send Email</button>
                             <input type="hidden" class="form-control" id="count" name="count" value="${count}">
                         </div>
 
                         <div class="table-responsive">
                             <table id="dt_spml" class="table align-center">
-                                <!--<p class="print-this">TEXT TO BE SHOWN IN PRINT</p>-->
                                 <thead title="Test">
                                     <tr>
                                         <th class="col-lg-1"><span>No</span></th>

@@ -18,7 +18,7 @@
 
                             <div class="filter-block pull-right">
                                 <a href="${contextPath}/wh/whShipping/whMpList/s" class="btn btn-primary pull-right">
-                                    <i class="fa fa-bars fa-lg"></i> Create Shipping Packing List
+                                    <i class="fa fa-truck fa-lg"></i> Create Shipping Packing List
                                 </a>
                             </div>
                         </div>
@@ -68,28 +68,30 @@
                                             <td><c:out value="${whShipping.requestViewRequestedDate}"/></td>
                                             <td><c:out value="${whShipping.status}"/></td>
                                             <td align="left">
-                                                <a href="${contextPath}/wh/whShipping/edit/${whShipping.id}" class="table-link" title="Edit">
+                                                <a href="${contextPath}/wh/whShipping/edit/${whShipping.id}" class="table-link" title="Prep for Shipment">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
-                                                        <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                        <i class="fa fa-arrow-circle-right fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <a href="${contextPath}/wh/whShipping/view/${whShipping.id}" class="table-link" title="Trip Ticket">
+                                                <!--<a href="${contextPath}/wh/whShipping/view/${whShipping.id}" class="table-link" title="Trip Ticket">-->
+                                                <a class="table-link" href="#" title="Trip Ticket" onclick="window.open('${contextPath}/wh/whShipping/viewWhShippingPdf/${whShipping.id}', 'Trip Ticket', 'width=1300,height=960').print()">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
-                                                        <i class="fa fa-ticket fa-stack-1x fa-inverse"></i>
+                                                        <i class="fa fa-file-text fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
                                                 <%--<c:if test="${whShipping.status == 'Not Scan Barcode Sticker Yet' || whShipping.status == 'Verified' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Ship'}">--%>
-                                                <c:if test="${whShipping.status == 'Pending Box Barcode Scanning' || whShipping.status == 'Pending Packing List' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Pending Shipment to Seremban Factory'}">
-                                                    <a class="table-link" href="#" title="Barcode Sticker" onclick="window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}', 'Barcode Sticker', 'width=720,height=800').print()">
+                                                <c:if test="${whShipping.status == 'Pending Box Barcode Scanning' || whShipping.status == 'Pending Packing List' || whShipping.status == 'Trip Ticket and Barcode Sticker Not Match' || whShipping.status == 'Pending Shipment to Seremban Factory' || whShipping.status == 'In SF Inventory'}">
+                                                    <a class="table-link" href="#" title="Barcode Sticker" onclick="window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}', 'Barcode Sticker', 'width=1300,height=960').print()">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
                                                             <i class="fa fa-barcode fa-stack-1x fa-inverse"></i>
                                                         </span>
                                                     </a>
                                                 </c:if>
-                                                <c:if test="${groupId == '1' || groupId == '2' || groupId == '29'}">
+                                                <%--<c:if test="${groupId == '1' || groupId == '2' || groupId == '29'}">--%>
+                                                <c:if test="${groupId == '1' || groupId == '2'}">
                                                     <a modaldeleteid="${whShipping.id}" title="Delete" data-toggle="modal" href="#delete_modal" class="table-link danger group_delete" onclick="modalDelete(this);">
                                                         <span class="fa-stack">
                                                             <i class="fa fa-square fa-stack-2x"></i>
@@ -164,26 +166,26 @@
                                                         });
 
                                                         function printDiv() {
-                                                            location.href = 'http://localhost:8080/CDARS/wh/whShipping/viewWhBarcodeStickerPdf/19';
-                                                            newWin = window.open("");
-                                                            newWin.document.write(location.href);
-//                                                            newWin.print();
-//                                                            newWin.close();
+                                                            location.href = '${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}';
+                                                                    newWin = window.open("");
+                                                                    newWin.document.write(location.href);
+                                                                    newWin.print();
+                                                                    newWin.close();
 
-                                                        }
+                                                                }
 
-                                                        $('.printAndEmail').on('click', function () {
-                                                            printDiv();
-                                                        })
+                                                                $('.printAndEmail').on('click', function () {
+                                                                    printDiv();
+                                                                })
 
-                                                        function modalDelete(e) {
-                                                            var deleteId = $(e).attr("modaldeleteid");
-                                                            var deleteInfo = $("#modal_delete_info_" + deleteId).html();
-                                                            var deleteUrl = "${contextPath}/wh/whShipping/delete/" + deleteId;
-                                                            var deleteMsg = "<f:message key='general.label.delete.confirmation'><f:param value='" + deleteInfo + "'/></f:message>";
-                                                            $("#delete_modal .modal-body").html(deleteMsg);
-                                                            $("#modal_delete_button").attr("href", deleteUrl);
-                                                        }
+                                                                function modalDelete(e) {
+                                                                    var deleteId = $(e).attr("modaldeleteid");
+                                                                    var deleteInfo = $("#modal_delete_info_" + deleteId).html();
+                                                                    var deleteUrl = "${contextPath}/wh/whShipping/delete/" + deleteId;
+                                                                    var deleteMsg = "<f:message key='general.label.delete.confirmation'><f:param value='" + deleteInfo + "'/></f:message>";
+                                                                    $("#delete_modal .modal-body").html(deleteMsg);
+                                                                    $("#modal_delete_button").attr("href", deleteUrl);
+                                                                }
             </script>
     </s:layout-component>
 </s:layout-render>

@@ -45,11 +45,13 @@ public class EmailConfigController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String emailConfig(
-            Model model
+            Model model, @ModelAttribute UserSession userSession
     ) {
         EmailConfigDAO emailConfigDAO = new EmailConfigDAO();
         List<EmailConfig> emailConfigList = emailConfigDAO.getEmailConfigList();
+        String groupId = userSession.getGroup();
         model.addAttribute("emailConfigList", emailConfigList);
+        model.addAttribute("groupId", groupId);
         return "emailConfig/emailConfig";
     }
 
