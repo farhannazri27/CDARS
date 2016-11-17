@@ -18,7 +18,6 @@ import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhInventory;
 import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.WhRetrievalCsvTemp;
-import com.onsemi.cdars.model.WhShippingCsvTemp;
 import com.onsemi.cdars.model.WhStatusLog;
 import com.onsemi.cdars.tools.CSV;
 import com.onsemi.cdars.tools.EmailSender;
@@ -325,6 +324,9 @@ public class WhRetrievalController {
             }
 
             String username = System.getProperty("user.name");
+            if (!"fg79cj".equals(username)) {
+                username = "imperial";
+            }
             //SEND EMAIL
             File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieval_status.csv");
 
@@ -411,7 +413,8 @@ public class WhRetrievalController {
             EmailSender emailSender = new EmailSender();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
             user.setFullname("Sg. Gadut Warehouse");
-            String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
+//            String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
+            String[] to = {"hmsrelontest@gmail.com"};
             emailSender.htmlEmailWithAttachment(
                     servletContext,
                     //                    user name
@@ -516,10 +519,14 @@ public class WhRetrievalController {
                     if (TransPkidQualA.getResponseId() > 0) {
                         LOGGER.info("transaction done pcb Qual A");
 
+                        WhRequestDAO whreqSptsD = new WhRequestDAO();
+                        WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                         //get item from sfitem
                         System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
                         JSONObject paramsQualA = new JSONObject();
-                        paramsQualA.put("itemID", itemIDQualA);
+//                        paramsQualA.put("itemID", itemIDQualA);
+                        paramsQualA.put("pkID", whreqSpts.getSfpkid());
                         JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
                         int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
@@ -565,10 +572,13 @@ public class WhRetrievalController {
                     if (TransPkidQualB.getResponseId() > 0) {
                         LOGGER.info("transaction done pcb Qual B");
 
+                        WhRequestDAO whreqSptsD = new WhRequestDAO();
+                        WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                         //get item from sfitem
                         System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
                         JSONObject paramsQualB = new JSONObject();
-                        paramsQualB.put("itemID", itemIDQualB);
+                        paramsQualB.put("pkID", whreqSpts.getSfpkidB());
                         JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
                         int itemSfBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
@@ -614,10 +624,13 @@ public class WhRetrievalController {
                     if (TransPkidQualC.getResponseId() > 0) {
                         LOGGER.info("transaction done pcb Qual C");
 
+                        WhRequestDAO whreqSptsD = new WhRequestDAO();
+                        WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                         //get item from sfitem
                         System.out.println("GET SFITEM PCB QUAL C BY PARAM...");
                         JSONObject paramsQualC = new JSONObject();
-                        paramsQualC.put("itemID", itemIDQualc);
+                        paramsQualC.put("pkID", whreqSpts.getSfpkidC());
                         JSONArray getItemByParamC = SPTSWebService.getSFItemByParam(paramsQualC);
                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamC.length());
                         int itemSfCpkid = getItemByParamC.getJSONObject(0).getInt("PKID");
@@ -663,10 +676,13 @@ public class WhRetrievalController {
                     if (TransPkidQualCtr.getResponseId() > 0) {
                         LOGGER.info("transaction done pcb Ctr");
 
+                        WhRequestDAO whreqSptsD = new WhRequestDAO();
+                        WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                         //get item from sfitem
                         System.out.println("GET SFITEM PCB CTR BY PARAM...");
                         JSONObject paramsQualCtr = new JSONObject();
-                        paramsQualCtr.put("itemID", itemIDQualctr);
+                        paramsQualCtr.put("pkID", whreqSpts.getSfpkidCtr());
                         JSONArray getItemByParamCtr = SPTSWebService.getSFItemByParam(paramsQualCtr);
                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamCtr.length());
                         int itemSfCtrpkid = getItemByParamCtr.getJSONObject(0).getInt("PKID");
@@ -711,10 +727,13 @@ public class WhRetrievalController {
                 if (TransPkid.getResponseId() > 0) {
                     LOGGER.info("transaction done item ");
 
+                    WhRequestDAO whreqSptsD = new WhRequestDAO();
+                    WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                     //get item from sfitem
                     System.out.println("GET SFITEM ITEM BY PARAM...");
                     JSONObject params3 = new JSONObject();
-                    params3.put("itemID", itemID);
+                    params3.put("pkID", whreqSpts.getSfpkid());
                     JSONArray getItemByParam2 = SPTSWebService.getSFItemByParam(params3);
                     System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam2.length());
                     int itemSfpkid = getItemByParam2.getJSONObject(0).getInt("PKID");
@@ -900,6 +919,9 @@ public class WhRetrievalController {
                 if ("Verified".equals(ttDisposition)) {
 
                     String username = System.getProperty("user.name");
+                    if (!"fg79cj".equals(username)) {
+                        username = "imperial";
+                    }
                     //SEND EMAIL
                     File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieval_status.csv");
 
@@ -986,7 +1008,8 @@ public class WhRetrievalController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname("Sg. Gadut Warehouse");
-                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
+//                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
+                    String[] to = {"hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -1091,10 +1114,13 @@ public class WhRetrievalController {
                             if (TransPkidQualA.getResponseId() > 0) {
                                 LOGGER.info("transaction done pcb Qual A");
 
+                                WhRequestDAO whreqSptsD = new WhRequestDAO();
+                                WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                                 //get item from sfitem
                                 System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
                                 JSONObject paramsQualA = new JSONObject();
-                                paramsQualA.put("itemID", itemIDQualA);
+                                paramsQualA.put("pkID", whreqSpts.getSfpkid());
                                 JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
                                 System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
                                 int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
@@ -1140,10 +1166,13 @@ public class WhRetrievalController {
                             if (TransPkidQualB.getResponseId() > 0) {
                                 LOGGER.info("transaction done pcb Qual B");
 
+                                WhRequestDAO whreqSptsD = new WhRequestDAO();
+                                WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                                 //get item from sfitem
                                 System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
                                 JSONObject paramsQualB = new JSONObject();
-                                paramsQualB.put("itemID", itemIDQualB);
+                                paramsQualB.put("pkID", whreqSpts.getSfpkidB());
                                 JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
                                 System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
                                 int itemSfBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
@@ -1189,10 +1218,13 @@ public class WhRetrievalController {
                             if (TransPkidQualC.getResponseId() > 0) {
                                 LOGGER.info("transaction done pcb Qual C");
 
+                                WhRequestDAO whreqSptsD = new WhRequestDAO();
+                                WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                                 //get item from sfitem
                                 System.out.println("GET SFITEM PCB QUAL C BY PARAM...");
                                 JSONObject paramsQualC = new JSONObject();
-                                paramsQualC.put("itemID", itemIDQualc);
+                                paramsQualC.put("pkID", whreqSpts.getSfpkidC());
                                 JSONArray getItemByParamC = SPTSWebService.getSFItemByParam(paramsQualC);
                                 System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamC.length());
                                 int itemSfCpkid = getItemByParamC.getJSONObject(0).getInt("PKID");
@@ -1238,10 +1270,13 @@ public class WhRetrievalController {
                             if (TransPkidQualCtr.getResponseId() > 0) {
                                 LOGGER.info("transaction done pcb Ctr");
 
+                                WhRequestDAO whreqSptsD = new WhRequestDAO();
+                                WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                                 //get item from sfitem
                                 System.out.println("GET SFITEM PCB CTR BY PARAM...");
                                 JSONObject paramsQualCtr = new JSONObject();
-                                paramsQualCtr.put("itemID", itemIDQualctr);
+                                paramsQualCtr.put("pkID", whreqSpts.getSfpkidCtr());
                                 JSONArray getItemByParamCtr = SPTSWebService.getSFItemByParam(paramsQualCtr);
                                 System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamCtr.length());
                                 int itemSfCtrpkid = getItemByParamCtr.getJSONObject(0).getInt("PKID");
@@ -1286,10 +1321,13 @@ public class WhRetrievalController {
                         if (TransPkid.getResponseId() > 0) {
                             LOGGER.info("transaction done item ");
 
+                            WhRequestDAO whreqSptsD = new WhRequestDAO();
+                            WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
                             //get item from sfitem
                             System.out.println("GET SFITEM ITEM BY PARAM...");
                             JSONObject params3 = new JSONObject();
-                            params3.put("itemID", itemID);
+                            params3.put("pkID", whreqSpts.getSfpkid());
                             JSONArray getItemByParam2 = SPTSWebService.getSFItemByParam(params3);
                             System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam2.length());
                             int itemSfpkid = getItemByParam2.getJSONObject(0).getInt("PKID");
@@ -1444,6 +1482,9 @@ public class WhRetrievalController {
 
             //update csv file
             String username = System.getProperty("user.name");
+            if (!"fg79cj".equals(username)) {
+                username = "imperial";
+            }
 
             File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv");
             if (file.exists()) {
@@ -1523,7 +1564,8 @@ public class WhRetrievalController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
+//                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
+                String[] to = {"hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name

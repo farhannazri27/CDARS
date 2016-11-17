@@ -235,7 +235,7 @@ public class WhMpListDAO {
         }
         return whMpListList;
     }
-    
+
     public List<WhMpList> getWhMpListListDateDisplayWithFlag0() {
         String sql = "SELECT *,DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS view_mp_expiry_date FROM cdars_wh_mp_list WHERE flag='0' ORDER BY id DESC";
         List<WhMpList> whMpListList = new ArrayList<WhMpList>();
@@ -299,6 +299,29 @@ public class WhMpListDAO {
         return queryResult;
     }
 
+    public QueryResult deleteAllWhMpListFlag1() {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "DELETE FROM cdars_wh_mp_list where flag = '1'"
+            );
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
     public Integer getCountMpNoWithFlag0(String mpNo) {
 //        QueryResult queryResult = new QueryResult();
         Integer count = null;
@@ -326,7 +349,7 @@ public class WhMpListDAO {
         }
         return count;
     }
-    
+
     public Integer getCountMpNo(String mpNo) {
 //        QueryResult queryResult = new QueryResult();
         Integer count = null;
@@ -354,8 +377,8 @@ public class WhMpListDAO {
         }
         return count;
     }
-    
-     public Integer getCountMpNoWithFlag1(String mpNo) {
+
+    public Integer getCountMpNoWithFlag1(String mpNo) {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
@@ -404,13 +427,41 @@ public class WhMpListDAO {
         }
         return queryResult;
     }
-    
+
     public Integer getCountWithFlag0() {
 //        QueryResult queryResult = new QueryResult();
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
                     "SELECT COUNT(*) AS count FROM cdars_wh_mp_list WHERE flag = '0'"
+            );
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("count");
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return count;
+    }
+
+    public Integer getCountAllList() {
+//        QueryResult queryResult = new QueryResult();
+        Integer count = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT COUNT(*) AS count FROM cdars_wh_mp_list"
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

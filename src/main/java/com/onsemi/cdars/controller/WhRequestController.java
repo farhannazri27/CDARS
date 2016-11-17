@@ -591,6 +591,10 @@ public class WhRequestController {
         whRequest.setRemarksLog(RemarksLogFull);
         whRequest.setCreatedBy(userSession.getId());
         whRequest.setFlag("0");
+        whRequest.setSfpkid("0");
+        whRequest.setSfpkidB("0");
+        whRequest.setSfpkidC("0");
+        whRequest.setSfpkidCtr("0");//new 11/11/16
 
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         QueryResult queryResult = whRequestDAO.insertWhRequest(whRequest);
@@ -748,6 +752,9 @@ public class WhRequestController {
                 }
 
                 String username = System.getProperty("user.name");
+                if (!"fg79cj".equals(username)) {
+                    username = "imperial";
+                }
                 File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_retrieve.csv");
 
                 if (file.exists()) {
@@ -894,7 +901,8 @@ public class WhRequestController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
+//                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};  //9/11/16
+                String[] to = {"hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
@@ -1380,6 +1388,9 @@ public class WhRequestController {
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
             user.setFullname(fullname);
 
+            whRequestDAO = new WhRequestDAO();
+            WhRequest whRequestEmail = whRequestDAO.getWhRequest(id);
+
             emailSender.htmlEmail(
                     servletContext,
                     //                    user name
@@ -1390,7 +1401,7 @@ public class WhRequestController {
                     //                    subject
                     "Approval Status for New Hardware Request for Sending to SBN Factory",
                     //                    msg
-                    "Approval status for New Hardware Request has been made. Please go to this link "
+                    "Approval status for New Hardware Request for id : " + whRequestEmail.getEquipmentId() + " has been made. Please go to this link "
                     //for testing development
                     //                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">HIMS</a>"
                     //                    + " for approval status checking."
@@ -1409,6 +1420,11 @@ public class WhRequestController {
 //                ship.setStatus("No Material Pass Number"); //original 3/11/16
                 ship.setStatus("Pending Material Pass Number"); //as requested 2/11/16
                 ship.setFlag("0");
+                ship.setSfpkid("0");
+                ship.setSfpkidB("0");
+                ship.setSfpkidC("0");
+                ship.setSfpkidCtr("0");
+                ship.setItempkid("0");
                 WhShippingDAO whShippingDAO = new WhShippingDAO();
                 QueryResult queryResultShip = whShippingDAO.insertWhShipping(ship);
 //                return "redirect:/wh/whShipping";

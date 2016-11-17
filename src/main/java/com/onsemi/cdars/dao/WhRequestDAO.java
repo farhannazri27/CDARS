@@ -33,7 +33,7 @@ public class WhRequestDAO {
                     "INSERT INTO cdars_wh_request (inventory_id, request_type, equipment_type, pcb_type, equipment_id, "
                     + "pcb_a, pcb_a_qty, pcb_b, pcb_b_qty, pcb_c, pcb_c_qty, pcb_ctr, pcb_ctr_qty, mp_no, mp_expiry_date, "
                     + "quantity, rack, shelf, requested_by, requestor_email, requested_date, remarks, remarks_log, created_by, "
-                    + "created_date, status, flag, retrieval_reason) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,NOW(),?,?,?)", Statement.RETURN_GENERATED_KEYS
+                    + "created_date, status, flag, retrieval_reason, sfpkid, sfpkidB, sfpkidC, sfpkidCtr) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,NOW(),?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whRequest.getInventoryId());
             ps.setString(2, whRequest.getRequestType());
@@ -61,6 +61,10 @@ public class WhRequestDAO {
             ps.setString(24, whRequest.getStatus());
             ps.setString(25, whRequest.getFlag());
             ps.setString(26, whRequest.getRetrievalReason());
+            ps.setString(27, whRequest.getSfpkid());
+            ps.setString(28, whRequest.getSfpkidB());
+            ps.setString(29, whRequest.getSfpkidC());
+            ps.setString(30, whRequest.getSfpkidCtr());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -200,6 +204,10 @@ public class WhRequestDAO {
                 whRequest.setStatus(rs.getString("status"));
                 whRequest.setFlag(rs.getString("flag"));
                 whRequest.setRetrievalReason(rs.getString("retrieval_reason"));
+                whRequest.setSfpkid(rs.getString("sfpkid"));
+                whRequest.setSfpkidB(rs.getString("sfpkidB"));
+                whRequest.setSfpkidC(rs.getString("sfpkidC"));
+                whRequest.setSfpkidCtr(rs.getString("sfpkidCtr"));
             }
             rs.close();
             ps.close();
@@ -262,6 +270,10 @@ public class WhRequestDAO {
                 whRequest.setStatus(rs.getString("status"));
                 whRequest.setFlag(rs.getString("flag"));
                 whRequest.setRetrievalReason(rs.getString("retrieval_reason"));
+                whRequest.setSfpkid(rs.getString("sfpkid"));
+                whRequest.setSfpkidB(rs.getString("sfpkidB"));
+                whRequest.setSfpkidC(rs.getString("sfpkidC"));
+                whRequest.setSfpkidCtr(rs.getString("sfpkidCtr"));
                 whRequestList.add(whRequest);
             }
             rs.close();
@@ -330,6 +342,10 @@ public class WhRequestDAO {
                 whRequest.setStatus(rs.getString("status"));
                 whRequest.setFlag(rs.getString("flag"));
                 whRequest.setRetrievalReason(rs.getString("retrieval_reason"));
+                whRequest.setSfpkid(rs.getString("sfpkid"));
+                whRequest.setSfpkidB(rs.getString("sfpkidB"));
+                whRequest.setSfpkidC(rs.getString("sfpkidC"));
+                whRequest.setSfpkidCtr(rs.getString("sfpkidCtr"));
                 whRequestList.add(whRequest);
             }
             rs.close();
@@ -390,6 +406,10 @@ public class WhRequestDAO {
                 whRequest.setStatus(rs.getString("status"));
                 whRequest.setFlag(rs.getString("flag"));
                 whRequest.setRetrievalReason(rs.getString("retrieval_reason"));
+                whRequest.setSfpkid(rs.getString("sfpkid"));
+                whRequest.setSfpkidB(rs.getString("sfpkidB"));
+                whRequest.setSfpkidC(rs.getString("sfpkidC"));
+                whRequest.setSfpkidCtr(rs.getString("sfpkidCtr"));
                 whRequestList.add(whRequest);
             }
             rs.close();
@@ -441,8 +461,8 @@ public class WhRequestDAO {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-//                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND NOW() > ADDDATE(DATE(requested_date),3)" //original 3/11/16
-                      "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Pending Approval' AND NOW() > ADDDATE(DATE(requested_date),3)" //as requested 2/11/16
+                    //                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND NOW() > ADDDATE(DATE(requested_date),3)" //original 3/11/16
+                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Pending Approval' AND NOW() > ADDDATE(DATE(requested_date),3)" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -516,6 +536,144 @@ public class WhRequestDAO {
         return queryResult;
     }
 
+    public QueryResult updateWhRequestStatusWithSfpkidAll(WhRequest whRequest) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_request SET modified_by = ?, modified_date = NOW(), status = ?, sfpkid = ?, sfpkidB = ?, sfpkidC = ?, sfpkidCtr = ? WHERE id = ?"
+            );
+            ps.setString(1, whRequest.getModifiedBy());
+            ps.setString(2, whRequest.getStatus());
+            ps.setString(3, whRequest.getSfpkid());
+            ps.setString(4, whRequest.getSfpkidB());
+            ps.setString(5, whRequest.getSfpkidC());
+            ps.setString(6, whRequest.getSfpkidCtr());
+            ps.setString(7, whRequest.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhRequestStatusWithSfpkid(WhRequest whRequest) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_request SET modified_by = ?, modified_date = NOW(), status = ?, sfpkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whRequest.getModifiedBy());
+            ps.setString(2, whRequest.getStatus());
+            ps.setString(3, whRequest.getSfpkid());
+            ps.setString(4, whRequest.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhRequestStatusWithSfpkidB(WhRequest whRequest) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_request SET modified_by = ?, modified_date = NOW(), status = ?, sfpkidB = ? WHERE id = ?"
+            );
+            ps.setString(1, whRequest.getModifiedBy());
+            ps.setString(2, whRequest.getStatus());
+            ps.setString(3, whRequest.getSfpkidB());
+            ps.setString(4, whRequest.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhRequestStatusWithSfpkidC(WhRequest whRequest) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_request SET modified_by = ?, modified_date = NOW(), status = ?, sfpkidC = ? WHERE id = ?"
+            );
+            ps.setString(1, whRequest.getModifiedBy());
+            ps.setString(2, whRequest.getStatus());
+            ps.setString(3, whRequest.getSfpkidC());
+            ps.setString(4, whRequest.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhRequestStatusWithSfpkidCtr(WhRequest whRequest) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_request SET modified_by = ?, modified_date = NOW(), status = ?, sfpkidCtr = ? WHERE id = ?"
+            );
+            ps.setString(1, whRequest.getModifiedBy());
+            ps.setString(2, whRequest.getStatus());
+            ps.setString(3, whRequest.getSfpkidCtr());
+            ps.setString(4, whRequest.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
     public QueryResult updateWhRequestStatusAndMpNo(WhRequest whRequest) {
         QueryResult queryResult = new QueryResult();
         try {
@@ -527,6 +685,31 @@ public class WhRequestDAO {
             ps.setString(3, whRequest.getModifiedBy());
             ps.setString(4, whRequest.getStatus());
             ps.setString(5, whRequest.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhRequestSfpkid(WhRequest whRequest) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_request SET sfpkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whRequest.getSfpkid());
+            ps.setString(2, whRequest.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -656,8 +839,8 @@ public class WhRequestDAO {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
-//                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND flag = '0'" //original 3/11/16
-                     "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Pending Approval' AND flag = '0'" //as requested 2/11/16
+                    //                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Waiting for Approval' AND flag = '0'" //original 3/11/16
+                    "SELECT count(*) AS count FROM cdars_wh_request WHERE status = 'Pending Approval' AND flag = '0'" //as requested 2/11/16
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

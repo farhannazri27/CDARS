@@ -62,6 +62,10 @@ public class HmsFtpConfig {
              */
 
             String username = System.getProperty("user.name");
+            if (!"fg79cj".equals(username)) {
+                username = "imperial";
+            }
+//            LOGGER.info("username!!!" + username);
             File file = new File("C:\\Users\\" + username + "\\Documents\\HMS\\hms_inventory.csv");
 
             if (file.exists()) {
@@ -134,12 +138,15 @@ public class HmsFtpConfig {
 
                                 //update spts location
                                 //get item pkid and version
+                                WhRequestDAO reqD = new WhRequestDAO();
+                                WhRequest reqSf = reqD.getWhRequest(e.getRequestId());
                                 if ("PCB".equals(e.getEquipmentType())) {
                                     if (!"0".equals(e.getPcbAQty())) {
                                         System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
                                         JSONObject paramsQualA = new JSONObject();
-                                        String itemID = e.getPcbA();
-                                        paramsQualA.put("itemID", itemID);
+//                                        String itemID = e.getPcbA();
+//                                        paramsQualA.put("itemID", itemID);
+                                        paramsQualA.put("pkID", reqSf.getSfpkid());
                                         JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
                                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
                                         int itemApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
@@ -165,8 +172,9 @@ public class HmsFtpConfig {
                                     if (!"0".equals(e.getPcbBQty())) {
                                         System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
                                         JSONObject paramsQualB = new JSONObject();
-                                        String itemID = e.getPcbB();
-                                        paramsQualB.put("itemID", itemID);
+//                                        String itemID = e.getPcbB();
+//                                        paramsQualB.put("itemID", itemID);
+                                        paramsQualB.put("pkID", reqSf.getSfpkidB());
                                         JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
                                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
                                         int itemBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
@@ -192,8 +200,9 @@ public class HmsFtpConfig {
                                     if (!"0".equals(e.getPcbCQty())) {
                                         System.out.println("GET SFITEM PCB QUAL C BY PARAM...");
                                         JSONObject paramsQualC = new JSONObject();
-                                        String itemID = e.getPcbC();
-                                        paramsQualC.put("itemID", itemID);
+//                                        String itemID = e.getPcbC();
+//                                        paramsQualC.put("itemID", itemID);
+                                        paramsQualC.put("pkID", reqSf.getSfpkidC());
                                         JSONArray getItemByParamC = SPTSWebService.getSFItemByParam(paramsQualC);
                                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamC.length());
                                         int itemCpkid = getItemByParamC.getJSONObject(0).getInt("PKID");
@@ -219,8 +228,9 @@ public class HmsFtpConfig {
                                     if (!"0".equals(e.getPcbCtrQty())) {
                                         System.out.println("GET SFITEM PCB CONTROL BY PARAM...");
                                         JSONObject paramsQualCtr = new JSONObject();
-                                        String itemID = e.getPcbCtr();
-                                        paramsQualCtr.put("itemID", itemID);
+//                                        String itemID = e.getPcbCtr();
+//                                        paramsQualCtr.put("itemID", itemID);
+                                        paramsQualCtr.put("pkID", reqSf.getSfpkidCtr());
                                         JSONArray getItemByParamCtr = SPTSWebService.getSFItemByParam(paramsQualCtr);
                                         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamCtr.length());
                                         int itemCtrpkid = getItemByParamCtr.getJSONObject(0).getInt("PKID");
@@ -246,8 +256,9 @@ public class HmsFtpConfig {
                                 } else {
                                     System.out.println("GET SFITEM BY PARAM...");
                                     JSONObject paramsSfItem = new JSONObject();
-                                    String itemID = e.getEquipmentId();
-                                    paramsSfItem.put("itemID", itemID);
+//                                    String itemID = e.getEquipmentId();
+//                                    paramsSfItem.put("itemID", itemID);
+                                    paramsSfItem.put("pkID", reqSf.getSfpkid());
                                     JSONArray getItemByParam = SPTSWebService.getSFItemByParam(paramsSfItem);
 //                                    for (int i = 0; i < getItemByParam.length(); i++) {
 //                                        System.out.println(getItemByParam.getJSONObject(i));
@@ -296,7 +307,7 @@ public class HmsFtpConfig {
                                 }
 
                                 //update status at master table request
-                                WhRequestDAO reqD = new WhRequestDAO();
+                                reqD = new WhRequestDAO();
                                 int countReq = reqD.getCountRequestId(e.getRequestId());
                                 if (countReq == 1) {
                                     reqD = new WhRequestDAO();
@@ -370,12 +381,15 @@ public class HmsFtpConfig {
 
                             //update spts location
                             //get item pkid and version
+                            WhRequestDAO reqD = new WhRequestDAO();
+                            WhRequest reqSf = reqD.getWhRequest(e.getRequestId());
                             if ("PCB".equals(e.getEquipmentType())) {
                                 if (!"0".equals(e.getPcbAQty())) {
                                     System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
                                     JSONObject paramsQualA = new JSONObject();
-                                    String itemID = e.getPcbA();
-                                    paramsQualA.put("itemID", itemID);
+//                                    String itemID = e.getPcbA();
+//                                    paramsQualA.put("itemID", itemID);
+                                    paramsQualA.put("pkID", reqSf.getSfpkid());
                                     JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
                                     System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
                                     int itemApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
@@ -401,8 +415,9 @@ public class HmsFtpConfig {
                                 if (!"0".equals(e.getPcbBQty())) {
                                     System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
                                     JSONObject paramsQualB = new JSONObject();
-                                    String itemID = e.getPcbB();
-                                    paramsQualB.put("itemID", itemID);
+//                                    String itemID = e.getPcbB();
+//                                    paramsQualB.put("itemID", itemID);
+                                    paramsQualB.put("pkID", reqSf.getSfpkidB());
                                     JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
                                     System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
                                     int itemBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
@@ -428,8 +443,9 @@ public class HmsFtpConfig {
                                 if (!"0".equals(e.getPcbCQty())) {
                                     System.out.println("GET SFITEM PCB QUAL C BY PARAM...");
                                     JSONObject paramsQualC = new JSONObject();
-                                    String itemID = e.getPcbC();
-                                    paramsQualC.put("itemID", itemID);
+//                                    String itemID = e.getPcbC();
+//                                    paramsQualC.put("itemID", itemID);
+                                    paramsQualC.put("pkID", reqSf.getSfpkidC());
                                     JSONArray getItemByParamC = SPTSWebService.getSFItemByParam(paramsQualC);
                                     System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamC.length());
                                     int itemCpkid = getItemByParamC.getJSONObject(0).getInt("PKID");
@@ -455,8 +471,9 @@ public class HmsFtpConfig {
                                 if (!"0".equals(e.getPcbCtrQty())) {
                                     System.out.println("GET SFITEM PCB CONTROL BY PARAM...");
                                     JSONObject paramsQualCtr = new JSONObject();
-                                    String itemID = e.getPcbCtr();
-                                    paramsQualCtr.put("itemID", itemID);
+//                                    String itemID = e.getPcbCtr();
+//                                    paramsQualCtr.put("itemID", itemID);
+                                    paramsQualCtr.put("pkID", reqSf.getSfpkidCtr());
                                     JSONArray getItemByParamCtr = SPTSWebService.getSFItemByParam(paramsQualCtr);
                                     System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamCtr.length());
                                     int itemCtrpkid = getItemByParamCtr.getJSONObject(0).getInt("PKID");
@@ -482,8 +499,9 @@ public class HmsFtpConfig {
                             } else {
                                 System.out.println("GET SFITEM BY PARAM...");
                                 JSONObject paramsSfItem = new JSONObject();
-                                String itemID = e.getEquipmentId();
-                                paramsSfItem.put("itemID", itemID);
+//                                String itemID = e.getEquipmentId();
+//                                paramsSfItem.put("itemID", itemID);
+                                paramsSfItem.put("pkID", reqSf.getSfpkid());
                                 JSONArray getItemByParam = SPTSWebService.getSFItemByParam(paramsSfItem);
 //                                    for (int i = 0; i < getItemByParam.length(); i++) {
 //                                        System.out.println(getItemByParam.getJSONObject(i));
@@ -533,7 +551,7 @@ public class HmsFtpConfig {
                             }
 
                             //update status at master table request
-                            WhRequestDAO reqD = new WhRequestDAO();
+                            reqD = new WhRequestDAO();
                             int countReq = reqD.getCountRequestId(e.getRequestId());
                             if (countReq == 1) {
                                 reqD = new WhRequestDAO();
@@ -659,7 +677,7 @@ public class HmsFtpConfig {
                             }
                         }
 
-                    } 
+                    }
 //                    else {
 //                        LOGGER.info("No data found");
 //                    }

@@ -275,6 +275,13 @@
             <scope>compile</scope>
         </dependency>
         
+        <!--excel poi-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.14</version>
+        </dependency>
+        
         <!-- Simple JSON -->
         <!--<dependency>
             <groupId>com.googlecode.json-simple</groupId>

@@ -30,7 +30,7 @@ public class WhShippingDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO cdars_wh_shipping (request_id, mp_no, mp_expiry_date, hardware_barcode_1, date_scan_1, hardware_barcode_2, date_scan_2, shipping_date, status, remarks, flag, created_by, created_date, modified_by, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?)", Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO cdars_wh_shipping (request_id, mp_no, mp_expiry_date, hardware_barcode_1, date_scan_1, hardware_barcode_2, date_scan_2, shipping_date, status, remarks, flag, created_by, created_date, itempkid, sfpkid, sfpkidB, sfpkidC, sfpkidCtr) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, whShipping.getRequestId());
             ps.setString(2, whShipping.getMpNo());
@@ -44,8 +44,11 @@ public class WhShippingDAO {
             ps.setString(10, whShipping.getRemarks());
             ps.setString(11, whShipping.getFlag());
             ps.setString(12, whShipping.getCreatedBy());
-            ps.setString(13, whShipping.getModifiedBy());
-            ps.setString(14, whShipping.getModifiedDate());
+            ps.setString(13, whShipping.getItempkid());
+            ps.setString(14, whShipping.getSfpkid());
+            ps.setString(15, whShipping.getSfpkidB());
+            ps.setString(16, whShipping.getSfpkidC());
+            ps.setString(17, whShipping.getSfpkidCtr());
             queryResult.setResult(ps.executeUpdate());
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -131,6 +134,149 @@ public class WhShippingDAO {
         return queryResult;
     }
 
+    public QueryResult updateWhShippingStatusWithItemPkidAndSfpkidAll(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ?, shipping_date = NOW(), sfpkid = ?, sfpkidB = ?, sfpkidC = ?, sfpkidCtr = ?,itempkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getStatus());
+            ps.setString(3, whShipping.getSfpkid());
+            ps.setString(4, whShipping.getSfpkidB());
+            ps.setString(5, whShipping.getSfpkidC());
+            ps.setString(6, whShipping.getSfpkidCtr());
+            ps.setString(7, whShipping.getItempkid());
+            ps.setString(8, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhShippingStatusWithItemPkidAndSfpkid(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ?, shipping_date = NOW(), sfpkid = ?, itempkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getStatus());
+            ps.setString(3, whShipping.getSfpkid());
+            ps.setString(4, whShipping.getItempkid());
+            ps.setString(5, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhShippingStatusWithItemPkidAndSfpkidB(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ?, shipping_date = NOW(), sfpkidB = ?, itempkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getStatus());
+            ps.setString(3, whShipping.getSfpkidB());
+            ps.setString(4, whShipping.getItempkid());
+            ps.setString(5, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhShippingStatusWithItemPkidAndSfpkidC(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ?, shipping_date = NOW(), sfpkidC = ?, itempkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getStatus());
+            ps.setString(3, whShipping.getSfpkidC());
+            ps.setString(4, whShipping.getItempkid());
+            ps.setString(5, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public QueryResult updateWhShippingStatusWithItemPkidAndSfpkidCtr(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET request_id = ?, status = ?, shipping_date = NOW(), sfpkidCtr = ?, itempkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getRequestId());
+            ps.setString(2, whShipping.getStatus());
+            ps.setString(3, whShipping.getSfpkidCtr());
+            ps.setString(4, whShipping.getItempkid());
+            ps.setString(5, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
     public QueryResult updateWhShippingStatusAndInventoryDate(WhShipping whShipping) {
         QueryResult queryResult = new QueryResult();
         try {
@@ -141,6 +287,31 @@ public class WhShippingDAO {
             ps.setString(2, whShipping.getStatus());
             ps.setString(3, whShipping.getFlag());
             ps.setString(4, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+    
+    public QueryResult updateWhShippingMpNo(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET mp_no = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getMpNo());
+            ps.setString(2, whShipping.getId());
             queryResult.setResult(ps.executeUpdate());
             ps.close();
         } catch (SQLException e) {
@@ -313,6 +484,10 @@ public class WhShippingDAO {
                 whShipping.setCreatedDate(rs.getString("created_date"));
                 whShipping.setModifiedBy(rs.getString("modified_by"));
                 whShipping.setModifiedDate(rs.getString("modified_date"));
+                whShipping.setSfpkid(rs.getString("sfpkid"));
+                whShipping.setSfpkidB(rs.getString("sfpkidB"));
+                whShipping.setSfpkidC(rs.getString("sfpkidC"));
+                whShipping.setSfpkidCtr(rs.getString("sfpkidCtr"));
             }
             rs.close();
             ps.close();
@@ -354,6 +529,10 @@ public class WhShippingDAO {
                 whShipping.setCreatedDate(rs.getString("created_date"));
                 whShipping.setModifiedBy(rs.getString("modified_by"));
                 whShipping.setModifiedDate(rs.getString("modified_date"));
+                whShipping.setSfpkid(rs.getString("sfpkid"));
+                whShipping.setSfpkidB(rs.getString("sfpkidB"));
+                whShipping.setSfpkidC(rs.getString("sfpkidC"));
+                whShipping.setSfpkidCtr(rs.getString("sfpkidCtr"));
             }
             rs.close();
             ps.close();
@@ -398,6 +577,10 @@ public class WhShippingDAO {
                 whShipping.setCreatedDate(rs.getString("created_date"));
                 whShipping.setModifiedBy(rs.getString("modified_by"));
                 whShipping.setModifiedDate(rs.getString("modified_date"));
+                whShipping.setSfpkid(rs.getString("sfpkid"));
+                whShipping.setSfpkidB(rs.getString("sfpkidB"));
+                whShipping.setSfpkidC(rs.getString("sfpkidC"));
+                whShipping.setSfpkidCtr(rs.getString("sfpkidCtr"));
 
                 //utk display data from table wh_request
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
@@ -456,6 +639,10 @@ public class WhShippingDAO {
                 whShipping.setCreatedDate(rs.getString("created_date"));
                 whShipping.setModifiedBy(rs.getString("modified_by"));
                 whShipping.setModifiedDate(rs.getString("modified_date"));
+                whShipping.setSfpkid(rs.getString("sfpkid"));
+                whShipping.setSfpkidB(rs.getString("sfpkidB"));
+                whShipping.setSfpkidC(rs.getString("sfpkidC"));
+                whShipping.setSfpkidCtr(rs.getString("sfpkidCtr"));
                 whShippingList.add(whShipping);
             }
             rs.close();
@@ -502,6 +689,10 @@ public class WhShippingDAO {
                 whShipping.setCreatedDate(rs.getString("created_date"));
                 whShipping.setModifiedBy(rs.getString("modified_by"));
                 whShipping.setModifiedDate(rs.getString("modified_date"));
+                whShipping.setSfpkid(rs.getString("sfpkid"));
+                whShipping.setSfpkidB(rs.getString("sfpkidB"));
+                whShipping.setSfpkidC(rs.getString("sfpkidC"));
+                whShipping.setSfpkidCtr(rs.getString("sfpkidCtr"));
 
                 //utk display data from table wh_request
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
@@ -566,6 +757,10 @@ public class WhShippingDAO {
                 whShipping.setCreatedDate(rs.getString("created_date"));
                 whShipping.setModifiedBy(rs.getString("modified_by"));
                 whShipping.setModifiedDate(rs.getString("modified_date"));
+                whShipping.setSfpkid(rs.getString("sfpkid"));
+                whShipping.setSfpkidB(rs.getString("sfpkidB"));
+                whShipping.setSfpkidC(rs.getString("sfpkidC"));
+                whShipping.setSfpkidCtr(rs.getString("sfpkidCtr"));
 
                 //utk display data from table wh_request
                 whShipping.setRequestEquipmentType(rs.getString("equipment_type"));
@@ -654,12 +849,14 @@ public class WhShippingDAO {
         return count;
     }
 
-    public Integer getCountMpNoWithStatusinSF(String mpNo) {
+    public Integer getCountMpNoEligbleToShip(String mpNo) {
         Integer count = null;
         try {
             PreparedStatement ps = conn.prepareStatement(
                     //                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE mp_no = '" + mpNo + "' AND status = 'Verified'" //original 3/11/16
+                    //                    "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE mp_no = '" + mpNo + "' AND (status = 'Pending Packing List' OR status = 'Pending Shipment to Seremban Factory')" //ass requested 2/11/16
                     "SELECT COUNT(*) AS count FROM cdars_wh_shipping WHERE mp_no = '" + mpNo + "' AND status = 'Pending Packing List'" //ass requested 2/11/16
+
             );
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -819,5 +1016,61 @@ public class WhShippingDAO {
             }
         }
         return count;
+    }
+
+    public WhShipping getWhShippingSfpkidAndItemPkid(String id) {
+        String sql = "SELECT sfpkid, sfpkidB, sfpkidC, sfpkidCtr, itempkid FROM cdars_wh_shipping WHERE id = '" + id + "'";
+        WhShipping whShipping = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whShipping = new WhShipping();
+                whShipping.setSfpkid(rs.getString("sfpkid"));
+                whShipping.setSfpkidB(rs.getString("sfpkidB"));
+                whShipping.setSfpkidC(rs.getString("sfpkidC"));
+                whShipping.setSfpkidCtr(rs.getString("sfpkidCtr"));
+                whShipping.setItempkid(rs.getString("itempkid"));
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whShipping;
+    }
+
+    public QueryResult updateSfpkidAndItemPkid(WhShipping whShipping) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_wh_shipping SET sfpkid = ?, itempkid = ? WHERE id = ?"
+            );
+            ps.setString(1, whShipping.getSfpkid());
+            ps.setString(2, whShipping.getItempkid());
+            ps.setString(3, whShipping.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
     }
 }

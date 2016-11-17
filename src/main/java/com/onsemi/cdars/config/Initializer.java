@@ -8,7 +8,8 @@ public class Initializer extends AbstractAnnotationConfigDispatcherServletInitia
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[]{DatabaseConfig.class, SecurityConfig.class, MailConfig.class, HmsFtpConfig.class, ApprovalCronConfig.class};
+//        return new Class[]{DatabaseConfig.class, SecurityConfig.class, MailConfig.class, HmsFtpConfig.class, ApprovalCronConfig.class};
+            return new Class[]{DatabaseConfig.class, SecurityConfig.class, MailConfig.class, HmsFtpConfig.class, ApprovalCronConfig.class, FtpConfigUSL24hrs.class};
     }
 
     @Override

@@ -195,7 +195,6 @@ public class SPTSRequestTest {
 //        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
 //            System.out.println("pkid..." + getItemByParam.getJSONObject(0).getInt("PKID"));
 //                System.out.println("version..." + getItemByParam.getJSONObject(0).getString("Version"));
-
 //        if (pkID != 0) {
 //            System.out.println("GET ITEM BY PKID...");
 //            JSONObject jsonObject1 = SPTSWebService.getItemByPKID(pkID.toString());
@@ -372,7 +371,6 @@ public class SPTSRequestTest {
 //
 //        SPTSResponse delete = SPTSWebService.insertActivityLog(params3);
 //        System.out.println("insertTransLog: " + delete.getResponseId());
-
 //        System.out.println("DELETE ITEM...");
 //        JSONObject params3 = new JSONObject();
 //        params3.put("pkID", "7686");
@@ -404,25 +402,64 @@ public class SPTSRequestTest {
 //            System.out.println(getItemByParam.getJSONObject(i));
 //        }
 //        System.out.println("COUNT GET TRANSACTION BY PARAM..." + getItemByParam.length());
-
+//        JSONObject params2 = new JSONObject();
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        Date date = new Date();
+//        String formattedDate = dateFormat.format(date);
+//        params2.put("dateTime", formattedDate);
+//        params2.put("itemsPKID", "161");
+//        params2.put("transType", "20");
+//        params2.put("transQty", "1");
+//        params2.put("remarks", "Retrieve from Storage Factory");
+//        SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+//        System.out.println("TransPkid: " + TransPkid.getResponseId());
+////                
+////get item from sfitem
+//        System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+//        JSONObject paramsQualA = new JSONObject();
+//        paramsQualA.put("pkID", "15");
+//        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+//        for (int i = 0; i < getItemByParamA.length(); i++) {
+//            System.out.println(getItemByParamA.getJSONObject(i));
+//        }
+//        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+//        int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+//        String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+//        System.out.println("pkid..." + itemSfApkid);
+//        System.out.println("version..." + versionSfA);
+//
+//                  //delete sfitem
+//                    JSONObject paramsdeleteSf = new JSONObject();
+//                    paramsdeleteSf.put("pkID", itemSfApkid);
+//                    paramsdeleteSf.put("version", versionSfA);
+//                    SPTSResponse deleteCtr = SPTSWebService.DeleteSFItem(paramsdeleteSf);
+//                          //delete sfitem
+//                        JSONObject paramsdeleteSfA = new JSONObject();
+//                        paramsdeleteSfA.put("pkID", itemSfApkid);
+//                        paramsdeleteSfA.put("version", versionSfA);
+//                        SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
+//                        if (deleteA.getStatus()) {
+//                            System.out.println("Delete Success pcb A: " + itemSfApkid);
+//                        } else {
+//                            System.out.println("Delete Failed pcb A: " + itemSfApkid);
+//                        }
+//PKID":15
+//ItemPKID":161
+//ItemID":"AVI058-2
 //get item from sfitem
-                        System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
-                        JSONObject paramsQualA = new JSONObject();
-                        paramsQualA.put("itemID", "19999A_CDARS-pcbTesting - CONTROL");
-                        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
-                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
-                        int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
-                        String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
-                        
-                          //delete sfitem
-                        JSONObject paramsdeleteSfA = new JSONObject();
-                        paramsdeleteSfA.put("pkID", itemSfApkid);
-                        paramsdeleteSfA.put("version", versionSfA);
-                        SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
-                        if (deleteA.getStatus()) {
-                            System.out.println("Delete Success pcb A: " + itemSfApkid);
-                        } else {
-                            System.out.println("Delete Failed pcb A: " + itemSfApkid);
-                        }
+        System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+        JSONObject paramsQualA = new JSONObject();
+        paramsQualA.put("pkID", "58");
+//        paramsQualA.put("pkID", "51");
+        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+//        JSONArray getItemByParamA = SPTSWebService.getItemByParam(paramsQualA);
+        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+        for (int i = 0; i < getItemByParamA.length(); i++) {
+            System.out.println(getItemByParamA.getJSONObject(i));
+        }
+        int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+        String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+        System.out.println("itemSfApkid: " + itemSfApkid);
+        System.out.println("versionSfA: " + versionSfA);
     }
 }

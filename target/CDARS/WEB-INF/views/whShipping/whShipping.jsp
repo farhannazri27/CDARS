@@ -17,7 +17,7 @@
                             <h2 class="pull-left">Shipping List</h2>
 
                             <div class="filter-block pull-right">
-                                <a href="${contextPath}/wh/whShipping/whMpList/s" class="btn btn-primary pull-right">
+                                <a href="${contextPath}/wh/whShipping/whMpList/add" class="btn btn-primary pull-right">
                                     <i class="fa fa-truck fa-lg"></i> Create Shipping Packing List
                                 </a>
                             </div>

@@ -41,6 +41,13 @@ public class WhShipping {
     private String pcbCtrQty;
     private String count;
 
+    //spts SFPkid
+    private String sfpkid;
+    private String sfpkidB;
+    private String sfpkidC;
+    private String sfpkidCtr;
+    private String itempkid;
+
     public String getId() {
         return id;
     }
@@ -327,6 +334,46 @@ public class WhShipping {
 
     public void setCount(String count) {
         this.count = count;
+    }
+
+    public String getSfpkid() {
+        return sfpkid;
+    }
+
+    public void setSfpkid(String sfpkid) {
+        this.sfpkid = sfpkid;
+    }
+
+    public String getItempkid() {
+        return itempkid;
+    }
+
+    public void setItempkid(String itempkid) {
+        this.itempkid = itempkid;
+    }
+
+    public String getSfpkidB() {
+        return sfpkidB;
+    }
+
+    public void setSfpkidB(String sfpkidB) {
+        this.sfpkidB = sfpkidB;
+    }
+
+    public String getSfpkidC() {
+        return sfpkidC;
+    }
+
+    public void setSfpkidC(String sfpkidC) {
+        this.sfpkidC = sfpkidC;
+    }
+
+    public String getSfpkidCtr() {
+        return sfpkidCtr;
+    }
+
+    public void setSfpkidCtr(String sfpkidCtr) {
+        this.sfpkidCtr = sfpkidCtr;
     }
 
 }

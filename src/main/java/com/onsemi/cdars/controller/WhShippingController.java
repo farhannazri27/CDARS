@@ -44,6 +44,8 @@ public class WhShippingController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WhShippingController.class);
     String[] args = {};
+    String mpNoTemp;
+    String idTemp;
 
     @Autowired
     private MessageSource messageSource;
@@ -519,6 +521,9 @@ public class WhShippingController {
 
             //update csv file
             String username = System.getProperty("user.name");
+            if (!"fg79cj".equals(username)) {
+                username = "imperial";
+            }
 
             File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
             if (file.exists()) {
@@ -598,7 +603,8 @@ public class WhShippingController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname(userSession.getFullname());
-                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};
+//                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
+                    String[] to = {"hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -667,12 +673,41 @@ public class WhShippingController {
         return "pdf/viewerTripTicket";
     }
 
-    @RequestMapping(value = "/viewWhShippingPdf/{whShippingId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/viewWhShippingPdf/{whShippingId}", method = {RequestMethod.POST, RequestMethod.GET})
     public ModelAndView viewWhShippingPdf(
             Model model,
-            @PathVariable("whShippingId") String whShippingId
+            @PathVariable("whShippingId") String whShippingId,
+            @RequestParam(required = false) String mpNo
     ) {
+
+        LOGGER.info(" @RequestParam(required = false) String mpNo," + whShippingId);
         WhShippingDAO whShippingDAO = new WhShippingDAO();
+        WhShipping test = whShippingDAO.getWhShipping(whShippingId);
+        LOGGER.info("String mpNo," + mpNo);
+        whShippingDAO = new WhShippingDAO();
+        WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
+        return new ModelAndView("whShippingPdf", "whShipping", whShipping);
+    }
+
+    @RequestMapping(value = "/viewWhShippingPdf/{whShippingId}/{mpNo}", method = {RequestMethod.POST, RequestMethod.GET})
+    public ModelAndView viewWhShippingPdfWithMpNo(
+            Model model,
+            @PathVariable("whShippingId") String whShippingId,
+            @PathVariable("mpNo") String mpNo
+    ) {
+        mpNoTemp = mpNo;
+        idTemp = whShippingId;
+        LOGGER.info("mpNoTemp, " + mpNoTemp);
+        WhShippingDAO whShippingDAO = new WhShippingDAO();
+        WhShipping test = whShippingDAO.getWhShipping(whShippingId);
+        LOGGER.info("String mpNo," + mpNo);
+
+        WhShipping updateMpNo = new WhShipping();
+        updateMpNo.setId(idTemp);
+        updateMpNo.setMpNo(mpNoTemp);
+        whShippingDAO = new WhShippingDAO();
+        QueryResult ru = whShippingDAO.updateWhShippingMpNo(updateMpNo);
+        whShippingDAO = new WhShippingDAO();
         WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
         return new ModelAndView("whShippingPdf", "whShipping", whShipping);
     }

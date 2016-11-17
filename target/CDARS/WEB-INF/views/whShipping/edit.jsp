@@ -118,8 +118,8 @@
                                     </div>
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel">Reset</button>
-                                        <!--<button type="submit" id="submit" name="submit" class="btn btn-primary">Save & View Trip Ticket</button>-->
-                                        <button type="submit" id="submit" name="submit" class="btn btn-primary" onclick="window.open('${contextPath}/wh/whShipping/viewWhShippingPdf/${whShipping.id}', 'Trip Ticket', 'width=1300,height=960').print()">Save & View Trip Ticket</button>
+                                        <button type="submit" id="submit" name="submit" class="btn btn-primary">Save & View Trip Ticket</button>
+                                        <!--<button type="submit" id="submit" name="submit" class="btn btn-primary testprint" onclick="window.open('${contextPath}/wh/whShipping/viewWhShippingPdf/${whShipping.id}', 'Trip Ticket', 'width=1300,height=960').print()">Save & View Trip Ticket</button>-->
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>
@@ -150,7 +150,8 @@
                                     <input type="hidden" class="form-control" id="mpNoVe" name="mpNoVe" value="${whShipping.mpNo}">
                                     <div class="pull-right">
                                         <button type="reset" class="btn btn-secondary cancel1">Reset</button>
-                                        <button type="submit" id="submit1" name="submit1" class="btn btn-primary" onclick="window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}', 'Barcode Sticker', 'width=1300,height=960').print()">Verify & View Barcode Sticker</button>
+                                        <button type="submit" id="submit1" name="submit1" class="btn btn-primary">Verify & View Barcode Sticker</button>
+                                        <!--<button type="submit" id="submit1" name="submit1" class="btn btn-primary" onclick="window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}', 'Barcode Sticker', 'width=1300,height=960').print()">Verify & View Barcode Sticker</button>-->
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>
@@ -201,137 +202,169 @@
     </s:layout-component>
     <s:layout-component name="page_js_inline">
         <script>
-                                            $(document).ready(function () {
+            $(document).ready(function () {
 
-                                                $('#hardwareId').bind('copy paste cut', function (e) {
-                                                    e.preventDefault(); //this line will help us to disable cut,copy,paste		
-                                                });
+                $('#hardwareId').bind('copy paste cut', function (e) {
+                    e.preventDefault(); //this line will help us to disable cut,copy,paste		
+                });
 
 //                $('#mpNo').bind('copy paste cut', function (e) {
 //                    e.preventDefault();		
 //                });
 
-                                                $('#hardwareBarcode1').bind('copy paste cut', function (e) {
-                                                    e.preventDefault();
-                                                });
+                $('#hardwareBarcode1').bind('copy paste cut', function (e) {
+                    e.preventDefault();
+                });
 
-                                                $('#hardwareBarcode2').bind('copy paste cut', function (e) {
-                                                    e.preventDefault();
-                                                });
-
-
-                                                var elementhardwareType = $('#hardwareType');
-                                                if (elementhardwareType.val() === "PCB") {
-                                                    $("#qualAnBDiv").show();
-                                                    $("#qualCnCtrDiv").show();
-                                                } else {
-                                                    $("#qualAnBDiv").hide();
-                                                    $("#qualCnCtrDiv").hide();
-                                                }
-
-                                                var element = $('#mpNo');
-                                                var element1 = $('#mpNoVe');
-                                                var element2 = $('#hardwareIdVe');
-                                                var element3 = $('#hardwareIdV')
-                                                var element4 = $('#hardwareBarcode1');
-                                                var element5 = $('#mpNo2')
-                                                var element6 = $('#hardwareBarcode2');
-
-                                                if (element.val() !== "" && element.val() === element5.val()) {
-                                                    $("#submit").attr("disabled", true);
-                                                    $("#mpNo").attr("readonly", true);
-                                                    $("#mpExpiryDate").attr("readonly", true);
-                                                }
-
-                                                if (element1.val() === "") {
-                                                    $("#submit1").attr("disabled", true);
-                                                    $("#hardwareBarcode1").attr("readonly", true);
-                                                }
-
-                                                if (element3.val() === element4.val()) {
-                                                    $("#submit1").attr("disabled", true);
-                                                    $("#hardwareBarcode1").attr("readonly", true);
-                                                }
-
-                                                if (element2.val() === "") {
-                                                    $("#submit2").attr("disabled", true);
-                                                    $("#hardwareBarcode2").attr("readonly", true);
-                                                }
-
-                                                if (element6.val() === element1.val()) {
-                                                    $("#submit2").attr("disabled", true);
-                                                    $("#hardwareBarcode2").attr("readonly", true);
-                                                }
+                $('#hardwareBarcode2').bind('copy paste cut', function (e) {
+                    e.preventDefault();
+                });
 
 
-                                                jQuery.extend(jQuery.validator.messages, {
-                                                    required: "This field is required.",
-                                                    equalTo: "Value is not match! Please re-scan.",
-                                                    email: "Please enter a valid email.",
-                                                });
+                var elementhardwareType = $('#hardwareType');
+                if (elementhardwareType.val() === "PCB") {
+                    $("#qualAnBDiv").show();
+                    $("#qualCnCtrDiv").show();
+                } else {
+                    $("#qualAnBDiv").hide();
+                    $("#qualCnCtrDiv").hide();
+                }
 
-                                                var idVerify = $('#hardwareBarcode1').val();
-                                                var idOri = $('#hardwareIdV').val();
-                                                if (idVerify !== idOri) {
-                                                    $('#hardwareBarcode1').val("");
-                                                }
+                var element = $('#mpNo');
+                var element1 = $('#mpNoVe');
+                var element2 = $('#hardwareIdVe');
+                var element3 = $('#hardwareIdV')
+                var element4 = $('#hardwareBarcode1');
+                var element5 = $('#mpNo2')
+                var element6 = $('#hardwareBarcode2');
 
-                                                bootstrap_alert = function () {}
-                                                bootstrap_alert.warning = function (message) {
-                                                    $('#alert_placeholder').html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>')
-                                                }
-                                                if ($('#hardwareBarcode2').val() !== "" && $('#hardwareBarcode2').val() !== $('#mpNoV').val()) {
-                                                    bootstrap_alert.warning('Barcode Sticker NOT MATCH with Trip Ticket! Please re-check. Email has been send to Requestor.');
-                                                    //                    $("#hardwareBarcode2").effect("highlight", {}, 1000);
-                                                    $("#hardwareBarcode2").addClass('highlight');
-                                                }
+                if (element.val() !== "" && element.val() === element5.val()) {
+                    $("#submit").attr("disabled", true);
+                    $("#mpNo").attr("readonly", true);
+                    $("#mpExpiryDate").attr("readonly", true);
+                }
 
-                                                $('#mpExpiryDate').datepicker({
-                                                    format: 'yyyy-mm-dd',
-                                                    autoclose: true
-                                                });
+                if (element1.val() === "") {
+                    $("#submit1").attr("disabled", true);
+                    $("#hardwareBarcode1").attr("readonly", true);
+                }
 
-                                                var validator = $("#mp_form").validate({
-                                                    rules: {
-                                                        mpNo: {
-                                                            required: true,
-                                                            minlength: 17,
-                                                            maxlength: 17
-                                                        },
-                                                        mpExpiryDate: {
-                                                            required: true
-                                                        }
-                                                    }
-                                                });
+                if (element3.val() === element4.val()) {
+                    $("#submit1").attr("disabled", true);
+                    $("#hardwareBarcode1").attr("readonly", true);
+                }
 
-                                                var validator1 = $("#tt_form").validate({
-                                                    rules: {
-                                                        hardwareBarcode1: {
-                                                            required: true,
-                                                            equalTo: "#hardwareIdV"
-                                                        }
-                                                    }
-                                                });
+                if (element2.val() === "") {
+                    $("#submit2").attr("disabled", true);
+                    $("#hardwareBarcode2").attr("readonly", true);
+                }
 
-                                                var validator2 = $("#bs_form").validate({
-                                                    rules: {
-                                                        hardwareBarcode2: {
-                                                            required: true,
-                                                            equalTo: "#mpNoV"
-                                                        }
-                                                    }
-                                                });
+                if (element6.val() === element1.val()) {
+                    $("#submit2").attr("disabled", true);
+                    $("#hardwareBarcode2").attr("readonly", true);
+                }
 
-                                                $(".cancel").click(function () {
-                                                    validator.resetForm();
-                                                });
-                                                $(".cancel1").click(function () {
-                                                    validator1.resetForm();
-                                                });
-                                                $(".cancel2").click(function () {
-                                                    validator2.resetForm();
-                                                });
-                                            });
+
+                jQuery.extend(jQuery.validator.messages, {
+                    required: "This field is required.",
+                    equalTo: "Value is not match! Please re-scan.",
+                    email: "Please enter a valid email.",
+                });
+
+                var idVerify = $('#hardwareBarcode1').val();
+                var idOri = $('#hardwareIdV').val();
+                if (idVerify !== idOri) {
+                    $('#hardwareBarcode1').val("");
+                }
+
+                bootstrap_alert = function () {}
+                bootstrap_alert.warning = function (message) {
+                    $('#alert_placeholder').html('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><span>' + message + '</span></div>')
+                }
+                if ($('#hardwareBarcode2').val() !== "" && $('#hardwareBarcode2').val() !== $('#mpNoV').val()) {
+                    bootstrap_alert.warning('Barcode Sticker NOT MATCH with Trip Ticket! Please re-check. Email has been send to Requestor.');
+                    //                    $("#hardwareBarcode2").effect("highlight", {}, 1000);
+                    $("#hardwareBarcode2").addClass('highlight');
+                }
+
+                $('#mpExpiryDate').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
+
+                var validator = $("#mp_form").validate({
+                    rules: {
+                        mpNo: {
+                            required: true,
+                            minlength: 17,
+                            maxlength: 17
+                        },
+                        mpExpiryDate: {
+                            required: true
+                        }
+                    }
+                });
+
+                var validator1 = $("#tt_form").validate({
+                    rules: {
+                        hardwareBarcode1: {
+                            required: true,
+                            equalTo: "#hardwareIdV"
+                        }
+                    }
+                });
+
+                var validator2 = $("#bs_form").validate({
+                    rules: {
+                        hardwareBarcode2: {
+                            required: true,
+                            equalTo: "#mpNoV"
+                        }
+                    }
+                });
+
+
+
+                $(".cancel").click(function () {
+                    validator.resetForm();
+                });
+                $(".cancel1").click(function () {
+                    validator1.resetForm();
+                });
+                $(".cancel2").click(function () {
+                    validator2.resetForm();
+                });
+
+
+//                                                var test = $("input#mpNo");
+//                                                $('.testprint').on('click', function (e) {
+//                                                    if (test.val().length !== 17) {
+//                                                        alert(test.val().length);
+//                                                        e.stopImmediatePropagation();
+//                                                        return false;
+//                                                    } else {
+//                                                        alert('enabled');
+//                                                    }
+//                                                });
+            });
+
+
+            $('#submit').on('click', function () {
+                var dum = $('#mpNo').val();
+                if (dum.length === 17) {
+                    window.open('${contextPath}/wh/whShipping/viewWhShippingPdf/${whShipping.id}/' + dum + '', 'Trip Ticket', 'width=1300,height=960').print();
+                }
+            });
+
+            $('#submit1').on('click', function () {
+                var dum = $('#hardwareBarcode1').val();
+                var dum1 = $('#hardwareIdV').val();
+                if (dum === dum1) {
+                    window.open('${contextPath}/wh/whShipping/viewWhBarcodeStickerPdf/${whShipping.id}', 'Barcode Sticker', 'width=1300,height=960').print();
+                            }
+                        });
+
+
 
 
 
