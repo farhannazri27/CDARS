@@ -142,7 +142,6 @@ public class WhRequestController {
         JSONObject paramPcbA = new JSONObject();
         paramPcbA.put("itemType", "PCB%");
         paramPcbA.put("itemStatus", "0");
-//        paramPcbA.put("status", "1");
         paramPcbA.put("itemID", "%QUAL A");
         JSONArray getItemByParamPcbA = SPTSWebService.getItemByParam(paramPcbA);
         List<LinkedHashMap<String, String>> itemListpcbQualA = SystemUtil.jsonArrayToList(getItemByParamPcbA);
@@ -150,7 +149,6 @@ public class WhRequestController {
         JSONObject paramPcbB = new JSONObject();
         paramPcbB.put("itemType", "PCB%");
         paramPcbB.put("itemStatus", "0");
-//        paramPcbB.put("status", "1");
         paramPcbB.put("itemID", "%QUAL B");
         JSONArray getItemByParamPcbB = SPTSWebService.getItemByParam(paramPcbB);
         List<LinkedHashMap<String, String>> itemListpcbQualB = SystemUtil.jsonArrayToList(getItemByParamPcbB);
@@ -158,7 +156,6 @@ public class WhRequestController {
         JSONObject paramPcbC = new JSONObject();
         paramPcbC.put("itemType", "PCB%");
         paramPcbC.put("itemStatus", "0");
-//        paramPcbC.put("status", "1");
         paramPcbC.put("itemID", "%QUAL C");
         JSONArray getItemByParamPcbC = SPTSWebService.getItemByParam(paramPcbC);
         List<LinkedHashMap<String, String>> itemListpcbQualC = SystemUtil.jsonArrayToList(getItemByParamPcbC);
@@ -166,13 +163,10 @@ public class WhRequestController {
         JSONObject paramPcbCtr = new JSONObject();
         paramPcbCtr.put("itemType", "PCB%");
         paramPcbCtr.put("itemStatus", "0");
-//        paramPcbCtr.put("status", "1");
         paramPcbCtr.put("itemID", "%CONTROL");
         JSONArray getItemByParamPcbCtr = SPTSWebService.getItemByParam(paramPcbCtr);
         List<LinkedHashMap<String, String>> itemListpcbCtr = SystemUtil.jsonArrayToList(getItemByParamPcbCtr);
 
-        //        SptsClass bib = new SptsClass();
-//        List<LinkedHashMap<String, String>> itemListbib = bib.getSptsItemByParam("BIB", "0", "1");
         model.addAttribute("StencilItemList", stencil);
         model.addAttribute("bibItemList", itemListbib);
         model.addAttribute("trayItemList", itemListtray);
@@ -342,7 +336,6 @@ public class WhRequestController {
                     LOGGER.info("pcbCtrQty2........" + pcbCtrQty);
                 }
 
-//                Integer totalQty = Integer.valueOf(pcbAQty) + Integer.valueOf(pcbBQty) + Integer.valueOf(pcbCQty) + Integer.valueOf(pcbCtrQty);
                 Integer totalQty = Integer.valueOf(AQty) + Integer.valueOf(BQty) + Integer.valueOf(CQty) + Integer.valueOf(CtrQty);
                 whRequest.setQuantity(totalQty.toString());
 
@@ -388,7 +381,6 @@ public class WhRequestController {
             }
         } else {
             whRequest.setRetrievalReason(retrievalReason);
-//            whRequest.setStatus("New Request for Retrieval");
             whRequest.setStatus("New Request");
             if ("Motherboard".equals(equipmentType)) {
                 whRequest.setInventoryId(inventoryIdMb);
@@ -689,8 +681,6 @@ public class WhRequestController {
                 }
                 String[] myArray = new String[a.size()];
                 String[] emailTo = a.toArray(myArray);
-                LOGGER.info("+++++++emailTo+++++" + Arrays.toString(emailTo));
-                //                String[] email = {requestor, emailApprover, emaildistList1, emaildistList2, emaildistList3, emaildistList4};
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname("All");
                 emailSender.htmlEmailManyTo(
@@ -901,8 +891,8 @@ public class WhRequestController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-//                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"};  //9/11/16
-                String[] to = {"hmsrelontest@gmail.com"};
+                String[] to = {"hmsrelon@gmail.com"};  //9/11/16
+//                String[] to = {"hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
@@ -916,8 +906,6 @@ public class WhRequestController {
                         //                    msg
                         "New Hardware Request has been added to HIMS"
                 );
-
-                LOGGER.info("send email to sbnfactory");
 
                 EmailSender emailSenderSbnFactory = new EmailSender();
                 com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
@@ -936,7 +924,6 @@ public class WhRequestController {
                 );
                 return "redirect:/wh/whRetrieval";
             }
-//            return "redirect:/wh/whRequest/edit/" + queryResult.getGeneratedKey();
             return "redirect:/wh/whRequest";
         }
 
@@ -1094,41 +1081,32 @@ public class WhRequestController {
             if ("".equals(pcbAQty)) {
                 whRequest.setPcbAQty("0");
                 AQty = "0";
-                LOGGER.info("pcbAQty1........" + pcbAQty);
             } else {
                 whRequest.setPcbAQty(pcbAQty);
                 AQty = pcbAQty;
-                LOGGER.info("pcbAQty2........" + pcbAQty);
             }
             if ("".equals(pcbBQty)) {
                 whRequest.setPcbBQty("0");
                 BQty = "0";
-                LOGGER.info("pcbBQty1........" + pcbBQty);
             } else {
                 whRequest.setPcbBQty(pcbBQty);
                 BQty = pcbBQty;
-                LOGGER.info("pcbBQty2........" + pcbBQty);
             }
             if ("".equals(pcbCQty)) {
                 whRequest.setPcbCQty("0");
                 CQty = "0";
-                LOGGER.info("pcbCQty1........" + pcbCQty);
             } else {
                 whRequest.setPcbCQty(pcbCQty);
                 CQty = pcbCQty;
-                LOGGER.info("pcbCQty2........" + pcbCQty);
             }
             if ("".equals(pcbCtrQty)) {
                 whRequest.setPcbCtrQty("0");
                 CtrQty = "0";
-                LOGGER.info("pcbCtrQty1........" + pcbCtrQty);
             } else {
                 whRequest.setPcbCtrQty(pcbCtrQty);
                 CtrQty = pcbCtrQty;
-                LOGGER.info("pcbCtrQty2........" + pcbCtrQty);
             }
 
-//            Integer totalQty = Integer.valueOf(pcbAQty) + Integer.valueOf(pcbBQty) + Integer.valueOf(pcbCQty) + Integer.valueOf(pcbCtrQty);
             Integer totalQty = Integer.valueOf(AQty) + Integer.valueOf(BQty) + Integer.valueOf(CQty) + Integer.valueOf(CtrQty);
             whRequest.setQuantity(totalQty.toString());
 
@@ -1396,7 +1374,6 @@ public class WhRequestController {
                     //                    user name
                     user,
                     //                    to
-                    //                    "farhannazri27@yahoo.com",
                     emailRequestor,
                     //                    subject
                     "Approval Status for New Hardware Request for Sending to SBN Factory",
@@ -1427,7 +1404,6 @@ public class WhRequestController {
                 ship.setItempkid("0");
                 WhShippingDAO whShippingDAO = new WhShippingDAO();
                 QueryResult queryResultShip = whShippingDAO.insertWhShipping(ship);
-//                return "redirect:/wh/whShipping";
                 return "redirect:/wh/whRequest";
             }
 
@@ -1461,7 +1437,6 @@ public class WhRequestController {
         int count = 0;
 
         if (equipmentType != null) {
-//            if(!equipmentType.equals("") !("").equals(equipmentType)) {
             if (!("").equals(equipmentType)) {
                 count++;
                 if (count == 1) {

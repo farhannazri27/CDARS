@@ -80,74 +80,73 @@ public class WhMpListController {
         return "whMpList/whMpList";
     }
 
-    @RequestMapping(value = "/22", method = RequestMethod.GET)
-    public String whMpList2(
-            Model model
-    ) {
-        WhMpListDAO whMpListDAO = new WhMpListDAO();
-        List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
-        whMpListDAO = new WhMpListDAO();
-        int count = whMpListDAO.getCountWithFlag0();
-
-        //count dashboard ship
-        WhShippingDAO shipD = new WhShippingDAO();
-        int countMpShip = shipD.getCountNoMpNumFlag0();
-        shipD = new WhShippingDAO();
-        int countBsShip = shipD.getCountBSFlag0();
-        shipD = new WhShippingDAO();
-        int countTtShip = shipD.getCountTtFlag0();
-        shipD = new WhShippingDAO();
-        int countShippedShip = shipD.getCountShippedFlag0();
-        model.addAttribute("countMpShip", countMpShip);
-        model.addAttribute("countBsShip", countBsShip);
-        model.addAttribute("countTtShip", countTtShip);
-        model.addAttribute("countShippedShip", countShippedShip);
-
-        //count dashboard requests
-        WhRequestDAO reqD = new WhRequestDAO();
-        int countWaitReq = reqD.getCountWaitingFlag0();
-        reqD = new WhRequestDAO();
-        int countAppReq = reqD.getCountApprovedFlag0();
-        reqD = new WhRequestDAO();
-        int countNotAppReq = reqD.getCountNotApprovedFlag0();
-        model.addAttribute("countWaitReq", countWaitReq);
-        model.addAttribute("countAppReq", countAppReq);
-        model.addAttribute("countNotAppReq", countNotAppReq);
-
-        //count dashboard retrieval
-        WhRetrievalDAO retD = new WhRetrievalDAO();
-        int countReqRet = retD.getCountRequestFlag0();
-        retD = new WhRetrievalDAO();
-        int countShipRet = retD.getCountShipFlag0();
-        retD = new WhRetrievalDAO();
-        int countBsVerRet = retD.getCountBsVerifiedFlag0();
-        retD = new WhRetrievalDAO();
-        int countBsMisRet = retD.getCountBsMismatchedFlag0();
-        retD = new WhRetrievalDAO();
-        int countBsUnvRet = retD.getCountBsUnverifiedFlag0();
-        retD = new WhRetrievalDAO();
-        int countBsHoldRet = retD.getCountBsHoldFlag0();
-        retD = new WhRetrievalDAO();
-        int countTtMisRet = retD.getCountTtMismatchedFlag0();
-        retD = new WhRetrievalDAO();
-        int countTtUnvRet = retD.getCountTtUnverifiedFlag0();
-        retD = new WhRetrievalDAO();
-        int countTtHoldRet = retD.getCountTtHoldFlag0();
-        model.addAttribute("countReqRet", countReqRet);
-        model.addAttribute("countShipRet", countShipRet);
-        model.addAttribute("countBsVerRet", countBsVerRet);
-        model.addAttribute("countBsMisRet", countBsMisRet);
-        model.addAttribute("countBsUnvRet", countBsUnvRet);
-        model.addAttribute("countBsHoldRet", countBsHoldRet);
-        model.addAttribute("countTtMisRet", countTtMisRet);
-        model.addAttribute("countTtUnvRet", countTtUnvRet);
-        model.addAttribute("countTtHoldRet", countTtHoldRet);
-
-        model.addAttribute("whMpListList", whMpListList);
-        model.addAttribute("count", count);
-        return "whMpList/whMpList_2";
-    }
-
+//    @RequestMapping(value = "/22", method = RequestMethod.GET)
+//    public String whMpList2(
+//            Model model
+//    ) {
+//        WhMpListDAO whMpListDAO = new WhMpListDAO();
+//        List<WhMpList> whMpListList = whMpListDAO.getWhMpListListDateDisplayWithFlag0();
+//        whMpListDAO = new WhMpListDAO();
+//        int count = whMpListDAO.getCountWithFlag0();
+//
+//        //count dashboard ship
+//        WhShippingDAO shipD = new WhShippingDAO();
+//        int countMpShip = shipD.getCountNoMpNumFlag0();
+//        shipD = new WhShippingDAO();
+//        int countBsShip = shipD.getCountBSFlag0();
+//        shipD = new WhShippingDAO();
+//        int countTtShip = shipD.getCountTtFlag0();
+//        shipD = new WhShippingDAO();
+//        int countShippedShip = shipD.getCountShippedFlag0();
+//        model.addAttribute("countMpShip", countMpShip);
+//        model.addAttribute("countBsShip", countBsShip);
+//        model.addAttribute("countTtShip", countTtShip);
+//        model.addAttribute("countShippedShip", countShippedShip);
+//
+//        //count dashboard requests
+//        WhRequestDAO reqD = new WhRequestDAO();
+//        int countWaitReq = reqD.getCountWaitingFlag0();
+//        reqD = new WhRequestDAO();
+//        int countAppReq = reqD.getCountApprovedFlag0();
+//        reqD = new WhRequestDAO();
+//        int countNotAppReq = reqD.getCountNotApprovedFlag0();
+//        model.addAttribute("countWaitReq", countWaitReq);
+//        model.addAttribute("countAppReq", countAppReq);
+//        model.addAttribute("countNotAppReq", countNotAppReq);
+//
+//        //count dashboard retrieval
+//        WhRetrievalDAO retD = new WhRetrievalDAO();
+//        int countReqRet = retD.getCountRequestFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countShipRet = retD.getCountShipFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countBsVerRet = retD.getCountBsVerifiedFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countBsMisRet = retD.getCountBsMismatchedFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countBsUnvRet = retD.getCountBsUnverifiedFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countBsHoldRet = retD.getCountBsHoldFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countTtMisRet = retD.getCountTtMismatchedFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countTtUnvRet = retD.getCountTtUnverifiedFlag0();
+//        retD = new WhRetrievalDAO();
+//        int countTtHoldRet = retD.getCountTtHoldFlag0();
+//        model.addAttribute("countReqRet", countReqRet);
+//        model.addAttribute("countShipRet", countShipRet);
+//        model.addAttribute("countBsVerRet", countBsVerRet);
+//        model.addAttribute("countBsMisRet", countBsMisRet);
+//        model.addAttribute("countBsUnvRet", countBsUnvRet);
+//        model.addAttribute("countBsHoldRet", countBsHoldRet);
+//        model.addAttribute("countTtMisRet", countTtMisRet);
+//        model.addAttribute("countTtUnvRet", countTtUnvRet);
+//        model.addAttribute("countTtHoldRet", countTtHoldRet);
+//
+//        model.addAttribute("whMpListList", whMpListList);
+//        model.addAttribute("count", count);
+//        return "whMpList/whMpList_2";
+//    }
     @RequestMapping(value = "/s", method = RequestMethod.GET)
     public String whMpList1(
             Model model
@@ -861,61 +860,7 @@ public class WhMpListController {
                                     sfpkidB = sfPkidQualB.getResponseId();
 
                                     //original place for update statusLog, Ship and Request table
-//                                    //update statusLog
-//                                    whshipD = new WhShippingDAO();
-//                                    WhShipping shipping = whshipD.getWhShipping(whship.getId());
-//
-//                                    WhStatusLog stat = new WhStatusLog();
-//                                    stat.setRequestId(shipping.getRequestId());
-//                                    stat.setModule("cdars_wh_mp_list");
-//                                    stat.setStatus("Ship to Seremban Factory");
-//                                    stat.setCreatedBy(userSession.getFullname());
-//                                    stat.setFlag("0");
-//                                    WhStatusLogDAO statD = new WhStatusLogDAO();
-//                                    QueryResult queryResultStat = statD.insertWhStatusLog(stat);
-//                                    if (queryResultStat.getGeneratedKey().equals("0")) {
-//                                        LOGGER.info("[WhRequest] - insert status log failed");
-//                                    } else {
-//                                        LOGGER.info("[WhRequest] - insert status log done");
-//                                    }
-//
-//                                    //update status, sfpkid, itempkid at shipping list to "Pending Shipment to Seremban Factory"
-//                                    shipD = new WhShippingDAO();
-//                                    WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
-//
-//                                    WhShipping shipUpdate = new WhShipping();
-//                                    shipUpdate.setId(ship.getId());
-//                                    shipUpdate.setRequestId(ship.getRequestId());
-//                                    shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
-//                                    shipUpdate.setSfpkidB(sfPkidQualB.getResponseId().toString());
-//                                    shipUpdate.setItempkid(String.valueOf(itempkidQualB));
-//                                    WhShippingDAO shipDD = new WhShippingDAO();
-//                                    QueryResult u = shipDD.updateWhShippingStatusWithItemPkidAndSfpkidB(shipUpdate);
-//                                    if (u.getResult() == 1) {
-//                                        LOGGER.info("Status Ship updated");
-//                                    } else {
-//                                        LOGGER.info("Status Ship updated failed");
-//                                    }
-//
-//                                    //update status,sfpkid dkt master *request table     
-//                                    WhRequestDAO reqD = new WhRequestDAO();
-//                                    int countReq = reqD.getCountRequestId(ship.getRequestId());
-//                                    if (countReq == 1) {
-//                                        WhRequest reqUpdate = new WhRequest();
-//                                        reqUpdate.setModifiedBy(userSession.getFullname());
-//                                        reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
-//                                        reqUpdate.setSfpkidB(sfPkidQualB.getResponseId().toString());
-//                                        reqUpdate.setId(ship.getRequestId());
-//                                        reqD = new WhRequestDAO();
-//                                        QueryResult ru = reqD.updateWhRequestStatusWithSfpkidB(reqUpdate);
-//                                        if (ru.getResult() == 1) {
-//                                            LOGGER.info("[MpList] - update status at request table done");
-//                                        } else {
-//                                            LOGGER.info("[MpList] - update status at request table failed");
-//                                        }
-//                                    } else {
-//                                        LOGGER.info("[MpList] - requestId not found");
-//                                    }
+//                                  
                                     //original place for insert to csv  
                                 } else {
 
@@ -974,61 +919,7 @@ public class WhMpListController {
                                     sfpkidC = sfPkidQualC.getResponseId();
 
                                     //original place for update statusLog, Ship and Request table
-//                                    //update statusLog
-//                                    whshipD = new WhShippingDAO();
-//                                    WhShipping shipping = whshipD.getWhShipping(whship.getId());
-//
-//                                    WhStatusLog stat = new WhStatusLog();
-//                                    stat.setRequestId(shipping.getRequestId());
-//                                    stat.setModule("cdars_wh_mp_list");
-//                                    stat.setStatus("Ship to Seremban Factory");
-//                                    stat.setCreatedBy(userSession.getFullname());
-//                                    stat.setFlag("0");
-//                                    WhStatusLogDAO statD = new WhStatusLogDAO();
-//                                    QueryResult queryResultStat = statD.insertWhStatusLog(stat);
-//                                    if (queryResultStat.getGeneratedKey().equals("0")) {
-//                                        LOGGER.info("[WhRequest] - insert status log failed");
-//                                    } else {
-//                                        LOGGER.info("[WhRequest] - insert status log done");
-//                                    }
-//
-//                                    //update status, sfpkid, itempkid at shipping list to "Pending Shipment to Seremban Factory"
-//                                    shipD = new WhShippingDAO();
-//                                    WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
-//
-//                                    WhShipping shipUpdate = new WhShipping();
-//                                    shipUpdate.setId(ship.getId());
-//                                    shipUpdate.setRequestId(ship.getRequestId());
-//                                    shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
-//                                    shipUpdate.setSfpkidC(sfPkidQualC.getResponseId().toString());
-//                                    shipUpdate.setItempkid(String.valueOf(itempkidQualC));
-//                                    WhShippingDAO shipDD = new WhShippingDAO();
-//                                    QueryResult u = shipDD.updateWhShippingStatusWithItemPkidAndSfpkidC(shipUpdate);
-//                                    if (u.getResult() == 1) {
-//                                        LOGGER.info("Status Ship updated");
-//                                    } else {
-//                                        LOGGER.info("Status Ship updated failed");
-//                                    }
-//
-//                                    //update status,sfpkid dkt master *request table     
-//                                    WhRequestDAO reqD = new WhRequestDAO();
-//                                    int countReq = reqD.getCountRequestId(ship.getRequestId());
-//                                    if (countReq == 1) {
-//                                        WhRequest reqUpdate = new WhRequest();
-//                                        reqUpdate.setModifiedBy(userSession.getFullname());
-//                                        reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
-//                                        reqUpdate.setSfpkidC(sfPkidQualC.getResponseId().toString());
-//                                        reqUpdate.setId(ship.getRequestId());
-//                                        reqD = new WhRequestDAO();
-//                                        QueryResult ru = reqD.updateWhRequestStatusWithSfpkidC(reqUpdate);
-//                                        if (ru.getResult() == 1) {
-//                                            LOGGER.info("[MpList] - update status at request table done");
-//                                        } else {
-//                                            LOGGER.info("[MpList] - update status at request table failed");
-//                                        }
-//                                    } else {
-//                                        LOGGER.info("[MpList] - requestId not found");
-//                                    }
+//                                    
                                     //original place for insert to csv  
                                 } else {
 
@@ -1087,61 +978,6 @@ public class WhMpListController {
                                     sfpkidCtr = sfPkidQualCtr.getResponseId();
 
                                     //original place for update statusLog, Ship and Request table
-                                    //update statusLog
-//                                    whshipD = new WhShippingDAO();
-//                                    WhShipping shipping = whshipD.getWhShipping(whship.getId());
-//
-//                                    WhStatusLog stat = new WhStatusLog();
-//                                    stat.setRequestId(shipping.getRequestId());
-//                                    stat.setModule("cdars_wh_mp_list");
-//                                    stat.setStatus("Ship to Seremban Factory");
-//                                    stat.setCreatedBy(userSession.getFullname());
-//                                    stat.setFlag("0");
-//                                    WhStatusLogDAO statD = new WhStatusLogDAO();
-//                                    QueryResult queryResultStat = statD.insertWhStatusLog(stat);
-//                                    if (queryResultStat.getGeneratedKey().equals("0")) {
-//                                        LOGGER.info("[WhRequest] - insert status log failed");
-//                                    } else {
-//                                        LOGGER.info("[WhRequest] - insert status log done");
-//                                    }
-//
-//                                    //update status, sfpkid, itempkid at shipping list to "Pending Shipment to Seremban Factory"
-//                                    shipD = new WhShippingDAO();
-//                                    WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
-//
-//                                    WhShipping shipUpdate = new WhShipping();
-//                                    shipUpdate.setId(ship.getId());
-//                                    shipUpdate.setRequestId(ship.getRequestId());
-//                                    shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
-//                                    shipUpdate.setSfpkidCtr(sfPkidQualCtr.getResponseId().toString());
-//                                    shipUpdate.setItempkid(String.valueOf(itempkidQualCtr));
-//                                    WhShippingDAO shipDD = new WhShippingDAO();
-//                                    QueryResult u = shipDD.updateWhShippingStatusWithItemPkidAndSfpkidCtr(shipUpdate);
-//                                    if (u.getResult() == 1) {
-//                                        LOGGER.info("Status Ship updated");
-//                                    } else {
-//                                        LOGGER.info("Status Ship updated failed");
-//                                    }
-//
-//                                    //update status,sfpkid dkt master *request table     
-//                                    WhRequestDAO reqD = new WhRequestDAO();
-//                                    int countReq = reqD.getCountRequestId(ship.getRequestId());
-//                                    if (countReq == 1) {
-//                                        WhRequest reqUpdate = new WhRequest();
-//                                        reqUpdate.setModifiedBy(userSession.getFullname());
-//                                        reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
-//                                        reqUpdate.setSfpkidCtr(sfPkidQualCtr.getResponseId().toString());
-//                                        reqUpdate.setId(ship.getRequestId());
-//                                        reqD = new WhRequestDAO();
-//                                        QueryResult ru = reqD.updateWhRequestStatusWithSfpkidCtr(reqUpdate);
-//                                        if (ru.getResult() == 1) {
-//                                            LOGGER.info("[MpList] - update status at request table done");
-//                                        } else {
-//                                            LOGGER.info("[MpList] - update status at request table failed");
-//                                        }
-//                                    } else {
-//                                        LOGGER.info("[MpList] - requestId not found");
-//                                    }
 //original place for insert to csv                                 
                                 } else {
                                     flag = false;
@@ -1622,8 +1458,8 @@ public class WhMpListController {
         EmailSender emailSenderToHIMSSF = new EmailSender();
         com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
         user.setFullname("HIMS SF");
-        //                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/1/16
-        String[] to = {"hmsrelontest@gmail.com"};
+        String[] to = {"hmsrelon@gmail.com"}; //9/1/16
+//        String[] to = {"hmsrelontest@gmail.com"};
         emailSenderToHIMSSF.htmlEmailWithAttachment(
                 servletContext,
                 //                    user name

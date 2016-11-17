@@ -115,30 +115,24 @@ public class WhRetrievalController {
         }
 
         //for check which tab should active
-//        if ("Barcode Verified".equals(whRetrieval.getStatus()) || "Closed".equals(whRetrieval.getStatus()) || "Closed. Verified By Supervisor".equals(whRetrieval.getStatus())) { //original 3/11/16
         if ("Received".equals(whRetrieval.getStatus()) || "Closed".equals(whRetrieval.getStatus()) || "Closed. Verified By Supervisor".equals(whRetrieval.getStatus())) {
 
-//            LOGGER.info("........ttactive........");
             String ttActive = "active";
             String ttActiveTab = "in active";
             model.addAttribute("ttActive", ttActive);
             model.addAttribute("ttActiveTab", ttActiveTab);
         } else {
-//            LOGGER.info("........ttXactive........");
             String ttActive = "";
             String ttActiveTab = "";
             model.addAttribute("ttActive", ttActive);
             model.addAttribute("ttActiveTab", ttActiveTab);
         }
-//            if ("Ship".equals(whRetrieval.getStatus()) || "Requested".equals(whRetrieval.getStatus()) || "Barcode Not Match".equals(whRetrieval.getStatus()) || "Barcode Sticker - Verified By Supervisor".equals(whRetrieval.getStatus())) { //original 3/11/16
         if ("Shipped".equals(whRetrieval.getStatus()) || "Requested".equals(whRetrieval.getStatus()) || "Barcode Not Match".equals(whRetrieval.getStatus()) || "Barcode Sticker - Verified By Supervisor".equals(whRetrieval.getStatus())) { //as requested 2/11/16
-//            LOGGER.info("........bsactive........");
             String bsActive = "active";
             String bsActiveTab = "in active";
             model.addAttribute("bsActive", bsActive);
             model.addAttribute("bsActiveTab", bsActiveTab);
         } else {
-//            LOGGER.info("........bsXactive........");
             String bsActive = "";
             String bsActiveTab = "";
             model.addAttribute("bsActive", bsActive);
@@ -147,13 +141,11 @@ public class WhRetrievalController {
         if ("Barcode Sticker Scanning Mismatched".equals(whRetrieval.getStatus()) || "Trip Ticket Scanning Mismatched".equals(whRetrieval.getStatus())
                 || "Barcode Sticker - Hold By Supervisor".equals(whRetrieval.getStatus()) || "Barcode Sticker - Not Verified By Supervisor".equals(whRetrieval.getStatus())
                 || "Trip Ticket - Hold By Supervisor".equals(whRetrieval.getStatus()) || "Trip Ticket - Not Verified By Supervisor".equals(whRetrieval.getStatus())) {
-//            LOGGER.info("........disactive........");
             String disActive = "active";
             String disActiveTab = "in active";
             model.addAttribute("disActive", disActive);
             model.addAttribute("disActiveTab", disActiveTab);
         } else {
-//            LOGGER.info("........disXactive........");
             String disActive = "";
             String disActiveTab = "";
             model.addAttribute("disActive", disActive);
@@ -201,7 +193,6 @@ public class WhRetrievalController {
         whRetrieval.setId(id);
         whRetrieval.setBarcodeVerification(barcodeVerification);
         whRetrieval.setBarcodeVerifiedBy(userSession.getFullname());
-//        whRetrieval.setStatus("Barcode Verified"); //original 3/11/16
         whRetrieval.setStatus("Received"); //as requested 2/11/16
         whRetrieval.setFlag("0");
         WhRetrievalDAO whRetrievalDAO = new WhRetrievalDAO();
@@ -218,7 +209,6 @@ public class WhRetrievalController {
             WhStatusLog stat = new WhStatusLog();
             stat.setRequestId(whRetrie.getRequestId());
             stat.setModule("cdars_wh_retrieval");
-//            stat.setStatus("Barcode Verified"); original 3/11/16
             stat.setStatus("Received"); //as requested 2/11/16
             stat.setCreatedBy(userSession.getFullname());
             stat.setFlag("0");
@@ -237,10 +227,8 @@ public class WhRetrievalController {
             WhRequestDAO reqD = new WhRequestDAO();
             int countReq = reqD.getCountRequestId(ret.getRequestId());
             if (countReq == 1) {
-//                         WhRequest req = reqD.getWhRequest(ship.getRequestId());
                 WhRequest reqUpdate = new WhRequest();
                 reqUpdate.setModifiedBy(userSession.getFullname());
-//                reqUpdate.setStatus("Barcode Verified"); //original 3/11/16
                 reqUpdate.setStatus("Received"); //as requested 2/11/16
                 reqUpdate.setId(ret.getRequestId());
                 reqD = new WhRequestDAO();
@@ -413,8 +401,8 @@ public class WhRetrievalController {
             EmailSender emailSender = new EmailSender();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
             user.setFullname("Sg. Gadut Warehouse");
-//            String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
-            String[] to = {"hmsrelontest@gmail.com"};
+            String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//            String[] to = {"hmsrelontest@gmail.com"};
             emailSender.htmlEmailWithAttachment(
                     servletContext,
                     //                    user name
@@ -776,7 +764,6 @@ public class WhRetrievalController {
             @RequestParam(required = false) String ttDispositionRemarks
     ) throws IOException {
         if (barcodeDisposition != null && ("".equals(ttDisposition) || ttDisposition == null)) {
-            LOGGER.info("............barcodeDisposition.........");
 
             WhRetrieval whRetrieval = new WhRetrieval();
             whRetrieval.setId(id);
@@ -847,7 +834,6 @@ public class WhRetrievalController {
                 redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
             }
         } else {
-            LOGGER.info("............ttDisposition.........");
             WhRetrieval whRetrieval = new WhRetrieval();
             whRetrieval.setId(id);
             whRetrieval.setRequestId(requestId);
@@ -1008,8 +994,8 @@ public class WhRetrievalController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname("Sg. Gadut Warehouse");
-//                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
-                    String[] to = {"hmsrelontest@gmail.com"};
+                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//                    String[] to = {"hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -1564,8 +1550,8 @@ public class WhRetrievalController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-//                String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
-                String[] to = {"hmsrelontest@gmail.com"};
+                String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//                String[] to = {"hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
