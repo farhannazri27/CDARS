@@ -1416,7 +1416,8 @@ public class WhMpListController {
         EmailSender emailSender = new EmailSender();
         com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
         user.setFullname("All");
-        String[] to = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+//        String[] to = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+        String[] to = {"sbnfactory@gmail.com"};
 
         emailSender.htmlEmailManyTo(
                 servletContext,
@@ -1481,7 +1482,8 @@ public class WhMpListController {
         EmailSender emailSender = new EmailSender();
         com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
         user2.setFullname("All");
-        String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+//        String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+         String[] to2 = {"sbnfactory@gmail.com"};
 
         emailSender.htmlEmailManyTo(
                 servletContext,
@@ -1996,7 +1998,7 @@ public class WhMpListController {
                     while (data != null && flag == false) {
                         LOGGER.info("start reading file..........");
                         buff.append(data).append(System.getProperty("line.separator"));
-                        System.out.println("dataaaaaaaaa : \n" + data);
+//                        System.out.println("dataaaaaaaaa : \n" + data);
 
                         String[] split = data.split(",");
                         WhShippingCsvTemp inventory = new WhShippingCsvTemp(
@@ -2010,7 +2012,7 @@ public class WhMpListController {
                         );
 
                         if (split[0].equals(wh.getRequestId())) {
-                            LOGGER.info(row + " : refId found...................." + data);
+//                            LOGGER.info(row + " : refId found...................." + data);
                             CSV csv = new CSV();
                             csv.open(new File(targetLocation));
                             csv.put(0, row, "0");
@@ -2018,7 +2020,7 @@ public class WhMpListController {
                             csv.save(new File(targetLocation));
                             flag = true;
                         } else {
-                            LOGGER.info("refId not found........" + data);
+//                            LOGGER.info("refId not found........" + data);
                             flag = false;
                         }
                         data = bufferedReader.readLine();

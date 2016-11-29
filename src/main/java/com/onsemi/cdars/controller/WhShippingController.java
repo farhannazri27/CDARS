@@ -544,7 +544,7 @@ public class WhShippingController {
                     while (data != null) {
                         LOGGER.info("start reading file..........");
                         buff.append(data).append(System.getProperty("line.separator"));
-                        System.out.println("dataaaaaaaaa : \n" + data);
+//                        System.out.println("dataaaaaaaaa : \n" + data);
 
                         String[] split = data.split(",");
                         WhShippingCsvTemp inventory = new WhShippingCsvTemp(
@@ -558,7 +558,7 @@ public class WhShippingController {
                         );
 
                         if (split[0].equals(whShipping.getRequestId())) {
-                            LOGGER.info(row + " : refId found...................." + data);
+//                            LOGGER.info(row + " : refId found...................." + data);
                             CSV csv = new CSV();
                             csv.open(new File(targetLocation));
                             csv.put(19, row, "Cancelled");
@@ -582,7 +582,7 @@ public class WhShippingController {
                             );
 
                         } else {
-                            LOGGER.info("refId not found........" + data);
+//                            LOGGER.info("refId not found........" + data);
                         }
                         data = bufferedReader.readLine();
                         row++;
@@ -603,8 +603,8 @@ public class WhShippingController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname(userSession.getFullname());
-//                    String[] to = {"hmsrelon@gmail.com", "hmsrelontest@gmail.com"}; //9/11/16
-                    String[] to = {"hmsrelontest@gmail.com"};
+                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//                    String[] to = {"hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -697,16 +697,15 @@ public class WhShippingController {
     ) {
         mpNoTemp = mpNo;
         idTemp = whShippingId;
-        LOGGER.info("mpNoTemp, " + mpNoTemp);
         WhShippingDAO whShippingDAO = new WhShippingDAO();
-        WhShipping test = whShippingDAO.getWhShipping(whShippingId);
-        LOGGER.info("String mpNo," + mpNo);
-
-        WhShipping updateMpNo = new WhShipping();
-        updateMpNo.setId(idTemp);
-        updateMpNo.setMpNo(mpNoTemp);
-        whShippingDAO = new WhShippingDAO();
-        QueryResult ru = whShippingDAO.updateWhShippingMpNo(updateMpNo);
+        int countMp = whShippingDAO.getCountMpNoAndNotEqId(mpNo, whShippingId);
+        if (countMp == 0) {
+            WhShipping updateMpNo = new WhShipping();
+            updateMpNo.setId(idTemp);
+            updateMpNo.setMpNo(mpNoTemp);
+            whShippingDAO = new WhShippingDAO();
+            QueryResult ru = whShippingDAO.updateWhShippingMpNo(updateMpNo);
+        }
         whShippingDAO = new WhShippingDAO();
         WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
         return new ModelAndView("whShippingPdf", "whShipping", whShipping);

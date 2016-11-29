@@ -139,6 +139,13 @@
     <s:layout-component name="page_js_inline">
         <script>
             $(document).ready(function () {
+                
+                var elementReqType = $('#requestType');
+                if (elementReqType.val() === "Retrieve") {
+                     $("#submit").attr("disabled", true);
+                    $("#finalApprovedStatus").attr("disabled", true);
+                    $("#remarksApprover").attr("readonly", true);
+                }
 
                 var element = $('#equipmentType');
                 if (element.val() === "Motherboard") {
@@ -163,7 +170,7 @@
                 var element = $('#finalApprovedStatus');
                 if (element.val() === "Approved") {
                     $("#submit").attr("disabled", true);
-                    $("#finalApprovedStatus").attr("readonly", true);
+                    $("#finalApprovedStatus").attr("disabled", true);
                     $("#remarksApprover").attr("readonly", true);
                 }
 

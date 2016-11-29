@@ -405,6 +405,7 @@ public class WhStatusLogDAO {
                 + "HOUR(TIMEDIFF(final_approved_date,IFNULL(re.mp_created_date,NOW()))) AS approve_to_mp_created_temp_24, "
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(final_approved_date,  IFNULL(re.mp_created_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' secs') AS approve_to_mp_created_temp "
                 + "FROM cdars_wh_request re WHERE re.request_type = 'Ship' "
+                + "AND flag = '0' "
                 + "ORDER BY re.equipment_type ASC ";
         List<WhStatusLog> whStatusLogList = new ArrayList<WhStatusLog>();
         try {
@@ -588,7 +589,7 @@ public class WhStatusLogDAO {
     public List<WhStatusLog> getTLRetrieveRequestToCloseList() { //timelapse notification for retrieve
         String sql = "SELECT "
                 + "request_id,"
-                + "hardware_type,"
+                + "hardware_type, hardware_id, mp_no, "
                 + "HOUR(TIMEDIFF(requested_date,verified_date)) AS req_received_date_24, "
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(requested_date, verified_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(requested_date, verified_date)), 24), ' hours, ', MINUTE(TIMEDIFF(requested_date, verified_date)), ' mins, ', SECOND(TIMEDIFF(requested_date, verified_date)), ' secs') AS req_received_date, "
                 + "HOUR(TIMEDIFF(requested_date,IFNULL(verified_date,NOW()))) AS req_received_date_temp_24, "
@@ -614,6 +615,9 @@ public class WhStatusLogDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 whStatusLog = new WhStatusLog();
+                whStatusLog.setEquipmentId(rs.getString("hardware_id"));
+                whStatusLog.setEquipmentType(rs.getString("hardware_type"));
+                whStatusLog.setMpNo(rs.getString("mp_no"));
                 whStatusLog.setRequestToVerifiedDate(rs.getString("req_received_date"));
                 whStatusLog.setVerifiedDatetoShipDate(rs.getString("received_date_to_ship_date"));
                 whStatusLog.setShipDateToBsScan(rs.getString("ship_date_to_bs_scan"));
@@ -754,6 +758,39 @@ public class WhStatusLogDAO {
         String sql = "SELECT COUNT(*) AS count FROM "
                 + "cdars_wh_retrieval "
                 + "WHERE request_id = '" + id + "'";
+        WhStatusLog whStatusLog = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whStatusLog = new WhStatusLog();
+                whStatusLog.setCount(rs.getString("count"));
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whStatusLog;
+    }
+    
+    public WhStatusLog getCountShipRequestIdAtRetrieval(String id) {
+        String sql = "SELECT count(*) "
+                + "FROM cdars_wh_request re, "
+                + "(SELECT DISTINCT Item.request_id AS request_id FROM (SELECT lo.* FROM cdars_wh_status_log lo, "
+                + "(SELECT re.id AS id FROM cdars_wh_request re, "
+                + "(SELECT inv.request_id AS ii FROM cdars_wh_request res, cdars_wh_inventory inv WHERE res.inventory_id = inv.id AND res.id = '" + id + "') AS invid "
+                + "WHERE re.id = invid.ii) AS test WHERE test.id = lo.request_id "
+                + "ORDER BY lo.status_date DESC) AS Item ) AS testtt "
+                + "WHERE re.id = testtt.request_id";
         WhStatusLog whStatusLog = null;
         try {
             PreparedStatement ps = conn.prepareStatement(sql);

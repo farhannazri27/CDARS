@@ -45,9 +45,9 @@ public class CSV {
     }
 
     public void save(File file) throws IOException {
-        System.out.println("save phase 1 +++++++++++++++++++++++++++++++");
+//        System.out.println("save phase 1 +++++++++++++++++++++++++++++++");
         save(file, ',');
-        System.out.println("save phase 2 ++++++++++++++++++++++++++++++");
+//        System.out.println("save phase 2 ++++++++++++++++++++++++++++++");
     }
 
     public void save(File file, char delimiter) throws IOException {

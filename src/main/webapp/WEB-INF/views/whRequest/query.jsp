@@ -358,19 +358,31 @@
                     dom: 'Brtip',
                     buttons: [
                         {
-                            extend: 'copy'
+                            extend: 'copy',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                            }
                         },
                         {
-                            extend: 'excel'
+                            extend: 'excel',
+                             exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                            }
                         },
                         {
-                            extend: 'pdf'
+                            extend: 'pdf',
+                             exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                            }
                         },
                         {
                             extend: 'print',
+                             exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                            },
                             customize: function (win) {
                                 $(win.document.body)
-                                        .css('font-size', '10pt')
+                                        .css('font-size', '10pt');
                                 $(win.document.body).find('table')
                                         .addClass('compact')
                                         .css('font-size', 'inherit');

@@ -7,6 +7,24 @@
         <link rel="stylesheet" href="${contextPath}/resources/private/datatables/css/buttons.dataTables.min.css" type="text/css" />
     </s:layout-component>
     <s:layout-component name="page_css_inline">
+        <style>
+            @media print {
+                table thead {
+                    border-top: #000 solid 2px;
+                    border-bottom: #000 solid 2px;
+                }
+                table tbody {
+                    border-top: #000 solid 2px;
+                    border-bottom: #000 solid 2px;
+                }
+            }
+            .dataTables_wrapper .dt-buttons {
+                float:none;  
+                text-align:right;
+            }
+
+
+        </style>
     </s:layout-component>
     <s:layout-component name="page_container">
         <div class="col-lg-12">
@@ -132,6 +150,40 @@
         <script>
                                                         $(document).ready(function () {
 
+                                                            oTable = $('#dt_spml').DataTable({
+                                                                dom: 'Brtip',
+                                                                buttons: [
+                                                                    {
+                                                                        extend: 'copy',
+                                                                        exportOptions: {
+                                                                            columns: [0, 1, 2, 3, 4, 5]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        extend: 'excel',
+                                                                        exportOptions: {
+                                                                             columns: [0, 1, 2, 3, 4, 5]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        extend: 'pdf',
+                                                                        exportOptions: {
+                                                                            columns: [0, 1, 2, 3, 4, 5]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            });
+
+//                oTable.buttons().container().appendTo($("#dt_spml_tt", oTable.table().container() ) );
+
+                                                            $('#dt_spml_search').keyup(function () {
+                                                                oTable.search($(this).val()).draw();
+                                                            });
+
+                                                            $("#dt_spml_rows").change(function () {
+                                                                oTable.page.len($(this).val()).draw();
+                                                            });
+
                                                             if ($('#countAll').val() === '0') {
                                                                 $('.printAndEmail').hide();
                                                             } else {
@@ -158,7 +210,7 @@
                                                         $('#submit1').on('click', function () {
                                                             location.reload();
                                                             window.open('${contextPath}/wh/whShipping/whMpList/viewPackingListPdf', 'Packing List', 'width=1600,height=1100').print();
-                                                            
+
                                                         });
 
 

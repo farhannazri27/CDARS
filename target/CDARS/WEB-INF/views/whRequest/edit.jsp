@@ -244,7 +244,7 @@
                             <div class="form-group" id="statusDiv" hidden>
                                 <label for="status" class="col-lg-2 control-label">Status</label>                                     
                                 <div class="col-lg-6">
-                                    <input type="text" class="form-control" id="status" name="status" value="${whRequest.status}" readonly>
+                                    <input type="text" class="form-control" id="status" name="status" value="${whRequest.finalApprovedStatus}" readonly>
                                 </div>
                             </div>
                             <div class="form-group"id="approvalRemarksDiv" hidden>
@@ -282,6 +282,7 @@
                     $("#statusDiv").show();
                     $("#submit").attr("disabled", true);
                     $("#status").attr("readonly", true);
+                    $("#quantity").attr("readonly", true);
                     $("#remarksApprover").attr("readonly", true);
                     $("#statusDiv").show();
                     $("#approvalRemarksDiv").show();
@@ -293,7 +294,8 @@
                     $("#remarks").attr("readonly", true);
 
 //                } else if (element.val() === "Waiting for Approval") { //original 3/11/16
-                } else if (element.val() === "Pending Approval") { //as requested 2/11/16
+//                } else if (element.val() === "Pending Approval") { //as requested 2/11/16
+                } else if (element.val() === "") { //29/11/16
                     $("#statusDiv").hide();
                     $("#approvalRemarksDiv").hide();
                     $("#status").attr("readonly", true);

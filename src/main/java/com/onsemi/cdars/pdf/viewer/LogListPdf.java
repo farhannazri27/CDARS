@@ -81,6 +81,11 @@ public class LogListPdf extends AbstractITextPdfViewPotrait {
         table3.setWidths(new float[]{2.5f, 2.5f, 2.5f});
         table3.setSpacingBefore(15);
 
+        PdfPTable table4 = new PdfPTable(3);
+        table4.setWidthPercentage(100.0f);
+        table4.setWidths(new float[]{2.5f, 2.5f, 2.5f});
+        table4.setSpacingBefore(15);
+
         PdfPTable table5 = new PdfPTable(3);
         table5.setWidthPercentage(100.0f);
         table5.setWidths(new float[]{2.5f, 2.5f, 2.5f});
@@ -88,7 +93,6 @@ public class LogListPdf extends AbstractITextPdfViewPotrait {
 
         PdfPTable table6 = new PdfPTable(4);
         table6.setWidthPercentage(100.0f);
-//        table6.setWidths(new float[]{2.5f, 2.5f, 2.5f});
         table6.setWidths(new float[]{2.0f, 2.0f, 2.0f, 2.0f});
         table6.setSpacingBefore(15);
 
@@ -101,11 +105,6 @@ public class LogListPdf extends AbstractITextPdfViewPotrait {
         table8.setWidthPercentage(100.0f);
         table8.setWidths(new float[]{2.5f, 2.5f, 2.5f});
         table8.setSpacingBefore(15);
-
-        PdfPTable table4 = new PdfPTable(3);
-        table4.setWidthPercentage(100.0f);
-        table4.setWidths(new float[]{2.5f, 2.5f, 2.5f});
-        table4.setSpacingBefore(15);
 
         Font fontHeader = fontOpenSans(9f, Font.BOLD);
         fontHeader.setColor(BaseColor.WHITE);
@@ -244,18 +243,9 @@ public class LogListPdf extends AbstractITextPdfViewPotrait {
         WhStatusLog countReIdShip = (WhStatusLog) model.get("countReIdShip");
         WhStatusLog whretrievalTL = (WhStatusLog) model.get("retrievalTL");
         WhStatusLog countReIdRetrieval = (WhStatusLog) model.get("countReIdRetrieval");
+        WhStatusLog countShipRequestIdAtRetrieval = (WhStatusLog) model.get("countShipRequestIdAtRetrieval");
         WhStatusLog whRetrieveShp1 = (WhStatusLog) model.get("retrievalShipReqToMpCreatedTL");
         WhStatusLog whRetreiveShp2 = (WhStatusLog) model.get("retrievalShipMpCreatedToInventoryTL");
-
-        LOGGER.info("+++whStaShipReToMp.getRequestToApprove() " + whStaShipReToMp.getRequestToApprove());
-        LOGGER.info("+++whStaShipReToMp.getApproveToMPCreated()) " + whStaShipReToMp.getApproveToMPCreated());
-        LOGGER.info("+++countReIdShip.getCount() " + countReIdShip.getCount());
-        if (!"0".equals(countReIdShip.getCount())) {
-            LOGGER.info("+++whStaMpToInv.getMpCreatedToTtScan() " + whStaMpToInv.getMpCreatedToTtScan());
-            LOGGER.info("+++whStaMpToInv.getTtScanToBsScan() " + whStaMpToInv.getTtScanToBsScan());
-            LOGGER.info("+++whStaMpToInv.getBsScanToShip() " + whStaMpToInv.getBsScanToShip());
-            LOGGER.info("+++whStaMpToInv.getShipToInventory() " + whStaMpToInv.getShipToInventory());
-        }
 
         if ("Ship".equals(whRequest.getRequestType())) {
             String title3 = "SHIPPING TIMELAPSE";
@@ -351,10 +341,152 @@ public class LogListPdf extends AbstractITextPdfViewPotrait {
 
             doc.add(table5);
         } else if ("Retrieve".equals(whRequest.getRequestType())) {
-            String title3 = "RETRIEVE TIMELAPSE";
+
+            //shipping timelapse for retrieval request
+            String title3 = "SHIPPING TIMELAPSE";
             Paragraph viewTitle3 = new Paragraph(title3, fontOpenSans(8f, Font.BOLD));
             viewTitle3.setAlignment(Element.ALIGN_LEFT);
             doc.add(viewTitle3);
+            cellHeader3.setPhrase(new Phrase("Request Time - Approval Time", fontHeader3));
+            table3.addCell(cellHeader3);
+            cellHeader3.setPhrase(new Phrase("Approval Time - Material Pass Created Time", fontHeader3));
+            table3.addCell(cellHeader3);
+            cellHeader3.setPhrase(new Phrase("Material Pass Created Time - Trip Ticket Scan Time", fontHeader3));
+            table3.addCell(cellHeader3);
+            if (!"0".equals(countShipRequestIdAtRetrieval.getCount())) {
+                if (whRetrieveShp1.getRequestToApprove() != null || !"".equals(whRetrieveShp1.getRequestToApprove())) {
+                    cellContent.setPhrase(new Phrase(whRetrieveShp1.getRequestToApprove(), fontContent3));
+                    table3.addCell(cellContent);
+                } else {
+                    cellContent.setPhrase(new Phrase("-", fontContent3));
+                    table3.addCell(cellContent);
+                }
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table3.addCell(cellContent);
+            }
+            if (!"0".equals(countShipRequestIdAtRetrieval.getCount())) {
+                if (whRetrieveShp1.getApproveToMPCreated() != null) {
+                    cellContent.setPhrase(new Phrase(whRetrieveShp1.getApproveToMPCreated(), fontContent3));
+                    table3.addCell(cellContent);
+                } else {
+                    cellContent.setPhrase(new Phrase("-", fontContent3));
+                    table3.addCell(cellContent);
+                }
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table3.addCell(cellContent);
+            }
+
+            if (!"0".equals(countShipRequestIdAtRetrieval.getCount())) {
+                if (whRetreiveShp2.getMpCreatedToTtScan() != null) {
+                    cellContent.setPhrase(new Phrase(whRetreiveShp2.getMpCreatedToTtScan(), fontContent3));
+                    table3.addCell(cellContent);
+                } else {
+                    cellContent.setPhrase(new Phrase("-", fontContent3));
+                    table3.addCell(cellContent);
+                }
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table3.addCell(cellContent);
+            }
+
+            doc.add(table3);
+
+            String title4 = "\n\n";
+            Paragraph viewTitle4 = new Paragraph(title4, fontOpenSans(8f, Font.BOLD));
+            viewTitle4.setAlignment(Element.ALIGN_LEFT);
+            doc.add(viewTitle4);
+
+            cellHeader3.setPhrase(new Phrase("Trip Ticket Scan Time - Barcode Scan Time", fontHeader3));
+            table5.addCell(cellHeader3);
+            cellHeader3.setPhrase(new Phrase("Barcode Scan Time - Shipping Time", fontHeader3));
+            table5.addCell(cellHeader3);
+            cellHeader3.setPhrase(new Phrase("Shipping Time - Inventory Time", fontHeader3));
+            table5.addCell(cellHeader3);
+            if (!"0".equals(countShipRequestIdAtRetrieval.getCount())) {
+                if (whRetreiveShp2.getTtScanToBsScan() != null) {
+                    cellContent.setPhrase(new Phrase(whRetreiveShp2.getTtScanToBsScan(), fontContent3));
+                    table5.addCell(cellContent);
+                } else {
+                    cellContent.setPhrase(new Phrase("-", fontContent3));
+                    table5.addCell(cellContent);
+                }
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table5.addCell(cellContent);
+            }
+
+            if (!"0".equals(countShipRequestIdAtRetrieval.getCount())) {
+                if (whRetreiveShp2.getBsScanToShip() != null) {
+                    cellContent.setPhrase(new Phrase(whRetreiveShp2.getBsScanToShip(), fontContent3));
+                    table5.addCell(cellContent);
+                } else {
+                    cellContent.setPhrase(new Phrase("-", fontContent3));
+                    table5.addCell(cellContent);
+                }
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table5.addCell(cellContent);
+            }
+
+            if (!"0".equals(countShipRequestIdAtRetrieval.getCount())) {
+                if (whRetreiveShp2.getShipToInventory() != null) {
+                    cellContent.setPhrase(new Phrase(whRetreiveShp2.getShipToInventory(), fontContent3));
+                    table5.addCell(cellContent);
+                } else {
+                    cellContent.setPhrase(new Phrase("-", fontContent3));
+                    table5.addCell(cellContent);
+                }
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table5.addCell(cellContent);
+            }
+
+            doc.add(table5);
+
+            String title5 = "\n\nRETRIEVAL TIMELAPSE";
+            Paragraph viewTitle5 = new Paragraph(title5, fontOpenSans(8f, Font.BOLD));
+            viewTitle5.setAlignment(Element.ALIGN_LEFT);
+            doc.add(viewTitle5);
+            cellHeader3.setPhrase(new Phrase("Request Time - Barcode Verification Time", fontHeader3));
+            table6.addCell(cellHeader3);
+            cellHeader3.setPhrase(new Phrase("Barcode Verification (SF) Time - Shipment Time", fontHeader3));
+            table6.addCell(cellHeader3);
+            cellHeader3.setPhrase(new Phrase("Shipment Time - Barcode Verification (RL) Time", fontHeader3));
+            table6.addCell(cellHeader3);
+            cellHeader3.setPhrase(new Phrase("Barcode Verification (RL) Time - Trip Ticket Verification (RL) Time", fontHeader3));
+            table6.addCell(cellHeader3);
+
+            if (whretrievalTL.getRequestToVerifiedDate() != null || !"".equals(whretrievalTL.getRequestToVerifiedDate())) {
+                cellContent.setPhrase(new Phrase(whretrievalTL.getRequestToVerifiedDate(), fontContent3));
+                table6.addCell(cellContent);
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table6.addCell(cellContent);
+            }
+            if (whretrievalTL.getVerifiedDatetoShipDate() != null || !"".equals(whretrievalTL.getVerifiedDatetoShipDate())) {
+                cellContent.setPhrase(new Phrase(whretrievalTL.getVerifiedDatetoShipDate(), fontContent3));
+                table6.addCell(cellContent);
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table6.addCell(cellContent);
+            }
+            if (whretrievalTL.getShipDateToBsScan() != null || !"".equals(whretrievalTL.getShipDateToBsScan())) {
+                cellContent.setPhrase(new Phrase(whretrievalTL.getShipDateToBsScan(), fontContent3));
+                table6.addCell(cellContent);
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table6.addCell(cellContent);
+            }
+            if (whretrievalTL.getBsScanToTtScan() != null || !"".equals(whretrievalTL.getBsScanToTtScan())) {
+                cellContent.setPhrase(new Phrase(whretrievalTL.getBsScanToTtScan(), fontContent3));
+                table6.addCell(cellContent);
+            } else {
+                cellContent.setPhrase(new Phrase("-", fontContent3));
+                table6.addCell(cellContent);
+            }
+            doc.add(table6);
         }
 
         String title5 = "\n\n";

@@ -1598,6 +1598,10 @@ public class WhRequestController {
         statusD = new WhStatusLogDAO();
         WhStatusLog countReIdRetrieval = statusD.getCountReqIdAtRetrieval(whRequestId);
         model.addAttribute("countReIdRetrieval", countReIdRetrieval);
+        
+        statusD = new WhStatusLogDAO();
+        WhStatusLog countShipRequestIdAtRetrieval = statusD.getCountShipRequestIdAtRetrieval(whRequestId);
+        model.addAttribute("countShipRequestIdAtRetrieval", countShipRequestIdAtRetrieval);
 
         model.addAttribute("countShip", countShip);
         WhRequestDAO whRequestDAO = new WhRequestDAO();

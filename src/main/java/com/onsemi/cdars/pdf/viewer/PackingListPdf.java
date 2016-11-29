@@ -38,7 +38,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
         viewTitle2.setAlignment(Element.ALIGN_RIGHT);
         doc.add(viewTitle2);
         
-        String title = "\nHIMS RL Shipping List";
+        String title = "\nHIMS RL Shipping List (Rel Lab to SBN Factory)";
         Paragraph viewTitle = new Paragraph(title, fontOpenSans(10f, Font.BOLD));
         viewTitle.setAlignment(Element.ALIGN_CENTER);
         doc.add(viewTitle);

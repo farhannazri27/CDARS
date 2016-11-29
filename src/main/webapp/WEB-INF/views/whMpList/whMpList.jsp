@@ -103,10 +103,58 @@
         <script src="${contextPath}/resources/private/datatables/js/buttons.print.min.js"></script>
         <script src="${contextPath}/resources/private/datatables/js/buttons.flash.min.js"></script>
         <script src="${contextPath}/resources/private/datatables/js/buttons.html5.min.js"></script>
+
     </s:layout-component>
     <s:layout-component name="page_js_inline">
         <script>
                                     $(document).ready(function () {
+
+                                        oTable = $('#dt_spml').DataTable({
+                                            dom: 'Brtip',
+                                            buttons: [
+                                                {
+                                                    extend: 'copy',
+                                                    exportOptions: {
+                                                        columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                                                    }
+                                                },
+                                                {
+                                                    extend: 'excel',
+                                                    exportOptions: {
+                                                        columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                                                    }
+                                                },
+                                                {
+                                                    extend: 'pdf',
+                                                    exportOptions: {
+                                                        columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                                                    }
+                                                },
+                                                {
+                                                    extend: 'print',
+                                                    exportOptions: {
+                                                        columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                                                    },
+                                                    customize: function (win) {
+                                                        $(win.document.body)
+                                                                .css('font-size', '10pt');
+                                                        $(win.document.body).find('table')
+                                                                .addClass('compact')
+                                                                .css('font-size', 'inherit');
+                                                    }
+                                                }
+                                            ]
+                                        });
+
+//                oTable.buttons().container().appendTo($("#dt_spml_tt", oTable.table().container() ) );
+
+                                        $('#dt_spml_search').keyup(function () {
+                                            oTable.search($(this).val()).draw();
+                                        });
+
+                                        $("#dt_spml_rows").change(function () {
+                                            oTable.page.len($(this).val()).draw();
+                                        });
 //                                        
                                         if ($('#count').val() === '0') {
                                             $('.printAndEmail').hide();
@@ -114,33 +162,33 @@
                                             $('.printAndEmail').show();
                                         }
 
-                                        oTable = $('#dt_spml').DataTable({
-//                                             pageLength: '100',
-                                            dom: 'Bfrtip',
-                                            buttons: [
-//                                                'copy', 'csv', 'excel', 'pdf',
-                                                {
-                                                    extend: 'print',
-                                                    customize: function (win) {
-                                                        $(win.document.body)
-                                                                .css('font-size', '10pt')
-                                                        $(win.document.body).find('table')
-                                                                .addClass('compact')
-                                                                .css('font-size', 'inherit');
-                                                    },
-                                                    autoPrint: true,
-                                                }
-                                            ]
-                                        });
+//                                        oTable = $('#dt_spml').DataTable({
+////                                             pageLength: '100',
+//                                            dom: 'Bfrtip'
+////                                            buttons: [
+//////                                                'copy', 'csv', 'excel', 'pdf',
+////                                                {
+////                                                    extend: 'print',
+////                                                    customize: function (win) {
+////                                                        $(win.document.body)
+////                                                                .css('font-size', '10pt')
+////                                                        $(win.document.body).find('table')
+////                                                                .addClass('compact')
+////                                                                .css('font-size', 'inherit');
+////                                                    },
+////                                                    autoPrint: true,
+////                                                }
+////                                            ]
+//                                        });
+//
+//                                        $('#dt_spml_search').keyup(function () {
+//                                            oTable.search($(this).val()).draw();
+//                                        });
+//                                        $("#dt_spml_rows").change(function () {
+//                                            oTable.page.len($(this).val()).draw();
+//                                        });
 
-                                        $('#dt_spml_search').keyup(function () {
-                                            oTable.search($(this).val()).draw();
-                                        });
-                                        $("#dt_spml_rows").change(function () {
-                                            oTable.page.len($(this).val()).draw();
-                                        });
-
-                                        $('.dt-buttons').hide();
+//                                        $('.dt-buttons').hide();
 
                                     });
 

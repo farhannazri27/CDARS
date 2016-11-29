@@ -1491,7 +1491,7 @@ public class WhRetrievalController {
                     while (data != null) {
                         LOGGER.info("start reading file..........");
                         buff.append(data).append(System.getProperty("line.separator"));
-                        System.out.println("dataaaaaaaaa : \n" + data);
+//                        System.out.println("dataaaaaaaaa : \n" + data);
 
                         String[] split = data.split(",");
                         WhRetrievalCsvTemp retrieval = new WhRetrievalCsvTemp(
@@ -1505,7 +1505,7 @@ public class WhRetrievalController {
                         );
 
                         if (split[0].equals(whRetrieval.getRequestId())) {
-                            LOGGER.info(row + " : refId found...................." + data);
+//                            LOGGER.info(row + " : refId found...................." + data);
                             CSV csv = new CSV();
                             csv.open(new File(targetLocation));
                             csv.put(21, row, "Cancelled,");
@@ -1529,7 +1529,7 @@ public class WhRetrievalController {
                             );
 
                         } else {
-                            LOGGER.info("refId not found........" + data);
+//                            LOGGER.info("refId not found........" + data);
                         }
                         data = bufferedReader.readLine();
                         row++;
@@ -1610,7 +1610,7 @@ public class WhRetrievalController {
             @PathVariable("id") String id
     ) {
 
-        LOGGER.info("...iddd....." + id);
+//        LOGGER.info("...iddd....." + id);
 
         WhRetrieval whRetrieval = new WhRetrieval();
         whRetrieval.setId(id);

@@ -80,6 +80,7 @@ public abstract class AbstractITextPdfViewPotrait extends AbstractView {
     protected Document newDocument() {
         //return new Document(PageSize.LETTER.rotate());
         return new Document(PageSize.A4, 36, 36, 80, 36);
+//        return new Document(PageSize.A4, 5, 5, 80, 36);
         //return new Document(PageSize.A4);
     }
 
@@ -134,7 +135,7 @@ public abstract class AbstractITextPdfViewPotrait extends AbstractView {
     public PdfPTable tableNoData() throws IOException, DocumentException {
         Font fontNoData = fontOpenSans(9f, Font.ITALIC);
         Integer cellPadding = 5;
-        
+
         PdfPTable tableNoData = new PdfPTable(1);
         tableNoData.setWidthPercentage(100.0f);
         tableNoData.setWidths(new float[]{1.0f});
@@ -145,7 +146,7 @@ public abstract class AbstractITextPdfViewPotrait extends AbstractView {
         cellNoData.setPadding(cellPadding);
         cellNoData.setPhrase(new Phrase("No data available!", fontNoData));
         tableNoData.addCell(cellNoData);
-        
+
         return tableNoData;
     }
 
