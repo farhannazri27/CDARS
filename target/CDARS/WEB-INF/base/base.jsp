@@ -116,7 +116,7 @@
                                     <span class="hidden-xs">${sessionScope.userSession.fullname}</span> <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="${contextPath}/profile"><i class="fa fa-user"></i>Profile</a></li>
+                                    <!--<li><a href="${contextPath}/profile"><i class="fa fa-user"></i>Profile</a></li>-->
                                     <li><a href="${contextPath}/logout"><i class="fa fa-power-off"></i>Logout</a></li>
                                 </ul>
                             </li>

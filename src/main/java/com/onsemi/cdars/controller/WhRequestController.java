@@ -891,8 +891,8 @@ public class WhRequestController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-                String[] to = {"hmsrelon@gmail.com"};  //9/11/16
-//                String[] to = {"hmsrelontest@gmail.com"};
+//                String[] to = {"hmsrelon@gmail.com"};  //9/11/16
+                String[] to = {"hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
@@ -910,7 +910,8 @@ public class WhRequestController {
                 EmailSender emailSenderSbnFactory = new EmailSender();
                 com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
                 user2.setFullname("All");
-                String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+//                String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
+                String[] to2 = {"sbnfactory@gmail.com"};
                 emailSenderSbnFactory.htmlEmailManyTo(
                         servletContext,
                         //                    user name
@@ -1431,7 +1432,9 @@ public class WhRequestController {
             @RequestParam(required = false) String receivedDate1,
             @RequestParam(required = false) String receivedDate2,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String retrievalReason
+            @RequestParam(required = false) String retrievalReason,
+            @RequestParam(required = false) String shippingDate,
+            @RequestParam(required = false) String receivedDate
     ) {
         String query = "";
         int count = 0;
@@ -1440,9 +1443,9 @@ public class WhRequestController {
             if (!("").equals(equipmentType)) {
                 count++;
                 if (count == 1) {
-                    query = " equipment_type = \'" + equipmentType + "\' ";
+                    query = " re.equipment_type = \'" + equipmentType + "\' ";
                 } else if (count > 1) {
-                    query = query + " AND equipment_type = \'" + equipmentType + "\' ";
+                    query = query + " AND re.equipment_type = \'" + equipmentType + "\' ";
                 }
             }
         }
@@ -1451,9 +1454,9 @@ public class WhRequestController {
             if (!equipmentId.equals("")) {
                 count++;
                 if (count == 1) {
-                    query = " equipment_id = \'" + equipmentId + "\' ";
+                    query = " re.equipment_id = \'" + equipmentId + "\' ";
                 } else if (count > 1) {
-                    query = query + " AND equipment_id = \'" + equipmentId + "\' ";
+                    query = query + " AND re.equipment_id = \'" + equipmentId + "\' ";
                 }
             }
         }
@@ -1462,16 +1465,16 @@ public class WhRequestController {
             if (!materialPassNo.equals("")) {
                 count++;
                 if (count == 1) {
-                    query = " mp_no = \'" + materialPassNo + "\' ";
+                    query = " re.mp_no = \'" + materialPassNo + "\' ";
                 } else if (count > 1) {
-                    query = query + " AND mp_no = \'" + materialPassNo + "\' ";
+                    query = query + " AND re.mp_no = \'" + materialPassNo + "\' ";
                 }
             }
         }
         if (materialPassExpiry1 != null && materialPassExpiry2 != null) {
             if (!materialPassExpiry1.equals("") && !materialPassExpiry2.equals("")) {
                 count++;
-                String materialPassExpiry = " mp_expiry_date BETWEEN CAST(\'" + materialPassExpiry1 + "\' AS DATE) AND CAST(\'" + materialPassExpiry2 + "\' AS DATE) ";
+                String materialPassExpiry = " re.mp_expiry_date BETWEEN CAST(\'" + materialPassExpiry1 + "\' AS DATE) AND CAST(\'" + materialPassExpiry2 + "\' AS DATE) ";
                 if (count == 1) {
                     query = materialPassExpiry;
                 } else if (count > 1) {
@@ -1484,16 +1487,16 @@ public class WhRequestController {
             if (!requestedBy.equals("")) {
                 count++;
                 if (count == 1) {
-                    query = " requested_by = \'" + requestedBy + "\' ";
+                    query = " re.requested_by = \'" + requestedBy + "\' ";
                 } else if (count > 1) {
-                    query = query + " AND requested_by = \'" + requestedBy + "\' ";
+                    query = query + " AND re.requested_by = \'" + requestedBy + "\' ";
                 }
             }
         }
         if (requestedDate1 != null && requestedDate2 != null) {
             if (!requestedDate1.equals("") && !requestedDate2.equals("")) {
                 count++;
-                String requestedDate = " requested_date BETWEEN CAST(\'" + requestedDate1 + "\' AS DATE) AND CAST(\'" + requestedDate2 + "\' AS DATE) ";
+                String requestedDate = " re.requested_date BETWEEN CAST(\'" + requestedDate1 + "\' AS DATE) AND CAST(\'" + requestedDate2 + "\' AS DATE) ";
                 if (count == 1) {
                     query = requestedDate;
                 } else if (count > 1) {
@@ -1506,9 +1509,9 @@ public class WhRequestController {
             if (!("").equals(status)) {
                 count++;
                 if (count == 1) {
-                    query = " status = \'" + status + "\' ";
+                    query = " re.status = \'" + status + "\' ";
                 } else if (count > 1) {
-                    query = query + " AND status = \'" + status + "\' ";
+                    query = query + " AND re.status = \'" + status + "\' ";
                 }
             }
         }
@@ -1517,9 +1520,31 @@ public class WhRequestController {
             if (!retrievalReason.equals("")) {
                 count++;
                 if (count == 1) {
-                    query = " retrieval_reason = \'" + retrievalReason + "\' ";
+                    query = " re.retrieval_reason = \'" + retrievalReason + "\' ";
                 } else if (count > 1) {
-                    query = query + " AND retrieval_reason = \'" + retrievalReason + "\' ";
+                    query = query + " AND re.retrieval_reason = \'" + retrievalReason + "\' ";
+                }
+            }
+        }
+        
+        if (shippingDate != null) {
+            if (!shippingDate.equals("")) {
+                count++;
+                if (count == 1) {
+                    query = " sh.shipping_date LIKE '"+ shippingDate + "%'";
+                } else if (count > 1) {
+                    query = query + " AND sh.shipping_date LIKE '"+ shippingDate + "%'";
+                }
+            }
+        }
+        
+        if (receivedDate != null) {
+            if (!receivedDate.equals("")) {
+                count++;
+                if (count == 1) {
+                    query = " ret.shipping_date LIKE '"+ receivedDate + "%'";
+                } else if (count > 1) {
+                    query = query + " AND ret.shipping_date LIKE '"+ receivedDate + "%'";
                 }
             }
         }
@@ -1598,7 +1623,7 @@ public class WhRequestController {
         statusD = new WhStatusLogDAO();
         WhStatusLog countReIdRetrieval = statusD.getCountReqIdAtRetrieval(whRequestId);
         model.addAttribute("countReIdRetrieval", countReIdRetrieval);
-        
+
         statusD = new WhStatusLogDAO();
         WhStatusLog countShipRequestIdAtRetrieval = statusD.getCountShipRequestIdAtRetrieval(whRequestId);
         model.addAttribute("countShipRequestIdAtRetrieval", countShipRequestIdAtRetrieval);

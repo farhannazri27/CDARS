@@ -1459,15 +1459,14 @@ public class WhMpListController {
         EmailSender emailSenderToHIMSSF = new EmailSender();
         com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
         user.setFullname("HIMS SF");
-        String[] to = {"hmsrelon@gmail.com"}; //9/1/16
-//        String[] to = {"hmsrelontest@gmail.com"};
+//        String[] to = {"hmsrelon@gmail.com"}; //9/1/16
+        String[] to = {"hmsrelontest@gmail.com"};
         emailSenderToHIMSSF.htmlEmailWithAttachment(
                 servletContext,
                 //                    user name
                 user,
                 //                    to
                 to,
-                //                         "farhannazri27@yahoo.com",
                 // attachment file
                 new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv"),
                 //                    subject

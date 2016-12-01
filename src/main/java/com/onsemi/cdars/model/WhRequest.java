@@ -52,6 +52,9 @@ public class WhRequest {
     private String sfpkidC;
     private String sfpkidCtr;
 
+    private String shippingDate;
+    private String receivedDate;
+
     public String getId() {
         return id;
     }
@@ -418,6 +421,22 @@ public class WhRequest {
 
     public void setSfpkidCtr(String sfpkidCtr) {
         this.sfpkidCtr = sfpkidCtr;
+    }
+
+    public String getShippingDate() {
+        return shippingDate;
+    }
+
+    public void setShippingDate(String shippingDate) {
+        this.shippingDate = shippingDate;
+    }
+
+    public String getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(String receivedDate) {
+        this.receivedDate = receivedDate;
     }
 
 }

@@ -169,7 +169,25 @@
                                         </c:forEach>
                                     </select>
                                 </div>
-                            </div>                            
+                            </div>      
+                            <div class="form-group col-lg-11">
+                                <label for="shippingDate" class="col-lg-2 control-label">Shipping Date</label>
+                                <div class="col-lg-3">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" name="shippingDate" class="form-control" id="shippingDate" value="">
+                                    </div>
+                                    <label id="datepickerDate-error" class="error" for="shippingDate" style="display: none;"></label>
+                                </div>
+                                <label for="receivedDate" class="col-lg-2 control-label">Received Date</label>
+                               <div class="col-lg-3">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                        <input type="text" name="receivedDate" class="form-control" id="receivedDate" value="">
+                                    </div>
+                                    <label id="datepickerDate-error" class="error" for="receivedDate" style="display: none;"></label>
+                                </div>
+                            </div>      
                             <div class="col-lg-12">
                                 <br/>
                             </div>
@@ -295,6 +313,16 @@
                 });
 
                 $('#materialPassExpiry2').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
+                
+                $('#shippingDate').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
+                
+                $('#receivedDate').datepicker({
                     format: 'yyyy-mm-dd',
                     autoclose: true
                 });

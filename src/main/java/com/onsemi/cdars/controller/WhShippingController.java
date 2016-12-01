@@ -603,8 +603,8 @@ public class WhShippingController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname(userSession.getFullname());
-                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
-//                    String[] to = {"hmsrelontest@gmail.com"};
+//                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+                    String[] to = {"hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name

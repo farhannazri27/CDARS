@@ -14,7 +14,6 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.onsemi.cdars.controller.WhRequestController;
 import com.onsemi.cdars.model.WhMpList;
 import com.onsemi.cdars.pdf.AbstractITextPdfViewPotrait;
 import java.text.DateFormat;
@@ -31,7 +30,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
             PdfWriter writer, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
-        DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
         Date date = new Date();
         String todayDate = dateFormat.format(date);
         Paragraph viewTitle2 = new Paragraph("Generated Date : " + todayDate, fontOpenSans(6f, Font.NORMAL));
@@ -45,9 +44,14 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
 
         Integer cellPadding = 5;
         
-        PdfPTable table = new PdfPTable(6);
+//        PdfPTable table = new PdfPTable(6);
+//        table.setWidthPercentage(100.0f);
+//        table.setWidths(new float[]{0.5f, 1.5f, 2.0f, 1.5f, 3.5f, 0.5f});
+//        table.setSpacingBefore(20);
+        
+        PdfPTable table = new PdfPTable(9);
         table.setWidthPercentage(100.0f);
-        table.setWidths(new float[]{0.5f, 1.5f, 2.0f, 1.5f, 3.5f, 0.5f});
+        table.setWidths(new float[]{0.5f, 1.5f, 1.3f, 1.3f, 2.7f , 1.0f, 0.8f, 1.0f, 0.5f});
         table.setSpacingBefore(20);
         
         Font fontHeader = fontOpenSans(7f, Font.BOLD);
@@ -56,7 +60,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
         cellHeader.setBackgroundColor(BaseColor.GRAY);
         cellHeader.setPadding(cellPadding);
 
-        Font fontContent = fontOpenSans(7f, Font.NORMAL);
+        Font fontContent = fontOpenSans(6.5f, Font.NORMAL);
         PdfPCell cellContent = new PdfPCell();
         cellContent.setPadding(cellPadding);
         
@@ -76,6 +80,12 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
                 table.addCell(cellHeader);
                 cellHeader.setPhrase(new Phrase("Hardware ID", fontHeader));
                 table.addCell(cellHeader);
+                cellHeader.setPhrase(new Phrase("Shelf ID", fontHeader));
+                table.addCell(cellHeader);
+                cellHeader.setPhrase(new Phrase("Scan In Done", fontHeader));
+                table.addCell(cellHeader);
+                cellHeader.setPhrase(new Phrase("Material Pass Checkout", fontHeader));
+                table.addCell(cellHeader);
                 cellHeader.setPhrase(new Phrase("Qty", fontHeader));
                 table.addCell(cellHeader);
             }
@@ -89,6 +99,14 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
             table.addCell(cellContent);
             cellContent.setPhrase(new Phrase(packingList.get(i).getHardwareId(), fontContent));
             table.addCell(cellContent);
+            
+             cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+            cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+            cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+            
             cellContent.setPhrase(new Phrase(packingList.get(i).getQuantity(), fontContent));
             table.addCell(cellContent);
             i++;

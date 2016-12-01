@@ -918,10 +918,14 @@ public class WhRequestDAO {
     }
 
     public List<WhRequest> getQuery(String query) {
-        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y %h:%i %p') AS requested_date_view ,DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS mp_expiry_date_view "
-                + "FROM cdars_wh_request "
-                + "WHERE " + query + " AND status <> 'Requested for Retrieval' ORDER BY id DESC";
-//                + "WHERE " + query + " ORDER BY id DESC";
+//        String sql = "SELECT *,DATE_FORMAT(requested_date,'%d %M %Y %h:%i %p') AS requested_date_view ,DATE_FORMAT(mp_expiry_date,'%d %M %Y') AS mp_expiry_date_view "
+//                + "FROM cdars_wh_request "
+//                + "WHERE " + query + " AND status <> 'Requested for Retrieval' ORDER BY id DESC";
+          String sql = "SELECT re.*,DATE_FORMAT(re.requested_date,'%d %M %Y %h:%i %p') AS requested_date_view ,DATE_FORMAT(re.mp_expiry_date,'%d %M %Y') AS mp_expiry_date_view, "
+                  + "DATE_FORMAT(sh.shipping_date,'%d %M %Y %h:%i %p') AS shipping_date, DATE_FORMAT(ret.shipping_date,'%d %M %Y %h:%i %p') AS received_date "
+                  + "FROM cdars_wh_request re LEFT JOIN cdars_wh_shipping sh ON sh.request_id = re.id "
+                  + "LEFT JOIN cdars_wh_retrieval ret ON ret.request_id = re.id "
+                  + "WHERE " + query + " ORDER BY re.id DESC";
         List<WhRequest> whRequestList = new ArrayList<WhRequest>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -966,6 +970,8 @@ public class WhRequestDAO {
                 whRequest.setStatus(rs.getString("status"));
                 whRequest.setFlag(rs.getString("flag"));
                 whRequest.setRetrievalReason(rs.getString("retrieval_reason"));
+                whRequest.setShippingDate(rs.getString("shipping_date"));
+                whRequest.setReceivedDate(rs.getString("received_date"));
                 whRequestList.add(whRequest);
             }
             rs.close();
@@ -985,7 +991,8 @@ public class WhRequestDAO {
     }
 
     public List<WhRequest> getWhRequestListStatus() {
-        String sql = "SELECT status,id FROM cdars_wh_request WHERE status <> 'Requested for Retrieval' GROUP BY status ORDER BY status";
+//        String sql = "SELECT status,id FROM cdars_wh_request WHERE status <> 'Requested for Retrieval' GROUP BY status ORDER BY status";
+        String sql = "SELECT status,id FROM cdars_wh_request GROUP BY status ORDER BY status";
         List<WhRequest> whRequestList = new ArrayList<WhRequest>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
