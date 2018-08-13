@@ -14,27 +14,79 @@
                 outline: 0 none;
             }
         </style>
-        <div class="col-lg-12">
+        <div class="col-lg-10">
             <h1>Process HW for Sending to SBN Factory</h1>
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-10">
                     <div class="main-box">
                         <h2>Details</h2>
                         <form id="detail_form" class="form-horizontal" role="form">
                             <div class="form-group">
-                                <label for=" hardwareType" class="col-lg-3 control-label">Hardware Type </label>
+                                <label for=" hardwareType" class="col-lg-2 control-label">Hardware Type </label>
                                 <div class="col-lg-5">
                                     <input type="text" class="form-control" id="hardwareType" name="hardwareType" value="${whShipping.requestEquipmentType}" readonly>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for=" hardwareId" class="col-lg-3 control-label">${IdLabel} </label>
-                                <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.requestEquipmentId}" readonly>
-                                </div>
-                            </div>
+                            <c:choose>
+                                <c:when test="${whShipping.requestEquipmentType == 'Load Card'}">
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">Pair ID </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.requestEquipmentId}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">Load Card ID </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.loadCard}" readonly>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:when test="${whShipping.requestEquipmentType == 'Program Card'}">
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">Pair ID </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.requestEquipmentId}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">Program Card ID </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.programCard}" readonly>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:when test="${whShipping.requestEquipmentType == 'Load Card & Program Card'}">
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">Pair ID </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.requestEquipmentId}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">Load Card ID </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.loadCard}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">Program Card ID </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.programCard}" readonly>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-2 control-label">${IdLabel} </label>
+                                        <div class="col-lg-8">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whShipping.requestEquipmentId}" readonly>
+                                        </div>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                             <div class="form-group" id="qualAnBDiv" hidden>
-                                <label for=" quantity" class="col-lg-3 control-label">Quantity Qual A </label>
+                                <label for=" quantity" class="col-lg-2 control-label">Quantity Qual A </label>
                                 <div class="col-lg-2">
                                     <input type="text" class="form-control" id="quantity" name="quantity" value="${whShipping.pcbAQty}" readonly>
                                 </div>
@@ -44,7 +96,7 @@
                                 </div>
                             </div>
                             <div class="form-group" id="qualCnCtrDiv" hidden>
-                                <label for=" quantity" class="col-lg-3 control-label">Quantity Qual C </label>
+                                <label for=" quantity" class="col-lg-2 control-label">Quantity Qual C </label>
                                 <div class="col-lg-2">
                                     <input type="text" class="form-control" id="quantity" name="quantity" value="${whShipping.pcbCQty}" readonly>
                                 </div>
@@ -54,19 +106,19 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for=" quantity" class="col-lg-3 control-label">Total Quantity </label>
+                                <label for=" quantity" class="col-lg-2 control-label">Total Quantity </label>
                                 <div class="col-lg-2">
                                     <input type="text" class="form-control" id="quantity" name="quantity" value="${whShipping.requestQuantity}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="requestedBy" class="col-lg-3 control-label">Requested By </label>
+                                <label for="requestedBy" class="col-lg-2 control-label">Requested By </label>
                                 <div class="col-lg-8">
                                     <input type="text" class="form-control" id="requestedBy" name="requestedBy" value="${whShipping.requestRequestedBy}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="requestedDate" class="col-lg-3 control-label">Requested Date </label>
+                                <label for="requestedDate" class="col-lg-2 control-label">Requested Date </label>
                                 <div class="col-lg-4">
                                     <input type="text" class="form-control" id="requestedDate" name="requestedDate" value="${whShipping.requestViewRequestedDate}" readonly>
                                 </div>
@@ -140,9 +192,35 @@
                                     <input type="hidden" name="status" value="${whShipping.status}" />
                                     <input type="hidden" name="tab" value="${ttActiveTab}" />
                                     <div class="form-group">
-                                        <label for=" hardwareBarcode1" class="col-lg-3 control-label">${IdLabel} *</label>
-                                        <div class="col-lg-5">
+                                        <c:choose>
+                                            <c:when test="${whShipping.requestEquipmentType == 'Load Card'}">
+                                                <label for=" hardwareBarcode1" class="col-lg-2 control-label">Pair ID *</label>
+                                            </c:when>
+                                            <c:when test="${whShipping.requestEquipmentType == 'Program Card'}">
+                                                <label for=" hardwareBarcode1" class="col-lg-2 control-label">Pair ID *</label>
+                                            </c:when>
+                                            <c:when test="${whShipping.requestEquipmentType == 'Load Card & Program Card'}">
+                                                <label for=" hardwareBarcode1" class="col-lg-2 control-label">Pair ID *</label>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <label for=" hardwareBarcode1" class="col-lg-2 control-label">${IdLabel} *</label>
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                        <div class="col-lg-7">
                                             <input type="text" class="form-control" id="hardwareBarcode1" name="hardwareBarcode1" autofocus="autofocus" placeholder="Please scan trip ticket" value="${whShipping.hardwareBarcode1}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="loadCardDiv" hidden>
+                                        <label for=" test" class="col-lg-2 control-label">Load Card ID </label>
+                                        <div class="col-lg-7">
+                                            <input type="text" class="form-control" id="loadCardId" name="loadCardId" value="${whShipping.loadCard}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="programCardDiv" hidden>
+                                        <label for=" test" class="col-lg-2 control-label">Program Card ID </label>
+                                        <div class="col-lg-7">
+                                            <input type="text" class="form-control" id="programCardId" name="programCardId" value="${whShipping.programCard}" readonly>
                                         </div>
                                     </div>
                                     <input type="hidden" class="form-control" id="hardwareIdV" name="hardwareIdV" value="${whShipping.requestEquipmentId}">
@@ -237,6 +315,22 @@
                 var element4 = $('#hardwareBarcode1');
                 var element5 = $('#mpNo2')
                 var element6 = $('#hardwareBarcode2');
+                var element7 = $('#loadCardId').val();
+                var element8 = $('#programCardId').val();
+                var element9 = $('#hardwareBarcode1').val();
+
+                //display load card & program card after done scan tt
+                if (element9 !== "" && element7 !== "" && element8 === "") {
+                    $("#loadCardDiv").show();
+                } else if (element9 !== "" && element7 === "" && element8 !== "") {
+                    $("#programCardDiv").show();
+                } else if (element9 !== "" && element7 !== "" && element8 !== "") {
+                    $("#programCardDiv").show();
+                    $("#loadCardDiv").show();
+                } else {
+                    $("#programCardDiv").hide();
+                    $("#loadCardDiv").hide();
+                }
 
                 if (element.val() !== "" && element.val() === element5.val()) {
                     $("#submit").attr("disabled", true);
@@ -346,6 +440,26 @@
 //                                                        alert('enabled');
 //                                                    }
 //                                                });
+            });
+
+            $('#hardwareBarcode1').on('input', function (e) {
+                var pairId = $('#hardwareBarcode1').val();
+                var eqptId = $('#hardwareIdV').val();
+                var loadCard = $('#loadCardId').val();
+                var programCard = $('#programCardId').val();
+
+                if (pairId === eqptId && loadCard !== "" && programCard === "") {
+                    $("#loadCardDiv").show();
+                } else if (pairId === eqptId && loadCard === "" && programCard !== "") {
+                    $("#programCardDiv").show();
+                } else if (pairId === eqptId && loadCard !== "" && programCard !== "") {
+                    $("#programCardDiv").show();
+                    $("#loadCardDiv").show();
+                } else {
+                    $("#programCardDiv").hide();
+                    $("#loadCardDiv").hide();
+                }
+
             });
 
 

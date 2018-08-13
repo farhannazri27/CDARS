@@ -1,5 +1,7 @@
 package com.onsemi.cdars.controller;
 
+import com.onsemi.cdars.dao.MasterGroupDAO;
+import com.onsemi.cdars.dao.UserGroupDAO;
 import com.onsemi.cdars.dao.WhRequestDAO;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -8,6 +10,8 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhShippingDAO;
 import com.onsemi.cdars.dao.WhStatusLogDAO;
+import com.onsemi.cdars.model.MasterGroup;
+import com.onsemi.cdars.model.UserGroup;
 import com.onsemi.cdars.model.WhShipping;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhRequest;
@@ -41,31 +45,42 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping(value = "/wh/whShipping")
 @SessionAttributes({"userSession"})
 public class WhShippingController {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(WhShippingController.class);
     String[] args = {};
     String mpNoTemp;
     String idTemp;
-
+    
     @Autowired
     private MessageSource messageSource;
-
+    
     @Autowired
     ServletContext servletContext;
-
+    
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String whShipping(
             Model model, @ModelAttribute UserSession userSession
     ) {
         WhShippingDAO whShippingDAO = new WhShippingDAO();
-        List<WhShipping> whShippingList = whShippingDAO.getWhShippingListMergeWithRequest();
+//        List<WhShipping> whShippingList = whShippingDAO.getWhShippingListMergeWithRequest();
         String groupId = userSession.getGroup();
-
+        UserGroupDAO userD = new UserGroupDAO();
+        UserGroup userGroup = userD.getGroup(groupId);
+        String mgId = "";
+        if (userGroup.getMasterGroupId().equals("0")) {
+            mgId = "3";
+        } else {
+            mgId = userGroup.getMasterGroupId();
+        }
+        MasterGroupDAO masterGroupD = new MasterGroupDAO();
+        MasterGroup masterGroup = masterGroupD.getMasterGroup(mgId);
+        String type = masterGroup.getType();
+        List<WhShipping> whShippingList = whShippingDAO.getWhShippingListMergeWithRequestBasedMasterGroupId(type);
         model.addAttribute("whShippingList", whShippingList);
         model.addAttribute("groupId", groupId);
         return "whShipping/whShipping";
     }
-
+    
     @RequestMapping(value = "/edit/{whShippingId}", method = RequestMethod.GET)
     public String edit(
             Model model,
@@ -132,12 +147,12 @@ public class WhShippingController {
             model.addAttribute("bsActive", bsActive);
             model.addAttribute("bsActiveTab", bsActiveTab);
         }
-
+        
         model.addAttribute("whShipping", whShipping);
-
+        
         return "whShipping/edit";
     }
-
+    
     @RequestMapping(value = "/updateMp", method = RequestMethod.POST)
     public String updateMp(
             Model model,
@@ -194,7 +209,7 @@ public class WhShippingController {
                 //update status at master table request
                 whShippingDAO = new WhShippingDAO();
                 WhShipping ret = whShippingDAO.getWhShipping(id);
-
+                
                 WhRequestDAO reqD = new WhRequestDAO();
                 int countReq = reqD.getCountRequestId(ret.getRequestId());
                 if (countReq == 1) {
@@ -222,7 +237,7 @@ public class WhShippingController {
 //        return "redirect:/wh/whShipping/viewTripTicket2/" + id;
         return "redirect:/wh/whShipping/edit/" + id;
     }
-
+    
     @RequestMapping(value = "/updateScanTt", method = RequestMethod.POST)
     public String updateScanTt(
             Model model,
@@ -274,7 +289,7 @@ public class WhShippingController {
                 //update status at master table request
                 whShippingDAO = new WhShippingDAO();
                 WhShipping ret = whShippingDAO.getWhShipping(id);
-
+                
                 WhRequestDAO reqD = new WhRequestDAO();
                 int countReq = reqD.getCountRequestId(ret.getRequestId());
                 if (countReq == 1) {
@@ -292,7 +307,7 @@ public class WhShippingController {
                 } else {
                     LOGGER.info("[whShipping] - requestId not found");
                 }
-
+                
             } else {
                 redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
             }
@@ -303,9 +318,9 @@ public class WhShippingController {
             redirectAttrs.addFlashAttribute("error", "ID Not Match! Please re-check.");
             return "redirect:/wh/whShipping/edit/" + id;
         }
-
+        
     }
-
+    
     @RequestMapping(value = "/updateScanBs", method = RequestMethod.POST)
     public String updateScanBs(
             Model model,
@@ -343,7 +358,7 @@ public class WhShippingController {
                     "Mismatch Scan for Barcode Sticker Vs Trip Ticket",
                     //                    msg
                     "Mismatch scan for barcode sticker vs trip ticket has been found. Please click this "
-                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whShipping/edit/" + id + "\">link</a>"
+                    + "<a href=\"" + request.getScheme() + "://mysed-rel-app03:" + request.getServerPort() + request.getContextPath() + "/wh/whShipping/edit/" + id + "\">link</a>"
                     + " and re-check to ensure barcode sticker vs trip ticket are match.  "
             );
         }
@@ -375,7 +390,7 @@ public class WhShippingController {
             //update status at master table request
             whShippingDAO = new WhShippingDAO();
             WhShipping ret = whShippingDAO.getWhShipping(id);
-
+            
             WhRequestDAO reqD = new WhRequestDAO();
             int countReq = reqD.getCountRequestId(ret.getRequestId());
             if (countReq == 1) {
@@ -393,14 +408,14 @@ public class WhShippingController {
             } else {
                 LOGGER.info("[whShipping] - requestId not found");
             }
-
+            
             return "redirect:/wh/whShipping";
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.update.error", args, locale));
         }
         return "redirect:/wh/whShipping/edit/" + id;
     }
-
+    
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String update(
             Model model,
@@ -454,7 +469,7 @@ public class WhShippingController {
         }
         return "redirect:/wh/whShipping/edit/" + id;
     }
-
+    
     @RequestMapping(value = "/delete/{whShippingId}", method = RequestMethod.GET)
     public String delete(
             Model model,
@@ -524,22 +539,22 @@ public class WhShippingController {
             if (!"fg79cj".equals(username)) {
                 username = "imperial";
             }
-
+            
             File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
             if (file.exists()) {
                 LOGGER.info("dh ada header");
                 FileWriter fileWriter = null;
                 FileReader fileReader = null;
-
+                
                 try {
                     fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv", true);
                     fileReader = new FileReader("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
                     String targetLocation = "C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv";
-
+                    
                     BufferedReader bufferedReader = new BufferedReader(fileReader);
                     String data = bufferedReader.readLine();
                     StringBuilder buff = new StringBuilder();
-
+                    
                     int row = 0;
                     while (data != null) {
                         LOGGER.info("start reading file..........");
@@ -556,14 +571,14 @@ public class WhShippingController {
                                 split[15], split[16], split[17],
                                 split[18], split[19] //status = [19]
                         );
-
+                        
                         if (split[0].equals(whShipping.getRequestId())) {
 //                            LOGGER.info(row + " : refId found...................." + data);
                             CSV csv = new CSV();
                             csv.open(new File(targetLocation));
                             csv.put(19, row, "Cancelled");
                             csv.save(new File(targetLocation));
-
+                            
                             EmailSender emailSenderSbnFactory = new EmailSender();
                             com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
                             user2.setFullname("All");
@@ -580,7 +595,7 @@ public class WhShippingController {
                                     "CANCELLATION for hardware id : " + whShipping.getRequestEquipmentId() + " / material pass number : " + whShipping.getMpNo() + " from sending to Seremban Factory has been made. Please do not proceed with the shipment."
                                     + "Thank you. "
                             );
-
+                            
                         } else {
 //                            LOGGER.info("refId not found........" + data);
                         }
@@ -603,8 +618,8 @@ public class WhShippingController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname(userSession.getFullname());
-//                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
-                    String[] to = {"hmsrelontest@gmail.com"};
+                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//                    String[] to = {"hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -620,17 +635,17 @@ public class WhShippingController {
                             "Cancellation for sending hardware to Seremban Factory has been made through HIMS RL."
                     );
                 }
-
+                
             } else {
                 LOGGER.info("File not exists.................");
             }
-
+            
         } else {
             redirectAttrs.addFlashAttribute("error", messageSource.getMessage("general.label.delete.error", args, locale));
         }
         return "redirect:/wh/whShipping";
     }
-
+    
     @RequestMapping(value = "/view/{whShippingId}", method = RequestMethod.GET)
     public String view(
             Model model,
@@ -644,7 +659,7 @@ public class WhShippingController {
         model.addAttribute("pageTitle", "general.label.whShipping");
         return "pdf/viewer";
     }
-
+    
     @RequestMapping(value = "/viewTripTicket/{whShippingId}", method = RequestMethod.GET)
     public String viewTripTicket(
             Model model,
@@ -658,7 +673,7 @@ public class WhShippingController {
         model.addAttribute("pageTitle", "general.label.whShipping");
         return "pdf/viewer";
     }
-
+    
     @RequestMapping(value = "/viewTripTicket2/{whShippingId}", method = RequestMethod.GET)
     public String viewTripTicket2(
             Model model,
@@ -672,14 +687,14 @@ public class WhShippingController {
         model.addAttribute("pageTitle", "general.label.whShipping");
         return "pdf/viewerTripTicket";
     }
-
+    
     @RequestMapping(value = "/viewWhShippingPdf/{whShippingId}", method = {RequestMethod.POST, RequestMethod.GET})
     public ModelAndView viewWhShippingPdf(
             Model model,
             @PathVariable("whShippingId") String whShippingId,
             @RequestParam(required = false) String mpNo
     ) {
-
+        
         LOGGER.info(" @RequestParam(required = false) String mpNo," + whShippingId);
         WhShippingDAO whShippingDAO = new WhShippingDAO();
         WhShipping test = whShippingDAO.getWhShipping(whShippingId);
@@ -688,7 +703,7 @@ public class WhShippingController {
         WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
         return new ModelAndView("whShippingPdf", "whShipping", whShipping);
     }
-
+    
     @RequestMapping(value = "/viewWhShippingPdf/{whShippingId}/{mpNo}", method = {RequestMethod.POST, RequestMethod.GET})
     public ModelAndView viewWhShippingPdfWithMpNo(
             Model model,
@@ -710,7 +725,7 @@ public class WhShippingController {
         WhShipping whShipping = whShippingDAO.getWhShippingMergeWithRequest(whShippingId);
         return new ModelAndView("whShippingPdf", "whShipping", whShipping);
     }
-
+    
     @RequestMapping(value = "/viewBarcodeSticker/{whShippingId}", method = RequestMethod.GET)
     public String viewBarcodeSticker(
             Model model,
@@ -724,7 +739,7 @@ public class WhShippingController {
         model.addAttribute("pageTitle", "Barcode Sticker");
         return "pdf/viewer";
     }
-
+    
     @RequestMapping(value = "/viewBarcodeSticker2/{whShippingId}", method = RequestMethod.GET)
     public String viewBarcodeSticker2(
             Model model,
@@ -738,7 +753,7 @@ public class WhShippingController {
         model.addAttribute("pageTitle", "Barcode Sticker");
         return "pdf/viewerBarcode";
     }
-
+    
     @RequestMapping(value = "/viewWhBarcodeStickerPdf/{whShippingId}", method = RequestMethod.GET)
     public ModelAndView viewWhBarcodeStickerPdf(
             Model model,

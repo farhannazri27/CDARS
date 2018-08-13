@@ -24,7 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PackingListPdf extends AbstractITextPdfViewPotrait {
-private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.class);
+
     @Override
     protected void buildPdfDocument(Map<String, Object> model, Document doc,
             PdfWriter writer, HttpServletRequest request, HttpServletResponse response)
@@ -36,25 +38,25 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
         Paragraph viewTitle2 = new Paragraph("Generated Date : " + todayDate, fontOpenSans(6f, Font.NORMAL));
         viewTitle2.setAlignment(Element.ALIGN_RIGHT);
         doc.add(viewTitle2);
-        
+
         String title = "\nHIMS RL Shipping List (Rel Lab to SBN Factory)";
         Paragraph viewTitle = new Paragraph(title, fontOpenSans(10f, Font.BOLD));
         viewTitle.setAlignment(Element.ALIGN_CENTER);
         doc.add(viewTitle);
 
         Integer cellPadding = 5;
-        
+
 //        PdfPTable table = new PdfPTable(6);
 //        table.setWidthPercentage(100.0f);
 //        table.setWidths(new float[]{0.5f, 1.5f, 2.0f, 1.5f, 3.5f, 0.5f});
 //        table.setSpacingBefore(20);
-        
-        PdfPTable table = new PdfPTable(9);
+        PdfPTable table = new PdfPTable(10);
         table.setWidthPercentage(100.0f);
-        table.setWidths(new float[]{0.5f, 1.5f, 1.3f, 1.3f, 2.7f , 1.0f, 0.8f, 1.0f, 0.5f});
+//        table.setWidths(new float[]{0.5f, 1.5f, 1.3f, 1.3f, 2.7f , 1.0f, 0.8f, 1.0f, 0.5f});
+        table.setWidths(new float[]{0.5f, 1.5f, 1.2f, 1.0f, 2.5f, 0.9f, 0.8f, 0.9f, 0.5f, 0.5f});
         table.setSpacingBefore(20);
-        
-        Font fontHeader = fontOpenSans(7f, Font.BOLD);
+
+        Font fontHeader = fontOpenSans(6.5f, Font.BOLD);
         fontHeader.setColor(BaseColor.WHITE);
         PdfPCell cellHeader = new PdfPCell();
         cellHeader.setBackgroundColor(BaseColor.GRAY);
@@ -63,12 +65,12 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
         Font fontContent = fontOpenSans(6.5f, Font.NORMAL);
         PdfPCell cellContent = new PdfPCell();
         cellContent.setPadding(cellPadding);
-        
+
         List<WhMpList> packingList = (List<WhMpList>) model.get("packingList");
-        
+
         int i = 0;
-        while(i<packingList.size()) {
-            if(i==0) {
+        while (i < packingList.size()) {
+            if (i == 0) {
                 //Header
                 cellHeader.setPhrase(new Phrase("No", fontHeader));
                 table.addCell(cellHeader);
@@ -86,10 +88,12 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
                 table.addCell(cellHeader);
                 cellHeader.setPhrase(new Phrase("Material Pass Checkout", fontHeader));
                 table.addCell(cellHeader);
-                cellHeader.setPhrase(new Phrase("Qty", fontHeader));
+                cellHeader.setPhrase(new Phrase("Qty Per Box", fontHeader));
+                table.addCell(cellHeader);
+                cellHeader.setPhrase(new Phrase("No of Box", fontHeader));
                 table.addCell(cellHeader);
             }
-            cellContent.setPhrase(new Phrase(i+1 + "", fontContent));
+            cellContent.setPhrase(new Phrase(i + 1 + "", fontContent));
             table.addCell(cellContent);
             cellContent.setPhrase(new Phrase(packingList.get(i).getMpNo(), fontContent));
             table.addCell(cellContent);
@@ -99,18 +103,20 @@ private static final Logger LOGGER = LoggerFactory.getLogger(PackingListPdf.clas
             table.addCell(cellContent);
             cellContent.setPhrase(new Phrase(packingList.get(i).getHardwareId(), fontContent));
             table.addCell(cellContent);
-            
-             cellContent.setPhrase(new Phrase("", fontContent));
-            table.addCell(cellContent);
+
             cellContent.setPhrase(new Phrase("", fontContent));
             table.addCell(cellContent);
             cellContent.setPhrase(new Phrase("", fontContent));
             table.addCell(cellContent);
-            
+            cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+
             cellContent.setPhrase(new Phrase(packingList.get(i).getQuantity(), fontContent));
             table.addCell(cellContent);
+            cellContent.setPhrase(new Phrase("1", fontContent));
+            table.addCell(cellContent);
             i++;
-        }        
-        doc.add(table);     
+        }
+        doc.add(table);
     }
 }

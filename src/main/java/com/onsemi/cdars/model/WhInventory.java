@@ -36,6 +36,12 @@ public class WhInventory {
     private String viewVerifiedDate;
     private String selected;
 
+    //phase 2
+    private String loadCard;
+    private String loadCardQty;
+    private String programCard;
+    private String programCardQty;
+
     public String getId() {
         return id;
     }
@@ -298,6 +304,38 @@ public class WhInventory {
 
     public void setReceivalDate(String receivalDate) {
         this.receivalDate = receivalDate;
+    }
+
+    public String getLoadCard() {
+        return loadCard;
+    }
+
+    public void setLoadCard(String loadCard) {
+        this.loadCard = loadCard;
+    }
+
+    public String getLoadCardQty() {
+        return loadCardQty;
+    }
+
+    public void setLoadCardQty(String loadCardQty) {
+        this.loadCardQty = loadCardQty;
+    }
+
+    public String getProgramCard() {
+        return programCard;
+    }
+
+    public void setProgramCard(String programCard) {
+        this.programCard = programCard;
+    }
+
+    public String getProgramCardQty() {
+        return programCardQty;
+    }
+
+    public void setProgramCardQty(String programCardQty) {
+        this.programCardQty = programCardQty;
     }
 
 }

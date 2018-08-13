@@ -55,6 +55,16 @@ public class WhRequest {
     private String shippingDate;
     private String receivedDate;
 
+    //phase 2
+    private String loadCard;
+    private String programCard;
+    private String loadCardQty;
+    private String programCardQty;
+    private String sfpkidLc;
+    private String sfpkidPc;
+
+    private String equipmentId2;
+
     public String getId() {
         return id;
     }
@@ -437,6 +447,62 @@ public class WhRequest {
 
     public void setReceivedDate(String receivedDate) {
         this.receivedDate = receivedDate;
+    }
+
+    public String getLoadCard() {
+        return loadCard;
+    }
+
+    public void setLoadCard(String loadCard) {
+        this.loadCard = loadCard;
+    }
+
+    public String getProgramCard() {
+        return programCard;
+    }
+
+    public void setProgramCard(String programCard) {
+        this.programCard = programCard;
+    }
+
+    public String getLoadCardQty() {
+        return loadCardQty;
+    }
+
+    public void setLoadCardQty(String loadCardQty) {
+        this.loadCardQty = loadCardQty;
+    }
+
+    public String getProgramCardQty() {
+        return programCardQty;
+    }
+
+    public void setProgramCardQty(String programCardQty) {
+        this.programCardQty = programCardQty;
+    }
+
+    public String getSfpkidLc() {
+        return sfpkidLc;
+    }
+
+    public void setSfpkidLc(String sfpkidLc) {
+        this.sfpkidLc = sfpkidLc;
+    }
+
+    public String getSfpkidPc() {
+        return sfpkidPc;
+    }
+
+    public void setSfpkidPc(String sfpkidPc) {
+        this.sfpkidPc = sfpkidPc;
+    }
+
+    public String getEquipmentId2() {
+        return equipmentId2;
+    }
+
+    public void setEquipmentId2(String equipmentId2) {
+        this.equipmentId2 = equipmentId2;
     }
 
 }

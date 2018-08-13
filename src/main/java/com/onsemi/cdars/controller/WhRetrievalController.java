@@ -1,7 +1,9 @@
 package com.onsemi.cdars.controller;
 
 import com.onsemi.cdars.dao.EmailConfigDAO;
+import com.onsemi.cdars.dao.MasterGroupDAO;
 import com.onsemi.cdars.dao.ParameterDetailsDAO;
+import com.onsemi.cdars.dao.UserGroupDAO;
 import com.onsemi.cdars.dao.WhInventoryDAO;
 import com.onsemi.cdars.dao.WhRequestDAO;
 import java.io.UnsupportedEncodingException;
@@ -12,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.dao.WhStatusLogDAO;
 import com.onsemi.cdars.model.EmailConfig;
+import com.onsemi.cdars.model.MasterGroup;
 import com.onsemi.cdars.model.ParameterDetails;
+import com.onsemi.cdars.model.UserGroup;
 import com.onsemi.cdars.model.WhRetrieval;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhInventory;
@@ -77,9 +81,20 @@ public class WhRetrievalController {
             Model model, @ModelAttribute UserSession userSession
     ) {
         WhRetrievalDAO whRetrievalDAO = new WhRetrievalDAO();
-        List<WhRetrieval> whRetrievalList = whRetrievalDAO.getWhRetrievalListWithDateDisplayWithoutStatusClosed();
-
+//        List<WhRetrieval> whRetrievalList = whRetrievalDAO.getWhRetrievalListWithDateDisplayWithoutStatusClosed();
         String groupId = userSession.getGroup();
+        UserGroupDAO userD = new UserGroupDAO();
+        UserGroup userGroup = userD.getGroup(groupId);
+        String mgId = "";
+        if (userGroup.getMasterGroupId().equals("0")) {
+            mgId = "3";
+        } else {
+            mgId = userGroup.getMasterGroupId();
+        }
+        MasterGroupDAO masterGroupD = new MasterGroupDAO();
+        MasterGroup masterGroup = masterGroupD.getMasterGroup(mgId);
+        String type = masterGroup.getType();
+        List<WhRetrieval> whRetrievalList = whRetrievalDAO.getWhRetrievalListWithDateDisplayWithoutStatusClosedBasedMasterGroupId(type);
 
         model.addAttribute("groupId", groupId);
         model.addAttribute("whRetrievalList", whRetrievalList);
@@ -401,8 +416,8 @@ public class WhRetrievalController {
             EmailSender emailSender = new EmailSender();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
             user.setFullname("Sg. Gadut Warehouse");
-//            String[] to = {"hmsrelon@gmail.com"}; //9/11/16
-            String[] to = {"hmsrelontest@gmail.com"};
+            String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//            String[] to = {"hmsrelontest@gmail.com"};
             emailSender.htmlEmailWithAttachment(
                     servletContext,
                     //                    user name
@@ -690,6 +705,215 @@ public class WhRetrievalController {
                         LOGGER.info("transaction failed pcb Ctr");
                     }
                 }
+            } else if ("Load Card".equals(wh.getHardwareType())) {
+                System.out.println("GET ITEM BY PARAM...");
+                JSONObject params = new JSONObject();
+                String itemID = wh.getLoadCard();
+                params.put("itemID", itemID);
+                JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                LOGGER.info("itempkid............." + itempkid);
+
+                JSONObject params2 = new JSONObject();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                String formattedDate = dateFormat.format(date);
+                params2.put("dateTime", formattedDate);
+                params2.put("itemsPKID", itempkid);
+                params2.put("transType", "20");
+                params2.put("transQty", wh.getLoadCardQty());
+                params2.put("remarks", "Retrieve from Storage Factory");
+                SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                System.out.println("TransPkid: " + TransPkid.getResponseId());
+
+                if (TransPkid.getResponseId() > 0) {
+                    LOGGER.info("transaction done item ");
+
+                    WhRequestDAO whreqSptsD = new WhRequestDAO();
+                    WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
+                    //get item from sfitem
+                    System.out.println("GET SFITEM ITEM BY PARAM...");
+                    JSONObject params3 = new JSONObject();
+                    params3.put("pkID", whreqSpts.getSfpkidLc());
+                    JSONArray getItemByParam2 = SPTSWebService.getSFItemByParam(params3);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam2.length());
+                    int itemSfpkid = getItemByParam2.getJSONObject(0).getInt("PKID");
+                    String versionSf = getItemByParam2.getJSONObject(0).getString("Version");
+
+                    //delete sfitem
+                    JSONObject paramsdeleteSf = new JSONObject();
+                    paramsdeleteSf.put("pkID", itemSfpkid);
+                    paramsdeleteSf.put("version", versionSf);
+                    SPTSResponse deleteCtr = SPTSWebService.DeleteSFItem(paramsdeleteSf);
+                    if (deleteCtr.getStatus()) {
+                        System.out.println("Delete Success item: " + itemID);
+                    } else {
+                        System.out.println("Delete Failed item: " + itemID);
+                    }
+                } else {
+                    LOGGER.info("transaction failed item");
+                }
+            } else if ("Program Card".equals(wh.getHardwareType())) {
+
+                System.out.println("GET ITEM BY PARAM...");
+                JSONObject params = new JSONObject();
+                String itemID = wh.getProgramCard();
+                params.put("itemID", itemID);
+                JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                LOGGER.info("itempkid............." + itempkid);
+
+                JSONObject params2 = new JSONObject();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                String formattedDate = dateFormat.format(date);
+                params2.put("dateTime", formattedDate);
+                params2.put("itemsPKID", itempkid);
+                params2.put("transType", "20");
+                params2.put("transQty", wh.getProgramCardQty());
+                params2.put("remarks", "Retrieve from Storage Factory");
+                SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                System.out.println("TransPkid: " + TransPkid.getResponseId());
+
+                if (TransPkid.getResponseId() > 0) {
+                    LOGGER.info("transaction done item ");
+
+                    WhRequestDAO whreqSptsD = new WhRequestDAO();
+                    WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
+                    //get item from sfitem
+                    System.out.println("GET SFITEM ITEM BY PARAM...");
+                    JSONObject params3 = new JSONObject();
+                    params3.put("pkID", whreqSpts.getSfpkidPc());
+                    JSONArray getItemByParam2 = SPTSWebService.getSFItemByParam(params3);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam2.length());
+                    int itemSfpkid = getItemByParam2.getJSONObject(0).getInt("PKID");
+                    String versionSf = getItemByParam2.getJSONObject(0).getString("Version");
+
+                    //delete sfitem
+                    JSONObject paramsdeleteSf = new JSONObject();
+                    paramsdeleteSf.put("pkID", itemSfpkid);
+                    paramsdeleteSf.put("version", versionSf);
+                    SPTSResponse deleteCtr = SPTSWebService.DeleteSFItem(paramsdeleteSf);
+                    if (deleteCtr.getStatus()) {
+                        System.out.println("Delete Success item: " + itemID);
+                    } else {
+                        System.out.println("Delete Failed item: " + itemID);
+                    }
+                } else {
+                    LOGGER.info("transaction failed item");
+                }
+
+            } else if ("Load Card & Program Card".equals(wh.getHardwareType())) {
+
+                if (!"0".equals(wh.getLoadCardQty())) {
+                    System.out.println("GET ITEM BY PARAM...");
+                    JSONObject params = new JSONObject();
+                    String itemID = wh.getLoadCard();
+                    params.put("itemID", itemID);
+                    JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                    int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkid............." + itempkid);
+
+                    JSONObject params2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    params2.put("dateTime", formattedDate);
+                    params2.put("itemsPKID", itempkid);
+                    params2.put("transType", "20");
+                    params2.put("transQty", wh.getLoadCardQty());
+                    params2.put("remarks", "Retrieve from Storage Factory");
+                    SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                    System.out.println("TransPkid: " + TransPkid.getResponseId());
+
+                    if (TransPkid.getResponseId() > 0) {
+                        LOGGER.info("transaction done item ");
+
+                        WhRequestDAO whreqSptsD = new WhRequestDAO();
+                        WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
+                        //get item from sfitem
+                        System.out.println("GET SFITEM ITEM BY PARAM...");
+                        JSONObject params3 = new JSONObject();
+                        params3.put("pkID", whreqSpts.getSfpkidLc());
+                        JSONArray getItemByParam2 = SPTSWebService.getSFItemByParam(params3);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam2.length());
+                        int itemSfpkid = getItemByParam2.getJSONObject(0).getInt("PKID");
+                        String versionSf = getItemByParam2.getJSONObject(0).getString("Version");
+
+                        //delete sfitem
+                        JSONObject paramsdeleteSf = new JSONObject();
+                        paramsdeleteSf.put("pkID", itemSfpkid);
+                        paramsdeleteSf.put("version", versionSf);
+                        SPTSResponse deleteCtr = SPTSWebService.DeleteSFItem(paramsdeleteSf);
+                        if (deleteCtr.getStatus()) {
+                            System.out.println("Delete Success item: " + itemID);
+                        } else {
+                            System.out.println("Delete Failed item: " + itemID);
+                        }
+                    } else {
+                        LOGGER.info("transaction failed item");
+                    }
+                }
+                if (!"0".equals(wh.getProgramCardQty())) {
+
+                    System.out.println("GET ITEM BY PARAM...");
+                    JSONObject params = new JSONObject();
+                    String itemID = wh.getProgramCard();
+                    params.put("itemID", itemID);
+                    JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                    int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkid............." + itempkid);
+
+                    JSONObject params2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    params2.put("dateTime", formattedDate);
+                    params2.put("itemsPKID", itempkid);
+                    params2.put("transType", "20");
+                    params2.put("transQty", wh.getProgramCardQty());
+                    params2.put("remarks", "Retrieve from Storage Factory");
+                    SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                    System.out.println("TransPkid: " + TransPkid.getResponseId());
+
+                    if (TransPkid.getResponseId() > 0) {
+                        LOGGER.info("transaction done item ");
+
+                        WhRequestDAO whreqSptsD = new WhRequestDAO();
+                        WhRequest whreqSpts = whreqSptsD.getWhRequest(inventory2.getRequestId());
+
+                        //get item from sfitem
+                        System.out.println("GET SFITEM ITEM BY PARAM...");
+                        JSONObject params3 = new JSONObject();
+                        params3.put("pkID", whreqSpts.getSfpkidPc());
+                        JSONArray getItemByParam2 = SPTSWebService.getSFItemByParam(params3);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam2.length());
+                        int itemSfpkid = getItemByParam2.getJSONObject(0).getInt("PKID");
+                        String versionSf = getItemByParam2.getJSONObject(0).getString("Version");
+
+                        //delete sfitem
+                        JSONObject paramsdeleteSf = new JSONObject();
+                        paramsdeleteSf.put("pkID", itemSfpkid);
+                        paramsdeleteSf.put("version", versionSf);
+                        SPTSResponse deleteCtr = SPTSWebService.DeleteSFItem(paramsdeleteSf);
+                        if (deleteCtr.getStatus()) {
+                            System.out.println("Delete Success item: " + itemID);
+                        } else {
+                            System.out.println("Delete Failed item: " + itemID);
+                        }
+                    } else {
+                        LOGGER.info("transaction failed item");
+                    }
+
+                }
+
             } else {
                 System.out.println("GET ITEM BY PARAM...");
                 JSONObject params = new JSONObject();
@@ -994,8 +1218,8 @@ public class WhRetrievalController {
                     EmailSender emailSender = new EmailSender();
                     com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                     user.setFullname("Sg. Gadut Warehouse");
-//                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
-                    String[] to = {"hmsrelontest@gmail.com"};
+                    String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//                    String[] to = {"hmsrelontest@gmail.com"};
                     emailSender.htmlEmailWithAttachment(
                             servletContext,
                             //                    user name
@@ -1550,8 +1774,8 @@ public class WhRetrievalController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-//                String[] to = {"hmsrelon@gmail.com"}; //9/11/16
-                String[] to = {"hmsrelontest@gmail.com"};
+                String[] to = {"hmsrelon@gmail.com"}; //9/11/16
+//                String[] to = {"hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
@@ -1611,7 +1835,6 @@ public class WhRetrievalController {
     ) {
 
 //        LOGGER.info("...iddd....." + id);
-
         WhRetrieval whRetrieval = new WhRetrieval();
         whRetrieval.setId(id);
         whRetrieval.setStatus("Barcode Sticker Scanning Mismatched");
@@ -1624,10 +1847,20 @@ public class WhRetrievalController {
 
             WhRetrievalDAO whRetD = new WhRetrievalDAO();
             WhRetrieval whRet = whRetD.getWhRetrieval(id);
-            String task = whRet.getHardwareType();
+            String task = "";
+
+            if (whRet.getHardwareType().contains("ATE")) {
+                task = "ATE";
+            } else if (whRet.getHardwareType().contains("EQP")) {
+                task = "EQP";
+            } else if (whRet.getHardwareType().contains("Card")) {
+                task = "Bib Cards";
+            } else {
+                task = whRet.getHardwareType();
+            }
 
             EmailConfigDAO econfD = new EmailConfigDAO();
-            EmailConfig econ = econfD.getEmailConfigByTask(task);
+            EmailConfig econ = econfD.getEmailConfigByTaskWildCard(task);
             String email = econ.getEmail();
             String name = econ.getUserName();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
@@ -1680,10 +1913,20 @@ public class WhRetrievalController {
 
             WhRetrievalDAO whRetD = new WhRetrievalDAO();
             WhRetrieval whRet = whRetD.getWhRetrieval(id);
-            String task = whRet.getHardwareType();
+            String task = "";
+
+            if (whRet.getHardwareType().contains("ATE")) {
+                task = "ATE";
+            } else if (whRet.getHardwareType().contains("EQP")) {
+                task = "EQP";
+            } else if (whRet.getHardwareType().contains("Card")) {
+                task = "Bib Cards";
+            } else {
+                task = whRet.getHardwareType();
+            }
 
             EmailConfigDAO econfD = new EmailConfigDAO();
-            EmailConfig econ = econfD.getEmailConfigByTask(task);
+            EmailConfig econ = econfD.getEmailConfigByTaskWildCard(task);
             String email = econ.getEmail();
             String name = econ.getUserName();
             com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();

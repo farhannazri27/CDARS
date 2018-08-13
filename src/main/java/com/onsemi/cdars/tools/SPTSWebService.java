@@ -17,10 +17,14 @@ import org.json.XML;
 public class SPTSWebService {
 
 //    private static final String SPTS_WEB_SERVICE_URL = "http://sptstest.jorfei.com/SPTSServices/SPTSServices.asmx";
-    private static final String SPTS_WEB_SERVICE_URL = "http://mysed-rel-spv2/SPTSServices/SPTSServices.asmx";
+    private static final String SPTS_WEB_SERVICE_URL = "http://mysed-rel-app04/SPTSServices/SPTSServices.asmx";
+//    private static final String SPTS_WEB_SERVICE_URL = "http://mysed-rel-app04/SPTSServicesSF/SPTSServices.asmx";
+//    private static final String SPTS_WEB_SERVICE_URL = "http://MYSED-REL-SPV2.ad.onsemi.com/SPTSServicesSF/SPTSServices.asmx";
     private static final String SPTS_ACTION_GETITEMALL = "http://tempuri.org/GetItemAll";
     private static final String SPTS_ACTION_GETITEMBYPKID = "http://tempuri.org/GetItemByPKID";
     private static final String SPTS_ACTION_GETITEMBYPARAM = "http://tempuri.org/GetItemByParam";
+    private static final String SPTS_ACTION_GETITEMBYPARAM2 = "http://tempuri.org/GetItemByParam2";
+    private static final String SPTS_ACTION_GETITEMWITHSFBYPARAM = "http://tempuri.org/GetItemWithSFByParam";
     private static final String SPTS_ACTION_INSERTITEM = "http://tempuri.org/InsertItem";
     private static final String SPTS_ACTION_UPDATEITEM = "http://tempuri.org/UpdateItem";
     private static final String SPTS_ACTION_DELETEITEM = "http://tempuri.org/DeleteItem";
@@ -127,6 +131,90 @@ public class SPTSWebService {
             JSONObject getAllItemResponse = soapBody.getJSONObject("GetItemByParamResponse");
             try {
                 JSONObject getAllItemResult = getAllItemResponse.getJSONObject("GetItemByParamResult");
+                JSONObject resultContent = getAllItemResult.getJSONObject("diffgr:diffgram");
+                JSONObject itemDS = resultContent.getJSONObject("ItemDS");
+                JSONArray jsonArray = itemDS.optJSONArray("ITEMS");
+                if (jsonArray == null) {
+                    JSONObject jo = itemDS.getJSONObject("ITEMS");
+                    JSONArray ja = new JSONArray();
+                    ja.put(jo);
+                    items = ja;
+                } else {
+                    items = jsonArray;
+                }
+            } catch (Exception e) {
+                //Ignore
+            }
+        } else {
+            String errorResponse = postMethod.getResponseBodyAsString();
+            errorResponse(result, errorResponse);
+        }
+        return items;
+    }
+
+    public static JSONArray getItemByParam2(JSONObject params) throws IOException {
+        JSONArray items = new JSONArray();
+        RequestEntity requestEntity = new StringRequestEntity(SPTSRequestXML.getItemByParam2(params), "text/xml", "ISO-8859-1");
+        PostMethod postMethod = new PostMethod(SPTS_WEB_SERVICE_URL);
+        postMethod.setRequestEntity(requestEntity);
+        postMethod.setRequestHeader("SOAPAction", SPTS_ACTION_GETITEMBYPARAM2);
+        HttpClient httpClient = new HttpClient();
+        int result = httpClient.executeMethod(postMethod);
+        if (result == 200) {
+            InputStream inputStream = postMethod.getResponseBodyAsStream();
+            StringBuilder stringBuilder = new StringBuilder();
+            Reader reader = new InputStreamReader(inputStream, "UTF-8");
+            copy(reader, stringBuilder);
+            reader.close();
+            String xmlString = stringBuilder.toString();
+            JSONObject jsonObject = XML.toJSONObject(xmlString);
+            JSONObject soapEnvelope = jsonObject.getJSONObject("soap:Envelope");
+            JSONObject soapBody = soapEnvelope.getJSONObject("soap:Body");
+            JSONObject getAllItemResponse = soapBody.getJSONObject("GetItemByParam2Response");
+            try {
+                JSONObject getAllItemResult = getAllItemResponse.getJSONObject("GetItemByParam2Result");
+                JSONObject resultContent = getAllItemResult.getJSONObject("diffgr:diffgram");
+                JSONObject itemDS = resultContent.getJSONObject("ItemDS");
+                JSONArray jsonArray = itemDS.optJSONArray("ITEMS");
+                if (jsonArray == null) {
+                    JSONObject jo = itemDS.getJSONObject("ITEMS");
+                    JSONArray ja = new JSONArray();
+                    ja.put(jo);
+                    items = ja;
+                } else {
+                    items = jsonArray;
+                }
+            } catch (Exception e) {
+                //Ignore
+            }
+        } else {
+            String errorResponse = postMethod.getResponseBodyAsString();
+            errorResponse(result, errorResponse);
+        }
+        return items;
+    }
+
+    public static JSONArray getItemWithSfByParam(JSONObject params) throws IOException {
+        JSONArray items = new JSONArray();
+        RequestEntity requestEntity = new StringRequestEntity(SPTSRequestXML.getItemWithSfByParam(params), "text/xml", "ISO-8859-1");
+        PostMethod postMethod = new PostMethod(SPTS_WEB_SERVICE_URL);
+        postMethod.setRequestEntity(requestEntity);
+        postMethod.setRequestHeader("SOAPAction", SPTS_ACTION_GETITEMWITHSFBYPARAM);
+        HttpClient httpClient = new HttpClient();
+        int result = httpClient.executeMethod(postMethod);
+        if (result == 200) {
+            InputStream inputStream = postMethod.getResponseBodyAsStream();
+            StringBuilder stringBuilder = new StringBuilder();
+            Reader reader = new InputStreamReader(inputStream, "UTF-8");
+            copy(reader, stringBuilder);
+            reader.close();
+            String xmlString = stringBuilder.toString();
+            JSONObject jsonObject = XML.toJSONObject(xmlString);
+            JSONObject soapEnvelope = jsonObject.getJSONObject("soap:Envelope");
+            JSONObject soapBody = soapEnvelope.getJSONObject("soap:Body");
+            JSONObject getAllItemResponse = soapBody.getJSONObject("GetItemWithSFByParamResponse");
+            try {
+                JSONObject getAllItemResult = getAllItemResponse.getJSONObject("GetItemWithSFByParamResult");
                 JSONObject resultContent = getAllItemResult.getJSONObject("diffgr:diffgram");
                 JSONObject itemDS = resultContent.getJSONObject("ItemDS");
                 JSONArray jsonArray = itemDS.optJSONArray("ITEMS");

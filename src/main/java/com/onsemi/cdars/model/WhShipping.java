@@ -48,6 +48,14 @@ public class WhShipping {
     private String sfpkidCtr;
     private String itempkid;
 
+    //phase 2
+    private String loadCard;
+    private String loadCardQty;
+    private String programCard;
+    private String programCardQty;
+    private String sfpkidLc;
+    private String sfpkidPc;
+
     public String getId() {
         return id;
     }
@@ -374,6 +382,54 @@ public class WhShipping {
 
     public void setSfpkidCtr(String sfpkidCtr) {
         this.sfpkidCtr = sfpkidCtr;
+    }
+
+    public String getLoadCard() {
+        return loadCard;
+    }
+
+    public void setLoadCard(String loadCard) {
+        this.loadCard = loadCard;
+    }
+
+    public String getLoadCardQty() {
+        return loadCardQty;
+    }
+
+    public void setLoadCardQty(String loadCardQty) {
+        this.loadCardQty = loadCardQty;
+    }
+
+    public String getProgramCard() {
+        return programCard;
+    }
+
+    public void setProgramCard(String programCard) {
+        this.programCard = programCard;
+    }
+
+    public String getProgramCardQty() {
+        return programCardQty;
+    }
+
+    public void setProgramCardQty(String programCardQty) {
+        this.programCardQty = programCardQty;
+    }
+
+    public String getSfpkidLc() {
+        return sfpkidLc;
+    }
+
+    public void setSfpkidLc(String sfpkidLc) {
+        this.sfpkidLc = sfpkidLc;
+    }
+
+    public String getSfpkidPc() {
+        return sfpkidPc;
+    }
+
+    public void setSfpkidPc(String sfpkidPc) {
+        this.sfpkidPc = sfpkidPc;
     }
 
 }

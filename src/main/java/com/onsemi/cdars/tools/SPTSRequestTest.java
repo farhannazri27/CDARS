@@ -449,14 +449,26 @@ public class SPTSRequestTest {
 //get item from sfitem
         System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
         JSONObject paramsQualA = new JSONObject();
-        paramsQualA.put("itemType", "Stencil");
-//        paramsQualA.put("pkID", "51");
+//        paramsQualA.put("itemType", "Stencil");
+//        paramsQualA.put("itemType", "Stencil");
+//         paramsQualA.put("storageFactoryQty", "1");
+//        paramsQualA.put("LastSFMovementDatetime", "!NULL");
+//        paramsQualA.put("itemStatus", "0");
+//        paramsQualA.put("itemStatus", "0");
+        paramsQualA.put("itemID", "Stencil - SOT223 6L NCP705 - 16309A");
+//        paramsQualA.put("itemType", "Stencil");
+        paramsQualA.put("itemStatus", "0");
+        paramsQualA.put("status", "1");
+//        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
         JSONArray getItemByParamA = SPTSWebService.getItemByParam(paramsQualA);
-//        JSONArray getItemByParamA = SPTSWebService.getItemByParam(paramsQualA);
         System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
         for (int i = 0; i < getItemByParamA.length(); i++) {
-            System.out.println(getItemByParamA.getJSONObject(i).getString("ItemID"));
+//            System.out.println(getItemByParamA.getJSONObject(i).getString("ItemID"));f
+            System.out.println(getItemByParamA.getJSONObject(i));
         }
+
+//        JSONObject jsonObject2 = SPTSWebService.getItemByPKID("7975");
+//                System.out.println(jsonObject2.toString());
 //        int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
 //        String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
 //        System.out.println("itemSfApkid: " + itemSfApkid);

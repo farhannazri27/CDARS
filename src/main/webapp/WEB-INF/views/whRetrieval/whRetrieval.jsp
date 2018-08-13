@@ -77,7 +77,21 @@
                                         <tr>
                                             <td><c:out value="${whRetrievalLoop.index+1}"/></td>
                                             <td><c:out value="${whRetrieval.hardwareType}"/></td>
-                                            <td id="modal_delete_info_${whRetrieval.id}"><c:out value="${whRetrieval.hardwareId}"/></td>
+                                            <!--<td id="modal_delete_info_${whRetrieval.id}"><c:out value="${whRetrieval.hardwareId}"/></td>-->
+                                            <c:choose>
+                                                <c:when test="${whRetrieval.hardwareType == 'Load Card'}">
+                                                    <td id="modal_delete_info_${whRetrieval.id}"><c:out value="${whRetrieval.loadCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whRetrieval.hardwareType == 'Program Card'}">
+                                                    <td id="modal_delete_info_${whRetrieval.id}"><c:out value="${whRetrieval.programCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whRetrieval.hardwareType == 'Load Card & Program Card'}">
+                                                    <td id="modal_delete_info_${whRetrieval.id}"><c:out value="${whRetrieval.loadCard}"/><br><c:out value="${whRetrieval.programCard}"/></td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                    <td id="modal_delete_info_${whRetrieval.id}"><c:out value="${whRetrieval.hardwareId}"/></td>
+                                                </c:otherwise>
+                                            </c:choose>
                                             <td><c:out value="${whRetrieval.hardwareQty}"/></td>
                                             <td><c:out value="${whRetrieval.retrievalReason}"/></td>
                                             <td><c:out value="${whRetrieval.requestedBy}"/></td>
@@ -146,7 +160,7 @@
                                                                     {
                                                                         extend: 'excel',
                                                                         exportOptions: {
-                                                                             columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                                                                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                                                                         }
                                                                     },
                                                                     {
@@ -157,7 +171,7 @@
                                                                     },
                                                                     {
                                                                         extend: 'print',
-                                                                         exportOptions: {
+                                                                        exportOptions: {
                                                                             columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                                                                         },
                                                                         customize: function (win) {

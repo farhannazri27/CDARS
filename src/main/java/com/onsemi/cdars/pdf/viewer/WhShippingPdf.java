@@ -177,12 +177,75 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
             cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity() + " PCB Panel(s)", fontContent));
             table.addCell(cellContent);
 
+        } else if ("Load Card".equals(whShipping.getRequestEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("Pair ID", fontHeader));
+            table.addCell(cellHeader);
+            table.addCell(barcode);
+
+            cellHeader.setPhrase(new Phrase("Load Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getLoadCard(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity() + " Load Card(s)", fontContent));
+            table.addCell(cellContent);
+
+        } else if ("Program Card".equals(whShipping.getRequestEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("Pair ID", fontHeader));
+            table.addCell(cellHeader);
+            table.addCell(barcode);
+
+            cellHeader.setPhrase(new Phrase("Program Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getProgramCard(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity() + " Program Card(s)", fontContent));
+            table.addCell(cellContent);
+
+        } else if ("Load Card & Program Card".equals(whShipping.getRequestEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("Pair ID", fontHeader));
+            table.addCell(cellHeader);
+            table.addCell(barcode);
+            
+            cellHeader.setPhrase(new Phrase("Load Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getLoadCard(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getLoadCardQty() + " Load Card(s)", fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Program Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getProgramCard(), fontContent));
+            table.addCell(cellContent);
+            
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getProgramCardQty() + " Program Card(s)", fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Total Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity() + " Card(s)", fontContent));
+            table.addCell(cellContent);
+
         } else {
             cellHeader.setPhrase(new Phrase("Equipment ID", fontHeader));
             table.addCell(cellHeader);
-//            cellContent.setPhrase(new Phrase(whShipping.getRequestEquipmentId(), fontContent));
-//            table.addCell(cellContent);
             table.addCell(barcode);
+
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whShipping.getRequestQuantity() + " Item(s)", fontContent));
+            table.addCell(cellContent);
         }
 
         cellHeader.setPhrase(new Phrase("Material Pass No.", fontHeader));
@@ -216,6 +279,5 @@ public class WhShippingPdf extends AbstractITextPdfViewPotrait {
 //        PdfPCell barcode1 = new PdfPCell(code128Imagetest);
 //        table1.addCell(barcode1).setBorder(Rectangle.NO_BORDER);
 //        doc.add(table1);
-        
     }
 }

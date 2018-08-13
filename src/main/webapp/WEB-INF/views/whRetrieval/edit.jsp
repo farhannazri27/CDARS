@@ -17,69 +17,135 @@
         <div class="col-lg-12">
             <h1>HW Verification for Retrieval from SBN Factory</h1>
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-11">
                     <div class="main-box">
                         <h2>Details</h2>
                         <form id="detail_form" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <input type="hidden" name="groupId" id="groupId" value="${groupId}" />
-                                <label for=" hardwareType" class="col-lg-4 control-label">Hardware Type </label>
+                                <label for=" hardwareType" class="col-lg-1 control-label">Hardware Type </label>
                                 <div class="col-lg-5">
                                     <input type="text" class="form-control" id="hardwareType" name="hardwareType" value="${whRetrieval.hardwareType}" readonly>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for=" hardwareId" class="col-lg-4 control-label">${IdLabel} </label>
-                                <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.hardwareId}" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for=" quantity" class="col-lg-4 control-label">Quantity </label>
-                                <div class="col-lg-3">
-                                    <input type="text" class="form-control" id="quantity" name="quantity" value="${whRetrieval.hardwareQty}" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for=" retrievalReason" class="col-lg-4 control-label">Reason for Retrieval </label>
-                                <div class="col-lg-3">
+                                <label for=" retrievalReason" class="col-lg-2 control-label">Reason for Retrieval </label>
+                                <div class="col-lg-2">
                                     <input type="text" class="form-control" id="retrievalReason" name="retrievalReason" value="${whRetrieval.retrievalReason}" readonly>
                                 </div>
+
                             </div>
+                            <!--start loadcard-->
+                            <c:choose>
+                                <c:when test="${whRetrieval.hardwareType == 'Load Card'}">
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">Pair ID </label>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.hardwareId}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">Load Card ID </label>
+                                        <div class="col-lg-6">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.loadCard}" readonly>
+                                        </div>
+                                        <label for=" quantity" class="col-lg-1 control-label">Quantity </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" id="quantity" name="quantity" value="${whRetrieval.hardwareQty}" readonly>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:when test="${whRetrieval.hardwareType == 'Program Card'}">
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">Pair ID </label>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.hardwareId}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">Program Card ID </label>
+                                        <div class="col-lg-6">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.programCard}" readonly>
+                                        </div>
+                                        <label for=" quantity" class="col-lg-1 control-label">Quantity </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" id="quantity" name="quantity" value="${whRetrieval.hardwareQty}" readonly>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:when test="${whRetrieval.hardwareType == 'Load Card & Program Card'}">
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">Pair ID </label>
+                                        <div class="col-lg-3">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.hardwareId}" readonly>
+                                        </div>
+                                        <label for=" quantity" class="col-lg-4 control-label">Quantity </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" id="quantity" name="quantity" value="${whRetrieval.hardwareQty}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">Load Card ID </label>
+                                        <div class="col-lg-6">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.loadCard}" readonly>
+                                        </div>
+                                        <label for=" lcquantity" class="col-lg-1 control-label">Load Card Quantity </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" id="lcquantity" name="lcquantity" value="${whRetrieval.loadCardQty}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">Program Card ID </label>
+                                        <div class="col-lg-6">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.programCard}" readonly>
+                                        </div>
+                                        <label for=" pcquantity" class="col-lg-1 control-label">Program Card Quantity </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" id="pcquantity" name="pcquantity" value="${whRetrieval.programCardQty}" readonly>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="form-group">
+                                        <label for=" hardwareId" class="col-lg-1 control-label">${IdLabel} </label>
+                                        <div class="col-lg-6">
+                                            <input type="text" class="form-control" id="hardwareId" name="hardwareId" value="${whRetrieval.hardwareId}" readonly>
+                                        </div>
+                                        <label for=" quantity" class="col-lg-1 control-label">Quantity </label>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" id="quantity" name="quantity" value="${whRetrieval.hardwareQty}" readonly>
+                                        </div>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                            <!--end loadcard-->
                             <div class="form-group">
-                                <label for="mpNo" class="col-lg-4 control-label">Material Pass No. </label>
-                                <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="requestedBy" name="mpNo" value="${whRetrieval.mpNo}" readonly>
+                                <label for="requestedBy" class="col-lg-1 control-label">Requested By </label>
+                                <div class="col-lg-6">
+                                    <input type="text" class="form-control" id="requestedDate" name="requestedBy" value="${whRetrieval.requestedBy}" readonly>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="mpExpiryDate" class="col-lg-4 control-label">Material Pass Expiry Date </label>
-                                <div class="col-lg-4">
-                                    <input type="text" class="form-control" id="requestedDate" name="mpExpiryDate" value="${whRetrieval.viewMpExpiryDate}" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="rack" class="col-lg-4 control-label">Rack </label>
+                                <label for="requestedDate" class="col-lg-1 control-label">Requested Date </label>
                                 <div class="col-lg-3">
+                                    <input type="text" class="form-control" id="requestedDate" name="requestedDate" value="${whRetrieval.viewRequestedDate}" readonly>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="rack" class="col-lg-1 control-label">Rack </label>
+                                <div class="col-lg-2">
                                     <input type="text" class="form-control" id="rack" name="rack" value="${whRetrieval.rack}" readonly>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="shelf" class="col-lg-4 control-label">Shelf </label>
-                                <div class="col-lg-3">
+                                <label for="shelf" class="col-lg-2 control-label">Shelf </label>
+                                <div class="col-lg-2">
                                     <input type="text" class="form-control" id="shelf" name="shelf" value="${whRetrieval.shelf}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="requestedBy" class="col-lg-4 control-label">Requested By </label>
-                                <div class="col-lg-8">
-                                    <input type="text" class="form-control" id="requestedDate" name="requestedBy" value="${whRetrieval.requestedBy}" readonly>
+                                <label for="mpNo" class="col-lg-1 control-label">Material Pass No. </label>
+                                <div class="col-lg-2">
+                                    <input type="text" class="form-control" id="requestedBy" name="mpNo" value="${whRetrieval.mpNo}" readonly>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="requestedDate" class="col-lg-4 control-label">Requested Date </label>
-                                <div class="col-lg-5">
-                                    <input type="text" class="form-control" id="requestedDate" name="requestedDate" value="${whRetrieval.viewRequestedDate}" readonly>
+                                <label for="mpExpiryDate" class="col-lg-2 control-label">Material Pass Expiry Date </label>
+                                <div class="col-lg-2">
+                                    <input type="text" class="form-control" id="requestedDate" name="mpExpiryDate" value="${whRetrieval.viewMpExpiryDate}" readonly>
                                 </div>
                             </div>
                             <div class="clearfix">           
@@ -154,11 +220,37 @@
                                     <input type="hidden" name="status" id="statusTt" value="${whRetrieval.status}" />
                                     <input type="hidden" name="tab" value="${ttActiveTab}" />
                                     <div class="form-group">
-                                        <label for=" ttVerification" class="col-lg-4 control-label">${IdLabel} *</label>
+                                        <c:choose>
+                                            <c:when test="${whRetrieval.hardwareType == 'Load Card'}">
+                                                <label for=" ttVerification" class="col-lg-2 control-label">Pair ID *</label>
+                                            </c:when>
+                                            <c:when test="${whRetrieval.hardwareType == 'Program Card'}">
+                                                <label for=" ttVerification" class="col-lg-2 control-label">Pair ID *</label>
+                                            </c:when>
+                                            <c:when test="${whRetrieval.hardwareType == 'Load Card & Program Card'}">
+                                                <label for=" ttVerification" class="col-lg-2 control-label">Pair ID *</label>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <label for=" ttVerification" class="col-lg-2 control-label">${IdLabel} *</label>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <!--<label for=" ttVerification" class="col-lg-4 control-label">${IdLabel} *</label>-->
                                         <div class="col-lg-5">
                                             <input type="text" class="form-control" id="ttVerification" name="ttVerification" autofocus="autofocus" placeholder="Please scan trip ticket" value="${whRetrieval.ttVerification}">
                                             <small id="noteTt" class="form-text text-muted">Verified by ${whRetrieval.ttDispositionBy}.</small>
                                             <small id="noteTtEmail" class="form-text text-muted">Email has been sent to supervisor.</small>
+                                        </div>
+                                    </div>     
+                                    <div class="form-group" id="loadCardDiv" hidden>
+                                        <label for=" test" class="col-lg-2 control-label">Load Card ID </label>
+                                        <div class="col-lg-7">
+                                            <input type="text" class="form-control" id="loadCardId" name="loadCardId" value="${whRetrieval.loadCard}" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="programCardDiv" hidden>
+                                        <label for=" test" class="col-lg-2 control-label">Program Card ID </label>
+                                        <div class="col-lg-7">
+                                            <input type="text" class="form-control" id="programCardId" name="programCardId" value="${whRetrieval.programCard}" readonly>
                                         </div>
                                     </div>
                                     <input type="hidden" id="hardwareIdV" name="hardwareIdV" value="${whRetrieval.hardwareId}">
@@ -261,6 +353,23 @@
 //                        ;
 //                    });
 //                }
+
+                var element7 = $('#loadCardId').val();
+                var element8 = $('#programCardId').val();
+                var element9 = $('#ttVerification').val();
+
+                //display load card & program card after done scan tt
+                if (element9 !== "" && element7 !== "" && element8 === "") {
+                    $("#loadCardDiv").show();
+                } else if (element9 !== "" && element7 === "" && element8 !== "") {
+                    $("#programCardDiv").show();
+                } else if (element9 !== "" && element7 !== "" && element8 !== "") {
+                    $("#programCardDiv").show();
+                    $("#loadCardDiv").show();
+                } else {
+                    $("#programCardDiv").hide();
+                    $("#loadCardDiv").hide();
+                }
 
                 var statusF = $('#statusTt'); //for finish button
                 if (statusF.val() === "Closed" || statusF.val() === "Closed. Verified By Supervisor") {
@@ -457,6 +566,26 @@
                 $(".cancel3").click(function () {
                     validator3.resetForm();
                 });
+            });
+
+            $('#ttVerification').on('input', function (e) {
+                var pairId = $('#ttVerification').val();
+                var eqptId = $('#hardwareIdV').val();
+                var loadCard = $('#loadCardId').val();
+                var programCard = $('#programCardId').val();
+
+                if (pairId === eqptId && loadCard !== "" && programCard === "") {
+                    $("#loadCardDiv").show();
+                } else if (pairId === eqptId && loadCard === "" && programCard !== "") {
+                    $("#programCardDiv").show();
+                } else if (pairId === eqptId && loadCard !== "" && programCard !== "") {
+                    $("#programCardDiv").show();
+                    $("#loadCardDiv").show();
+                } else {
+                    $("#programCardDiv").hide();
+                    $("#loadCardDiv").hide();
+                }
+
             });
 
         </script>

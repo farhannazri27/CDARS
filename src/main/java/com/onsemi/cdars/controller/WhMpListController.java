@@ -208,7 +208,15 @@ public class WhMpListController {
                 whMpList.setMpNo(mpNo);
                 whMpList.setMpExpiryDate(whship.getMpExpiryDate());
                 whMpList.setHardwareType(whship.getRequestEquipmentType());
-                whMpList.setHardwareId(whship.getRequestEquipmentId());
+                if ("Load Card".equals(whship.getRequestEquipmentType())) {
+                    whMpList.setHardwareId(whship.getLoadCard());
+                } else if ("Program Card".equals(whship.getRequestEquipmentType())) {
+                    whMpList.setHardwareId(whship.getProgramCard());
+                } else if ("Load Card & Program Card".equals(whship.getRequestEquipmentType())) {
+                    whMpList.setHardwareId(whship.getLoadCard() + " & " + whship.getProgramCard());
+                } else {
+                    whMpList.setHardwareId(whship.getRequestEquipmentId());
+                }
                 whMpList.setQuantity(whship.getRequestQuantity());
                 whMpList.setRequestedBy(whship.getRequestRequestedBy());
                 whMpList.setRequestedDate(whship.getRequestRequestedDate());
@@ -223,7 +231,8 @@ public class WhMpListController {
                     model.addAttribute("whMpList", whMpList);
                 } else {
 
-                    if (!"PCB".equals(whship.getRequestEquipmentType()) && !"Tray".equals(whship.getRequestEquipmentType())) {
+//                    if (!"PCB".equals(whship.getRequestEquipmentType()) && !"Tray".equals(whship.getRequestEquipmentType())) {
+                    if ("Motherboard".equals(whship.getRequestEquipmentType()) || "Stencil".equals(whship.getRequestEquipmentType())) {
 
                         //check dkt stps da transfer ke sf ke belum
                         WhShippingDAO shipD = new WhShippingDAO();
@@ -738,6 +747,926 @@ public class WhMpListController {
                             LOGGER.info("No need to update spts.Already have record in SfItem");
                         }
 
+                    } else if ("Load Card".equals(whship.getRequestEquipmentType())) {
+
+                        //check dkt stps da transfer ke sf ke belum
+                        WhShippingDAO shipD = new WhShippingDAO();
+                        WhShipping checkSfPkid = shipD.getWhShippingSfpkidAndItemPkid(whship.getId());
+                        if ("0".equals(checkSfPkid.getSfpkidLc())) {
+
+                            //get pkid
+                            System.out.println("GET ITEM BY PARAM...");
+                            JSONObject params0 = new JSONObject();
+                            String itemID = whship.getLoadCard();
+                            params0.put("itemID", itemID);
+                            JSONArray getItemByParam = SPTSWebService.getItemByParam(params0);
+                            for (int i = 0; i < getItemByParam.length(); i++) {
+                                System.out.println(getItemByParam.getJSONObject(i));
+                            }
+                            System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                            int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                            LOGGER.info("itempkid............." + itempkid);
+
+                            //                        //insert transaction spts
+                            JSONObject params2 = new JSONObject();
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            //get current date time with Date()
+                            Date date = new Date();
+                            String formattedDate = dateFormat.format(date);
+                            params2.put("dateTime", formattedDate);
+                            params2.put("itemsPKID", itempkid);
+                            params2.put("transType", "19");
+                            params2.put("transQty", whship.getRequestQuantity());
+                            params2.put("remarks", "send to storage factory through cdars");
+                            SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                            System.out.println("transPKID: " + TransPkid.getResponseId());
+
+                            if (TransPkid.getResponseId() > 0) {
+                                //                        //insert sfitem spts
+                                JSONObject params3 = new JSONObject();
+                                params3.put("itemPKID", itempkid);
+                                params3.put("transactionPKID", TransPkid.getResponseId());
+                                params3.put("sfItemStatus", "0");
+                                params3.put("sfRack", "");
+                                params3.put("sfShelf", "");
+                                SPTSResponse sfPkid = SPTSWebService.insertSFItem(params3);
+                                System.out.println("sfPKID: " + sfPkid.getResponseId());
+
+                                //update statusLog
+                                whshipD = new WhShippingDAO();
+                                WhShipping shipping = whshipD.getWhShipping(whship.getId());
+
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(shipping.getRequestId());
+                                stat.setModule("cdars_wh_mp_list");
+                                stat.setStatus("Ship to Seremban Factory");
+                                stat.setCreatedBy(userSession.getFullname());
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                                if (queryResultStat.getGeneratedKey().equals("0")) {
+                                    LOGGER.info("[WhRequest] - insert status log failed");
+                                } else {
+                                    LOGGER.info("[WhRequest] - insert status log done");
+                                }
+
+                                //update status, sfpkid, itempkid at shipping list to "Pending Shipment to Seremban Factory"
+                                shipD = new WhShippingDAO();
+                                WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
+
+                                WhShipping shipUpdate = new WhShipping();
+                                shipUpdate.setId(ship.getId());
+                                shipUpdate.setRequestId(ship.getRequestId());
+                                shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                                shipUpdate.setSfpkidLc(sfPkid.getResponseId().toString());
+                                shipUpdate.setItempkid(String.valueOf(itempkid));
+                                WhShippingDAO shipDD = new WhShippingDAO();
+                                QueryResult u = shipDD.updateWhShippingStatusWithItemPkidAndSfpkidLc(shipUpdate);
+                                if (u.getResult() == 1) {
+                                    LOGGER.info("Status Ship updated");
+                                } else {
+                                    LOGGER.info("Status Ship updated failed");
+                                }
+
+                                //update status,sfpkid dkt master *request table     
+                                WhRequestDAO reqD = new WhRequestDAO();
+                                int countReq = reqD.getCountRequestId(ship.getRequestId());
+                                if (countReq == 1) {
+                                    WhRequest reqUpdate = new WhRequest();
+                                    reqUpdate.setModifiedBy(userSession.getFullname());
+                                    reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                                    reqUpdate.setSfpkidLc(sfPkid.getResponseId().toString());
+                                    reqUpdate.setId(ship.getRequestId());
+                                    reqD = new WhRequestDAO();
+                                    QueryResult ru = reqD.updateWhRequestStatusWithSfpkidLc(reqUpdate);
+                                    if (ru.getResult() == 1) {
+                                        LOGGER.info("[MpList] - update status at request table done");
+                                    } else {
+                                        LOGGER.info("[MpList] - update status at request table failed");
+                                    }
+                                } else {
+                                    LOGGER.info("[MpList] - requestId not found");
+                                }
+
+                                String username = System.getProperty("user.name");
+                                if (!"fg79cj".equals(username)) {
+                                    username = "imperial";
+                                }
+                                File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+
+                                if (file.exists()) {
+                                    //create csv file
+                                    LOGGER.info("tiada header");
+                                    FileWriter fileWriter = null;
+                                    try {
+                                        fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv", true);
+                                        //New Line after the header
+                                        fileWriter.append(LINE_SEPARATOR);
+
+                                        //                            fileWriter.append(queryResult.getGeneratedKey());
+                                        fileWriter.append(whship.getRequestId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentType());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getLoadCard());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getLoadCardQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbB());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbBQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbC());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtr());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtrQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestQuantity());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(mpNo);
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getMpExpiryDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedBy());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestorEmail());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRemarks());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getCreatedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append("Shipped");
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        System.out.println("append to CSV file Succeed!!!");
+                                    } catch (Exception ee) {
+                                        ee.printStackTrace();
+                                    } finally {
+                                        try {
+                                            fileWriter.close();
+                                        } catch (IOException ie) {
+                                            System.out.println("Error occured while closing the fileWriter");
+                                            ie.printStackTrace();
+                                        }
+                                    }
+                                } else {
+                                    FileWriter fileWriter = null;
+                                    try {
+                                        fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+                                        LOGGER.info("no file yet");
+                                        //Adding the header
+                                        fileWriter.append(HEADER);
+
+                                        //New Line after the header
+                                        fileWriter.append(LINE_SEPARATOR);
+
+                                        fileWriter.append(whship.getRequestId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentType());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getLoadCard());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getLoadCardQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbB());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbBQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbC());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtr());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtrQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestQuantity());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(mpNo);
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getMpExpiryDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedBy());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestorEmail());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRemarks());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getCreatedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append("Shipped");
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        System.out.println("Write new to CSV file Succeed!!!");
+                                    } catch (Exception ee) {
+                                        ee.printStackTrace();
+                                    } finally {
+                                        try {
+                                            fileWriter.close();
+                                        } catch (IOException ie) {
+                                            System.out.println("Error occured while closing the fileWriter");
+                                            ie.printStackTrace();
+                                        }
+                                    }
+                                }
+                            } else {
+                                LOGGER.info("fail to update spts");
+                                //delete whMpList
+                                whMpListDAO = new WhMpListDAO();
+                                QueryResult queryResultDeleteFailed = whMpListDAO.deleteWhMpList(queryResult.getGeneratedKey());
+
+                                //update statusLog
+                                whshipD = new WhShippingDAO();
+                                WhShipping shipping = whshipD.getWhShipping(whship.getId());
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(shipping.getRequestId());
+                                stat.setModule("cdars_wh_mp_list");
+                                stat.setStatus("Failed to update SPTS");
+                                stat.setCreatedBy(userSession.getFullname());
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                                String messageError = "Failed to update SPTS. Please re-check!";
+                                redirectAttrs.addFlashAttribute("error", messageError);
+                                return "redirect:/wh/whShipping/whMpList/add";
+                            }
+                        } else {
+                            LOGGER.info("No need to update spts.Already have record in SfItem");
+                        }
+
+                    } else if ("Program Card".equals(whship.getRequestEquipmentType())) {
+
+                        //check dkt stps da transfer ke sf ke belum
+                        WhShippingDAO shipD = new WhShippingDAO();
+                        WhShipping checkSfPkid = shipD.getWhShippingSfpkidAndItemPkid(whship.getId());
+                        if ("0".equals(checkSfPkid.getSfpkidPc())) {
+
+                            //get pkid
+                            System.out.println("GET ITEM BY PARAM...");
+                            JSONObject params0 = new JSONObject();
+                            String itemID = whship.getProgramCard();
+                            params0.put("itemID", itemID);
+                            JSONArray getItemByParam = SPTSWebService.getItemByParam(params0);
+                            for (int i = 0; i < getItemByParam.length(); i++) {
+                                System.out.println(getItemByParam.getJSONObject(i));
+                            }
+                            System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                            int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                            LOGGER.info("itempkid............." + itempkid);
+
+                            //                        //insert transaction spts
+                            JSONObject params2 = new JSONObject();
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            //get current date time with Date()
+                            Date date = new Date();
+                            String formattedDate = dateFormat.format(date);
+                            params2.put("dateTime", formattedDate);
+                            params2.put("itemsPKID", itempkid);
+                            params2.put("transType", "19");
+                            params2.put("transQty", whship.getRequestQuantity());
+                            params2.put("remarks", "send to storage factory through cdars");
+                            SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                            System.out.println("transPKID: " + TransPkid.getResponseId());
+
+                            if (TransPkid.getResponseId() > 0) {
+                                //                        //insert sfitem spts
+                                JSONObject params3 = new JSONObject();
+                                params3.put("itemPKID", itempkid);
+                                params3.put("transactionPKID", TransPkid.getResponseId());
+                                params3.put("sfItemStatus", "0");
+                                params3.put("sfRack", "");
+                                params3.put("sfShelf", "");
+                                SPTSResponse sfPkid = SPTSWebService.insertSFItem(params3);
+                                System.out.println("sfPKID: " + sfPkid.getResponseId());
+
+                                //update statusLog
+                                whshipD = new WhShippingDAO();
+                                WhShipping shipping = whshipD.getWhShipping(whship.getId());
+
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(shipping.getRequestId());
+                                stat.setModule("cdars_wh_mp_list");
+                                stat.setStatus("Ship to Seremban Factory");
+                                stat.setCreatedBy(userSession.getFullname());
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                                if (queryResultStat.getGeneratedKey().equals("0")) {
+                                    LOGGER.info("[WhRequest] - insert status log failed");
+                                } else {
+                                    LOGGER.info("[WhRequest] - insert status log done");
+                                }
+
+                                //update status, sfpkid, itempkid at shipping list to "Pending Shipment to Seremban Factory"
+                                shipD = new WhShippingDAO();
+                                WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
+
+                                WhShipping shipUpdate = new WhShipping();
+                                shipUpdate.setId(ship.getId());
+                                shipUpdate.setRequestId(ship.getRequestId());
+                                shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                                shipUpdate.setSfpkidPc(sfPkid.getResponseId().toString());
+                                shipUpdate.setItempkid(String.valueOf(itempkid));
+                                WhShippingDAO shipDD = new WhShippingDAO();
+                                QueryResult u = shipDD.updateWhShippingStatusWithItemPkidAndSfpkidPc(shipUpdate);
+                                if (u.getResult() == 1) {
+                                    LOGGER.info("Status Ship updated");
+                                } else {
+                                    LOGGER.info("Status Ship updated failed");
+                                }
+
+                                //update status,sfpkid dkt master *request table     
+                                WhRequestDAO reqD = new WhRequestDAO();
+                                int countReq = reqD.getCountRequestId(ship.getRequestId());
+                                if (countReq == 1) {
+                                    WhRequest reqUpdate = new WhRequest();
+                                    reqUpdate.setModifiedBy(userSession.getFullname());
+                                    reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                                    reqUpdate.setSfpkidPc(sfPkid.getResponseId().toString());
+                                    reqUpdate.setId(ship.getRequestId());
+                                    reqD = new WhRequestDAO();
+                                    QueryResult ru = reqD.updateWhRequestStatusWithSfpkidPc(reqUpdate);
+                                    if (ru.getResult() == 1) {
+                                        LOGGER.info("[MpList] - update status at request table done");
+                                    } else {
+                                        LOGGER.info("[MpList] - update status at request table failed");
+                                    }
+                                } else {
+                                    LOGGER.info("[MpList] - requestId not found");
+                                }
+
+                                String username = System.getProperty("user.name");
+                                if (!"fg79cj".equals(username)) {
+                                    username = "imperial";
+                                }
+                                File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+
+                                if (file.exists()) {
+                                    //create csv file
+                                    LOGGER.info("tiada header");
+                                    FileWriter fileWriter = null;
+                                    try {
+                                        fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv", true);
+                                        //New Line after the header
+                                        fileWriter.append(LINE_SEPARATOR);
+
+                                        //                            fileWriter.append(queryResult.getGeneratedKey());
+                                        fileWriter.append(whship.getRequestId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentType());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbA());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbAQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getProgramCard());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getProgramCardQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbC());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtr());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtrQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestQuantity());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(mpNo);
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getMpExpiryDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedBy());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestorEmail());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRemarks());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getCreatedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append("Shipped");
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        System.out.println("append to CSV file Succeed!!!");
+                                    } catch (Exception ee) {
+                                        ee.printStackTrace();
+                                    } finally {
+                                        try {
+                                            fileWriter.close();
+                                        } catch (IOException ie) {
+                                            System.out.println("Error occured while closing the fileWriter");
+                                            ie.printStackTrace();
+                                        }
+                                    }
+                                } else {
+                                    FileWriter fileWriter = null;
+                                    try {
+                                        fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+                                        LOGGER.info("no file yet");
+                                        //Adding the header
+                                        fileWriter.append(HEADER);
+
+                                        //New Line after the header
+                                        fileWriter.append(LINE_SEPARATOR);
+
+                                        fileWriter.append(whship.getRequestId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentType());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbA());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbAQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getProgramCard());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getProgramCardQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbC());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtr());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtrQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestQuantity());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(mpNo);
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getMpExpiryDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedBy());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestorEmail());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRemarks());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getCreatedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append("Shipped");
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        System.out.println("Write new to CSV file Succeed!!!");
+                                    } catch (Exception ee) {
+                                        ee.printStackTrace();
+                                    } finally {
+                                        try {
+                                            fileWriter.close();
+                                        } catch (IOException ie) {
+                                            System.out.println("Error occured while closing the fileWriter");
+                                            ie.printStackTrace();
+                                        }
+                                    }
+                                }
+                            } else {
+                                LOGGER.info("fail to update spts");
+                                //delete whMpList
+                                whMpListDAO = new WhMpListDAO();
+                                QueryResult queryResultDeleteFailed = whMpListDAO.deleteWhMpList(queryResult.getGeneratedKey());
+
+                                //update statusLog
+                                whshipD = new WhShippingDAO();
+                                WhShipping shipping = whshipD.getWhShipping(whship.getId());
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(shipping.getRequestId());
+                                stat.setModule("cdars_wh_mp_list");
+                                stat.setStatus("Failed to update SPTS");
+                                stat.setCreatedBy(userSession.getFullname());
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                                String messageError = "Failed to update SPTS. Please re-check!";
+                                redirectAttrs.addFlashAttribute("error", messageError);
+                                return "redirect:/wh/whShipping/whMpList/add";
+                            }
+                        } else {
+                            LOGGER.info("No need to update spts.Already have record in SfItem");
+                        }
+
+                    } else if ("Load Card & Program Card".equals(whship.getRequestEquipmentType())) {
+
+                        boolean flag = true;
+                        int itemPkidLc = 0;
+                        int itemPkidPc = 0;
+                        int sfpkidLc = 0;
+                        int sfpkidPc = 0;
+                        int transLc = 0;
+                        int transPc = 0;
+                        if (!"0".equals(whship.getLoadCardQty()) && !"".equals(whship.getLoadCard())) {
+
+                            //check dkt stps da transfer ke sf ke belum
+                            WhShippingDAO shipD = new WhShippingDAO();
+                            WhShipping checkSfPkid = shipD.getWhShippingSfpkidAndItemPkid(whship.getId());
+                            if ("0".equals(checkSfPkid.getSfpkidLc())) {
+
+                                //get pkid for pcb qual a
+                                System.out.println("GET ITEM BY PARAM...");
+                                JSONObject paramsA = new JSONObject();
+                                String itemIDQualA = whship.getLoadCard();
+                                paramsA.put("itemID", itemIDQualA);
+                                JSONArray getItemByParamQualA = SPTSWebService.getItemByParam(paramsA);
+                                for (int i = 0; i < getItemByParamQualA.length(); i++) {
+                                    System.out.println(getItemByParamQualA.getJSONObject(i));
+                                }
+                                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualA.length());
+                                int itempkidLc = getItemByParamQualA.getJSONObject(0).getInt("PKID");
+                                LOGGER.info("itempkidLc............." + itempkidLc);
+                                itemPkidLc = itempkidLc;
+
+                                //                        //insert transaction spts for pcb qual a
+                                JSONObject paramsA2 = new JSONObject();
+                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                Date date = new Date();
+                                String formattedDate = dateFormat.format(date);
+                                paramsA2.put("dateTime", formattedDate);
+                                paramsA2.put("itemsPKID", itemPkidLc);
+                                paramsA2.put("transType", "19");
+                                paramsA2.put("transQty", whship.getLoadCardQty());
+                                paramsA2.put("remarks", "send to storage factory through cdars");
+                                SPTSResponse TransPkidQualA = SPTSWebService.insertTransaction(paramsA2);
+                                System.out.println("TransPkidQualA: " + TransPkidQualA.getResponseId());
+
+                                if (TransPkidQualA.getResponseId() > 0) {
+                                    //insert sfitem spts for pcb qual a
+                                    JSONObject paramsA3 = new JSONObject();
+                                    paramsA3.put("itemPKID", itemPkidLc);
+                                    paramsA3.put("transactionPKID", TransPkidQualA.getResponseId());
+                                    paramsA3.put("sfItemStatus", "0");
+                                    paramsA3.put("sfRack", "");
+                                    paramsA3.put("sfShelf", "");
+                                    SPTSResponse sfPkidQualA = SPTSWebService.insertSFItem(paramsA3);
+                                    System.out.println("sfPkidQualA: " + sfPkidQualA.getResponseId());
+
+                                    transLc = TransPkidQualA.getResponseId();
+                                    sfpkidLc = sfPkidQualA.getResponseId();
+
+                                    //original place for update statusLog, Ship and Request table
+                                    //original place for insert to csv  
+                                } else {
+                                    flag = false;
+                                    //original place for delete whmplist and insert log if failed update spts
+                                }
+                            } else {
+                                LOGGER.info("No need to update spts.Already have record in SfItem");
+                            }
+                        }
+                        if (!"0".equals(whship.getProgramCardQty()) && !"".equals(whship.getProgramCard())) {
+
+                            //check dkt stps da transfer ke sf ke belum
+                            WhShippingDAO shipD = new WhShippingDAO();
+                            WhShipping checkSfPkid = shipD.getWhShippingSfpkidAndItemPkid(whship.getId());
+                            if ("0".equals(checkSfPkid.getSfpkidPc())) {
+                                //get pkid for pcb qual b
+                                System.out.println("GET ITEM BY PARAM...");
+                                JSONObject paramsB = new JSONObject();
+                                String itemIDQualB = whship.getProgramCard();
+                                paramsB.put("itemID", itemIDQualB);
+                                JSONArray getItemByParamQualB = SPTSWebService.getItemByParam(paramsB);
+                                for (int i = 0; i < getItemByParamQualB.length(); i++) {
+                                    System.out.println(getItemByParamQualB.getJSONObject(i));
+                                }
+                                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualB.length());
+                                int itempkidQualB = getItemByParamQualB.getJSONObject(0).getInt("PKID");
+                                LOGGER.info("itempkidQualB............." + itempkidQualB);
+                                itemPkidPc = itempkidQualB;
+
+                                //                        //insert transaction spts for pcb qual b
+                                JSONObject paramsB2 = new JSONObject();
+                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                Date date = new Date();
+                                String formattedDate = dateFormat.format(date);
+                                paramsB2.put("dateTime", formattedDate);
+                                paramsB2.put("itemsPKID", itemPkidPc);
+                                paramsB2.put("transType", "19");
+                                paramsB2.put("transQty", whship.getProgramCardQty());
+                                paramsB2.put("remarks", "send to storage factory through cdars");
+                                SPTSResponse TransPkidQualB = SPTSWebService.insertTransaction(paramsB2);
+                                System.out.println("TransPkidQualB: " + TransPkidQualB.getResponseId());
+
+                                if (TransPkidQualB.getResponseId() > 0) {
+                                    //
+                                    //                        //insert sfitem spts for pcb qual b
+                                    JSONObject paramsB3 = new JSONObject();
+                                    paramsB3.put("itemPKID", itempkidQualB);
+                                    paramsB3.put("transactionPKID", TransPkidQualB.getResponseId());
+                                    paramsB3.put("sfItemStatus", "0");
+                                    paramsB3.put("sfRack", "");
+                                    paramsB3.put("sfShelf", "");
+                                    SPTSResponse sfPkidQualB = SPTSWebService.insertSFItem(paramsB3);
+                                    System.out.println("sfPkidQualB: " + sfPkidQualB.getResponseId());
+
+                                    transPc = TransPkidQualB.getResponseId();
+                                    sfpkidPc = sfPkidQualB.getResponseId();
+
+                                    //original place for update statusLog, Ship and Request table
+//                                  
+                                    //original place for insert to csv  
+                                } else {
+
+                                    flag = false;
+                                    //original place for delete whmplist and insert log if failed update spts
+                                }
+                            } else {
+                                LOGGER.info("No need to update spts.Already have record in SfItem");
+                            }
+                        }
+                        if (flag == true) {
+
+                            //update statusLog
+                            whshipD = new WhShippingDAO();
+                            WhShipping shipping = whshipD.getWhShipping(whship.getId());
+
+                            WhStatusLog stat = new WhStatusLog();
+                            stat.setRequestId(shipping.getRequestId());
+                            stat.setModule("cdars_wh_mp_list");
+                            stat.setStatus("Ship to Seremban Factory");
+                            stat.setCreatedBy(userSession.getFullname());
+                            stat.setFlag("0");
+                            WhStatusLogDAO statD = new WhStatusLogDAO();
+                            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                            //update status, sfpkid, itempkid at shipping list to "Pending Shipment to Seremban Factory"
+                            WhShippingDAO shipD = new WhShippingDAO();
+                            WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
+
+                            WhShipping shipUpdate = new WhShipping();
+                            shipUpdate.setId(ship.getId());
+                            shipUpdate.setRequestId(ship.getRequestId());
+                            shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                            shipUpdate.setSfpkidLc(String.valueOf(sfpkidLc));
+                            shipUpdate.setSfpkidPc(String.valueOf(sfpkidPc));
+                            shipUpdate.setItempkid(String.valueOf("0"));
+                            WhShippingDAO shipDD = new WhShippingDAO();
+                            QueryResult u = shipDD.updateWhShippingStatusWithSfpkidLcAndSfpkidPc(shipUpdate);
+                            if (u.getResult() == 1) {
+                                LOGGER.info("Status Ship updated");
+                            } else {
+                                LOGGER.info("Status Ship updated failed");
+                            }
+
+                            //update status,sfpkid dkt master *request table     
+                            WhRequestDAO reqD = new WhRequestDAO();
+                            int countReq = reqD.getCountRequestId(ship.getRequestId());
+                            if (countReq == 1) {
+                                WhRequest reqUpdate = new WhRequest();
+                                reqUpdate.setModifiedBy(userSession.getFullname());
+                                reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                                reqUpdate.setSfpkidLc(String.valueOf(sfpkidLc));
+                                reqUpdate.setSfpkidPc(String.valueOf(sfpkidPc));
+                                reqUpdate.setId(ship.getRequestId());
+                                reqD = new WhRequestDAO();
+                                QueryResult ru = reqD.updateWhRequestStatusWithSfpkidLcAndSpkidPc(reqUpdate);
+                                if (ru.getResult() == 1) {
+                                    LOGGER.info("[MpList] - update status at request table done");
+                                } else {
+                                    LOGGER.info("[MpList] - update status at request table failed");
+                                }
+                            } else {
+                                LOGGER.info("[MpList] - requestId not found");
+                            }
+
+                            String username = System.getProperty("user.name");
+                            if (!"fg79cj".equals(username)) {
+                                username = "imperial";
+                            }
+                            File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+
+                            if (file.exists()) {
+                                //create csv file
+                                LOGGER.info("tiada header");
+                                FileWriter fileWriter = null;
+                                try {
+                                    fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv", true);
+                                    //New Line after the header
+                                    fileWriter.append(LINE_SEPARATOR);
+
+                                    //                            fileWriter.append(queryResult.getGeneratedKey());
+                                    fileWriter.append(whship.getRequestId());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestEquipmentType());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestEquipmentId());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getLoadCard());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getLoadCardQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getProgramCard());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getProgramCardQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbC());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbCQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbCtr());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbCtrQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestQuantity());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(mpNo);
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getMpExpiryDate());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestRequestedBy());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestRequestorEmail());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestRequestedDate());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRemarks());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getCreatedDate());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append("Shipped");
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    System.out.println("append to CSV file Succeed!!!");
+                                } catch (Exception ee) {
+                                    ee.printStackTrace();
+                                } finally {
+                                    try {
+                                        fileWriter.close();
+                                    } catch (IOException ie) {
+                                        System.out.println("Error occured while closing the fileWriter");
+                                        ie.printStackTrace();
+                                    }
+                                }
+                            } else {
+                                FileWriter fileWriter = null;
+                                try {
+                                    fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+                                    LOGGER.info("no file yet");
+                                    //Adding the header
+                                    fileWriter.append(HEADER);
+
+                                    //New Line after the header
+                                    fileWriter.append(LINE_SEPARATOR);
+
+                                    fileWriter.append(whship.getRequestId());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestEquipmentType());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestEquipmentId());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getLoadCard());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getLoadCardQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getProgramCard());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getProgramCardQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbC());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbCQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbCtr());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getPcbCtrQty());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestQuantity());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(mpNo);
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getMpExpiryDate());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestRequestedBy());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestRequestorEmail());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRequestRequestedDate());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getRemarks());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append(whship.getCreatedDate());
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    fileWriter.append("Shipped");
+                                    fileWriter.append(COMMA_DELIMITER);
+                                    System.out.println("Write new to CSV file Succeed!!!");
+                                } catch (Exception ee) {
+                                    ee.printStackTrace();
+                                } finally {
+                                    try {
+                                        fileWriter.close();
+                                    } catch (IOException ie) {
+                                        System.out.println("Error occured while closing the fileWriter");
+                                        ie.printStackTrace();
+                                    }
+                                }
+                            }
+
+                        } else {
+                            LOGGER.info("[PCB] - fail to update spts");
+
+                            if (transLc > 0) {
+                                //revert transaction for pcb qual a
+                                JSONObject paramsA2 = new JSONObject();
+                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                Date date = new Date();
+                                String formattedDate = dateFormat.format(date);
+                                paramsA2.put("dateTime", formattedDate);
+                                paramsA2.put("itemsPKID", itemPkidLc);
+                                paramsA2.put("transType", "20");
+                                paramsA2.put("transQty", whship.getLoadCardQty());
+                                paramsA2.put("remarks", "Cancel shipment to SBN Factory");
+                                SPTSResponse TransPkidQualA = SPTSWebService.insertTransaction(paramsA2);
+                                System.out.println("TransPkidQualA: " + TransPkidQualA.getResponseId());
+                                if (TransPkidQualA.getResponseId() > 0) {
+                                    LOGGER.info("transaction done pcb Qual A");
+
+                                    //get item from sfitem
+                                    System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+                                    JSONObject paramsQualA = new JSONObject();
+                                    paramsQualA.put("pkID", sfpkidLc);
+                                    JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+                                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+                                    int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+                                    String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+
+                                    //delete sfitem
+                                    JSONObject paramsdeleteSfA = new JSONObject();
+                                    paramsdeleteSfA.put("pkID", itemSfApkid);
+                                    paramsdeleteSfA.put("version", versionSfA);
+                                    SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
+                                } else {
+                                    LOGGER.info("transaction failed load card");
+                                }
+                            }
+
+                            if (transPc > 0) {
+                                //revert transaction for pcb qual b
+                                JSONObject paramsB2 = new JSONObject();
+                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                Date date = new Date();
+                                String formattedDate = dateFormat.format(date);
+                                paramsB2.put("dateTime", formattedDate);
+                                paramsB2.put("itemsPKID", itemPkidPc);
+                                paramsB2.put("transType", "20");
+                                paramsB2.put("transQty", whship.getProgramCardQty());
+                                paramsB2.put("remarks", "Cancel shipment to SBN Factory");
+                                SPTSResponse TransPkidQualB = SPTSWebService.insertTransaction(paramsB2);
+                                System.out.println("TransPkidQualB: " + TransPkidQualB.getResponseId());
+                                if (TransPkidQualB.getResponseId() > 0) {
+                                    LOGGER.info("transaction done pcb Qual B");
+
+                                    //get item from sfitem
+                                    System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
+                                    JSONObject paramsQualB = new JSONObject();
+                                    paramsQualB.put("pkID", sfpkidPc);
+                                    JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
+                                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
+                                    int itemSfBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
+                                    String versionSfA = getItemByParamB.getJSONObject(0).getString("Version");
+
+                                    //delete sfitem
+                                    JSONObject paramsdeleteSfB = new JSONObject();
+                                    paramsdeleteSfB.put("pkID", itemSfBpkid);
+                                    paramsdeleteSfB.put("version", versionSfA);
+                                    SPTSResponse deleteB = SPTSWebService.DeleteSFItem(paramsdeleteSfB);
+                                } else {
+                                    LOGGER.info("transaction failed pcb Qual B");
+                                }
+
+                            }
+                            //delete whMpList
+                            whMpListDAO = new WhMpListDAO();
+                            QueryResult queryResultDeleteFailed = whMpListDAO.deleteWhMpList(queryResult.getGeneratedKey());
+
+                            //update statusLog
+                            whshipD = new WhShippingDAO();
+                            WhShipping shipping = whshipD.getWhShipping(whship.getId());
+                            WhStatusLog stat = new WhStatusLog();
+                            stat.setRequestId(shipping.getRequestId());
+                            stat.setModule("cdars_wh_mp_list");
+                            stat.setStatus("Failed to update SPTS");
+                            stat.setCreatedBy(userSession.getFullname());
+                            stat.setFlag("0");
+                            WhStatusLogDAO statD = new WhStatusLogDAO();
+                            QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                            String messageError = "Failed to update SPTS. Please re-check!";
+                            redirectAttrs.addFlashAttribute("error", messageError);
+                            return "redirect:/wh/whShipping/whMpList/add";
+                        }
                     } else if ("PCB".equals(whship.getRequestEquipmentType())) {
 
                         boolean flag = true;
@@ -1342,6 +2271,264 @@ public class WhMpListController {
                             redirectAttrs.addFlashAttribute("error", messageError);
                             return "redirect:/wh/whShipping/whMpList/add";
                         }
+                    } //utk sume eqpt & ate
+                    else {
+
+                        //check dkt stps da transfer ke sf ke belum
+                        WhShippingDAO shipD = new WhShippingDAO();
+                        WhShipping checkSfPkid = shipD.getWhShippingSfpkidAndItemPkid(whship.getId());
+                        if ("0".equals(checkSfPkid.getSfpkid())) {
+
+                            //get pkid
+                            System.out.println("GET ITEM BY PARAM...");
+                            JSONObject params0 = new JSONObject();
+                            String itemID = whship.getRequestEquipmentId();
+                            params0.put("itemID", itemID);
+                            JSONArray getItemByParam = SPTSWebService.getItemByParam(params0);
+                            for (int i = 0; i < getItemByParam.length(); i++) {
+                                System.out.println(getItemByParam.getJSONObject(i));
+                            }
+                            System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParam.length());
+                            int itempkid = getItemByParam.getJSONObject(0).getInt("PKID");
+                            LOGGER.info("itempkid............." + itempkid);
+
+                            //                        //insert transaction spts
+                            JSONObject params2 = new JSONObject();
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            //get current date time with Date()
+                            Date date = new Date();
+                            String formattedDate = dateFormat.format(date);
+                            params2.put("dateTime", formattedDate);
+                            params2.put("itemsPKID", itempkid);
+                            params2.put("transType", "19");
+                            params2.put("transQty", whship.getRequestQuantity());
+                            params2.put("remarks", "send to storage factory through cdars");
+                            SPTSResponse TransPkid = SPTSWebService.insertTransaction(params2);
+                            System.out.println("transPKID: " + TransPkid.getResponseId());
+
+                            if (TransPkid.getResponseId() > 0) {
+                                //                        //insert sfitem spts
+                                JSONObject params3 = new JSONObject();
+                                params3.put("itemPKID", itempkid);
+                                params3.put("transactionPKID", TransPkid.getResponseId());
+                                params3.put("sfItemStatus", "0");
+                                params3.put("sfRack", "");
+                                params3.put("sfShelf", "");
+                                SPTSResponse sfPkid = SPTSWebService.insertSFItem(params3);
+                                System.out.println("sfPKID: " + sfPkid.getResponseId());
+
+                                //update statusLog
+                                whshipD = new WhShippingDAO();
+                                WhShipping shipping = whshipD.getWhShipping(whship.getId());
+
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(shipping.getRequestId());
+                                stat.setModule("cdars_wh_mp_list");
+                                stat.setStatus("Ship to Seremban Factory");
+                                stat.setCreatedBy(userSession.getFullname());
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                                if (queryResultStat.getGeneratedKey().equals("0")) {
+                                    LOGGER.info("[WhRequest] - insert status log failed");
+                                } else {
+                                    LOGGER.info("[WhRequest] - insert status log done");
+                                }
+
+                                //update status, sfpkid, itempkid at shipping list to "Pending Shipment to Seremban Factory"
+                                shipD = new WhShippingDAO();
+                                WhShipping ship = shipD.getWhShippingMergeWithRequestByMpNo(mpNo);
+
+                                WhShipping shipUpdate = new WhShipping();
+                                shipUpdate.setId(ship.getId());
+                                shipUpdate.setRequestId(ship.getRequestId());
+                                shipUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                                shipUpdate.setSfpkid(sfPkid.getResponseId().toString());
+                                shipUpdate.setItempkid(String.valueOf(itempkid));
+                                WhShippingDAO shipDD = new WhShippingDAO();
+                                QueryResult u = shipDD.updateWhShippingStatusWithItemPkidAndSfpkid(shipUpdate);
+                                if (u.getResult() == 1) {
+                                    LOGGER.info("Status Ship updated");
+                                } else {
+                                    LOGGER.info("Status Ship updated failed");
+                                }
+
+                                //update status,sfpkid dkt master *request table     
+                                WhRequestDAO reqD = new WhRequestDAO();
+                                int countReq = reqD.getCountRequestId(ship.getRequestId());
+                                if (countReq == 1) {
+                                    WhRequest reqUpdate = new WhRequest();
+                                    reqUpdate.setModifiedBy(userSession.getFullname());
+                                    reqUpdate.setStatus("Pending Shipment to Seremban Factory"); //as requested 2/11/16
+                                    reqUpdate.setSfpkid(sfPkid.getResponseId().toString());
+                                    reqUpdate.setId(ship.getRequestId());
+                                    reqD = new WhRequestDAO();
+                                    QueryResult ru = reqD.updateWhRequestStatusWithSfpkid(reqUpdate);
+                                    if (ru.getResult() == 1) {
+                                        LOGGER.info("[MpList] - update status at request table done");
+                                    } else {
+                                        LOGGER.info("[MpList] - update status at request table failed");
+                                    }
+                                } else {
+                                    LOGGER.info("[MpList] - requestId not found");
+                                }
+
+                                String username = System.getProperty("user.name");
+                                if (!"fg79cj".equals(username)) {
+                                    username = "imperial";
+                                }
+                                File file = new File("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+
+                                if (file.exists()) {
+                                    //create csv file
+                                    LOGGER.info("tiada header");
+                                    FileWriter fileWriter = null;
+                                    try {
+                                        fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv", true);
+                                        //New Line after the header
+                                        fileWriter.append(LINE_SEPARATOR);
+
+                                        //                            fileWriter.append(queryResult.getGeneratedKey());
+                                        fileWriter.append(whship.getRequestId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentType());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbA());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbAQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbB());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbBQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbC());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtr());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtrQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestQuantity());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(mpNo);
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getMpExpiryDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedBy());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestorEmail());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRemarks());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getCreatedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append("Shipped");
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        System.out.println("append to CSV file Succeed!!!");
+                                    } catch (Exception ee) {
+                                        ee.printStackTrace();
+                                    } finally {
+                                        try {
+                                            fileWriter.close();
+                                        } catch (IOException ie) {
+                                            System.out.println("Error occured while closing the fileWriter");
+                                            ie.printStackTrace();
+                                        }
+                                    }
+                                } else {
+                                    FileWriter fileWriter = null;
+                                    try {
+                                        fileWriter = new FileWriter("C:\\Users\\" + username + "\\Documents\\CDARS\\cdars_shipping.csv");
+                                        LOGGER.info("no file yet");
+                                        //Adding the header
+                                        fileWriter.append(HEADER);
+
+                                        //New Line after the header
+                                        fileWriter.append(LINE_SEPARATOR);
+
+                                        fileWriter.append(whship.getRequestId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentType());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestEquipmentId());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbA());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbAQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbB());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbBQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbC());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtr());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getPcbCtrQty());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestQuantity());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(mpNo);
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getMpExpiryDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedBy());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestorEmail());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRequestRequestedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getRemarks());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append(whship.getCreatedDate());
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        fileWriter.append("Shipped");
+                                        fileWriter.append(COMMA_DELIMITER);
+                                        System.out.println("Write new to CSV file Succeed!!!");
+                                    } catch (Exception ee) {
+                                        ee.printStackTrace();
+                                    } finally {
+                                        try {
+                                            fileWriter.close();
+                                        } catch (IOException ie) {
+                                            System.out.println("Error occured while closing the fileWriter");
+                                            ie.printStackTrace();
+                                        }
+                                    }
+                                }
+                            } else {
+                                LOGGER.info("fail to update spts");
+                                //delete whMpList
+                                whMpListDAO = new WhMpListDAO();
+                                QueryResult queryResultDeleteFailed = whMpListDAO.deleteWhMpList(queryResult.getGeneratedKey());
+
+                                //update statusLog
+                                whshipD = new WhShippingDAO();
+                                WhShipping shipping = whshipD.getWhShipping(whship.getId());
+                                WhStatusLog stat = new WhStatusLog();
+                                stat.setRequestId(shipping.getRequestId());
+                                stat.setModule("cdars_wh_mp_list");
+                                stat.setStatus("Failed to update SPTS");
+                                stat.setCreatedBy(userSession.getFullname());
+                                stat.setFlag("0");
+                                WhStatusLogDAO statD = new WhStatusLogDAO();
+                                QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                                String messageError = "Failed to update SPTS. Please re-check!";
+                                redirectAttrs.addFlashAttribute("error", messageError);
+                                return "redirect:/wh/whShipping/whMpList/add";
+                            }
+                        } else {
+                            LOGGER.info("No need to update spts.Already have record in SfItem");
+                        }
+
                     }
                     redirectAttrs.addFlashAttribute("success", messageSource.getMessage("general.label.save.success", args, locale));
                 }
@@ -1459,8 +2646,8 @@ public class WhMpListController {
         EmailSender emailSenderToHIMSSF = new EmailSender();
         com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
         user.setFullname("HIMS SF");
-//        String[] to = {"hmsrelon@gmail.com"}; //9/1/16
-        String[] to = {"hmsrelontest@gmail.com"};
+        String[] to = {"hmsrelon@gmail.com"}; //9/1/16
+//        String[] to = {"hmsrelontest@gmail.com"};
         emailSenderToHIMSSF.htmlEmailWithAttachment(
                 servletContext,
                 //                    user name
@@ -1474,15 +2661,17 @@ public class WhMpListController {
                 //                    msg
                 "New hardware will be ship to storage factory. "
         );
-//
+////
         whMpListDAO = new WhMpListDAO();
         List<WhMpList> packingList = whMpListDAO.getWhMpListListDateDisplay();
-        LOGGER.info("send email to person in charge");
+//        LOGGER.info("send email to person in charge");
         EmailSender emailSender = new EmailSender();
         com.onsemi.cdars.model.User user2 = new com.onsemi.cdars.model.User();
         user2.setFullname("All");
 //        String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
-         String[] to2 = {"sbnfactory@gmail.com"};
+        String[] to2 = {"sbnfactory@gmail.com"};
+//        String[] to2 = {"fg79cj@onsemi.com"};
+
 
         emailSender.htmlEmailManyTo(
                 servletContext,
@@ -1887,6 +3076,340 @@ public class WhMpListController {
                         QueryResult queryResultStat = statD.insertWhStatusLog(stat);
                     } else {
                         LOGGER.info("transaction failed pcb Ctr");
+                    }
+                }
+            } else if ("Load Card".equals(wh.getRequestEquipmentType())) {
+
+                System.out.println("GET ITEM PCB A BY PARAM...");
+                JSONObject paramsA = new JSONObject();
+                String itemIDQualA = wh.getLoadCard();
+                paramsA.put("itemID", itemIDQualA);
+                JSONArray getItemByParamQualA = SPTSWebService.getItemByParam(paramsA);
+                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualA.length());
+                int itempkidQualA = getItemByParamQualA.getJSONObject(0).getInt("PKID");
+                LOGGER.info("itempkidQualA............." + itempkidQualA);
+
+                //insert transaction spts for pcb qual a
+                JSONObject paramsA2 = new JSONObject();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                String formattedDate = dateFormat.format(date);
+                paramsA2.put("dateTime", formattedDate);
+                paramsA2.put("itemsPKID", itempkidQualA);
+                paramsA2.put("transType", "20");
+                paramsA2.put("transQty", wh.getLoadCardQty());
+                paramsA2.put("remarks", "Cancel shipment to SBN Factory");
+                SPTSResponse TransPkidQualA = SPTSWebService.insertTransaction(paramsA2);
+                System.out.println("TransPkidQualA: " + TransPkidQualA.getResponseId());
+
+                if (TransPkidQualA.getResponseId() > 0) {
+                    LOGGER.info("transaction done pcb Qual A");
+
+                    WhRequestDAO reqD = new WhRequestDAO();
+                    WhRequest reqSf = reqD.getWhRequest(wh.getRequestId());
+
+                    //get item from sfitem
+                    System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+                    JSONObject paramsQualA = new JSONObject();
+                    paramsQualA.put("pkID", reqSf.getSfpkidLc());
+                    JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+                    int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+                    String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+
+                    //delete sfitem
+                    JSONObject paramsdeleteSfA = new JSONObject();
+                    paramsdeleteSfA.put("pkID", itemSfApkid);
+                    paramsdeleteSfA.put("version", versionSfA);
+                    SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
+                    if (deleteA.getStatus()) {
+                        System.out.println("Delete Success pcb A: " + itemIDQualA);
+                    } else {
+                        System.out.println("Delete Failed pcb A: " + itemIDQualA);
+                    }
+
+                    //update ship table
+                    WhShipping shipUpdate1 = new WhShipping();
+                    shipUpdate1.setId(whMpList.getWhShipId());
+                    shipUpdate1.setRequestId(wh.getRequestId());
+                    shipUpdate1.setStatus("Pending Packing List"); //as requested 2/11/16
+                    shipUpdate1.setItempkid(wh.getItempkid());
+                    shipUpdate1.setSfpkidLc("0");
+                    WhShippingDAO ushipDD = new WhShippingDAO();
+                    QueryResult u1 = ushipDD.updateWhShippingStatusWithItemPkidAndSfpkidLc(shipUpdate1);
+
+                    //update request table      
+                    WhRequestDAO reqUpdateDAO = new WhRequestDAO();
+                    WhRequest requpdateBack = reqUpdateDAO.getWhRequest(wh.getRequestId());
+                    requpdateBack.setModifiedBy(userSession.getFullname());
+                    requpdateBack.setStatus("Pending Packing List"); //as requested 2/11/16
+                    requpdateBack.setSfpkidLc("0");
+                    requpdateBack.setId(wh.getRequestId());
+                    reqUpdateDAO = new WhRequestDAO();
+                    QueryResult ru1 = reqUpdateDAO.updateWhRequestStatusWithSfpkidLc(requpdateBack);
+
+                    //update statusLog
+                    WhStatusLog stat = new WhStatusLog();
+                    stat.setRequestId(whMpListId);
+                    stat.setModule("cdars_wh_mp_list");
+                    stat.setStatus("Deleted from Packing List");
+                    stat.setCreatedBy(userSession.getFullname());
+                    stat.setFlag("0");
+                    WhStatusLogDAO statD = new WhStatusLogDAO();
+                    QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                } else {
+                    LOGGER.info("transaction failed pcb Qual A");
+                }
+
+            } else if ("Program Card".equals(wh.getRequestEquipmentType())) {
+
+                System.out.println("GET ITEM PCB A BY PARAM...");
+                JSONObject paramsA = new JSONObject();
+                String itemIDQualA = wh.getProgramCard();
+                paramsA.put("itemID", itemIDQualA);
+                JSONArray getItemByParamQualA = SPTSWebService.getItemByParam(paramsA);
+                System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualA.length());
+                int itempkidQualA = getItemByParamQualA.getJSONObject(0).getInt("PKID");
+                LOGGER.info("itempkidQualA............." + itempkidQualA);
+
+                //insert transaction spts for pcb qual a
+                JSONObject paramsA2 = new JSONObject();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = new Date();
+                String formattedDate = dateFormat.format(date);
+                paramsA2.put("dateTime", formattedDate);
+                paramsA2.put("itemsPKID", itempkidQualA);
+                paramsA2.put("transType", "20");
+                paramsA2.put("transQty", wh.getProgramCardQty());
+                paramsA2.put("remarks", "Cancel shipment to SBN Factory");
+                SPTSResponse TransPkidQualA = SPTSWebService.insertTransaction(paramsA2);
+                System.out.println("TransPkidQualA: " + TransPkidQualA.getResponseId());
+
+                if (TransPkidQualA.getResponseId() > 0) {
+                    LOGGER.info("transaction done pcb Qual A");
+
+                    WhRequestDAO reqD = new WhRequestDAO();
+                    WhRequest reqSf = reqD.getWhRequest(wh.getRequestId());
+
+                    //get item from sfitem
+                    System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+                    JSONObject paramsQualA = new JSONObject();
+                    paramsQualA.put("pkID", reqSf.getSfpkidPc());
+                    JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+                    int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+                    String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+
+                    //delete sfitem
+                    JSONObject paramsdeleteSfA = new JSONObject();
+                    paramsdeleteSfA.put("pkID", itemSfApkid);
+                    paramsdeleteSfA.put("version", versionSfA);
+                    SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
+                    if (deleteA.getStatus()) {
+                        System.out.println("Delete Success pcb A: " + itemIDQualA);
+                    } else {
+                        System.out.println("Delete Failed pcb A: " + itemIDQualA);
+                    }
+
+                    //update ship table
+                    WhShipping shipUpdate1 = new WhShipping();
+                    shipUpdate1.setId(whMpList.getWhShipId());
+                    shipUpdate1.setRequestId(wh.getRequestId());
+                    shipUpdate1.setStatus("Pending Packing List"); //as requested 2/11/16
+                    shipUpdate1.setItempkid(wh.getItempkid());
+                    shipUpdate1.setSfpkidPc("0");
+                    WhShippingDAO ushipDD = new WhShippingDAO();
+                    QueryResult u1 = ushipDD.updateWhShippingStatusWithItemPkidAndSfpkidPc(shipUpdate1);
+
+                    //update request table      
+                    WhRequestDAO reqUpdateDAO = new WhRequestDAO();
+                    WhRequest requpdateBack = reqUpdateDAO.getWhRequest(wh.getRequestId());
+                    requpdateBack.setModifiedBy(userSession.getFullname());
+                    requpdateBack.setStatus("Pending Packing List"); //as requested 2/11/16
+                    requpdateBack.setSfpkidPc("0");
+                    requpdateBack.setId(wh.getRequestId());
+                    reqUpdateDAO = new WhRequestDAO();
+                    QueryResult ru1 = reqUpdateDAO.updateWhRequestStatusWithSfpkidPc(requpdateBack);
+
+                    //update statusLog
+                    WhStatusLog stat = new WhStatusLog();
+                    stat.setRequestId(whMpListId);
+                    stat.setModule("cdars_wh_mp_list");
+                    stat.setStatus("Deleted from Packing List");
+                    stat.setCreatedBy(userSession.getFullname());
+                    stat.setFlag("0");
+                    WhStatusLogDAO statD = new WhStatusLogDAO();
+                    QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                } else {
+                    LOGGER.info("transaction failed pcb Qual A");
+                }
+
+            } else if ("Load Card & Program Card".equals(wh.getRequestEquipmentType())) {
+                if (!"0".equals(wh.getLoadCardQty())) {
+                    System.out.println("GET ITEM PCB A BY PARAM...");
+                    JSONObject paramsA = new JSONObject();
+                    String itemIDQualA = wh.getLoadCard();
+                    paramsA.put("itemID", itemIDQualA);
+                    JSONArray getItemByParamQualA = SPTSWebService.getItemByParam(paramsA);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualA.length());
+                    int itempkidQualA = getItemByParamQualA.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkidQualA............." + itempkidQualA);
+
+                    //insert transaction spts for pcb qual a
+                    JSONObject paramsA2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    paramsA2.put("dateTime", formattedDate);
+                    paramsA2.put("itemsPKID", itempkidQualA);
+                    paramsA2.put("transType", "20");
+                    paramsA2.put("transQty", wh.getLoadCardQty());
+                    paramsA2.put("remarks", "Cancel shipment to SBN Factory");
+                    SPTSResponse TransPkidQualA = SPTSWebService.insertTransaction(paramsA2);
+                    System.out.println("TransPkidQualA: " + TransPkidQualA.getResponseId());
+
+                    if (TransPkidQualA.getResponseId() > 0) {
+                        LOGGER.info("transaction done pcb Qual A");
+
+                        WhRequestDAO reqD = new WhRequestDAO();
+                        WhRequest reqSf = reqD.getWhRequest(wh.getRequestId());
+
+                        //get item from sfitem
+                        System.out.println("GET SFITEM PCB QUAL A BY PARAM...");
+                        JSONObject paramsQualA = new JSONObject();
+                        paramsQualA.put("pkID", reqSf.getSfpkidLc());
+                        JSONArray getItemByParamA = SPTSWebService.getSFItemByParam(paramsQualA);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamA.length());
+                        int itemSfApkid = getItemByParamA.getJSONObject(0).getInt("PKID");
+                        String versionSfA = getItemByParamA.getJSONObject(0).getString("Version");
+
+                        //delete sfitem
+                        JSONObject paramsdeleteSfA = new JSONObject();
+                        paramsdeleteSfA.put("pkID", itemSfApkid);
+                        paramsdeleteSfA.put("version", versionSfA);
+                        SPTSResponse deleteA = SPTSWebService.DeleteSFItem(paramsdeleteSfA);
+                        if (deleteA.getStatus()) {
+                            System.out.println("Delete Success Load Card: " + itemIDQualA);
+                        } else {
+                            System.out.println("Delete Failed Load Card: " + itemIDQualA);
+                        }
+
+                        //update ship table
+                        WhShipping shipUpdate1 = new WhShipping();
+                        shipUpdate1.setId(whMpList.getWhShipId());
+                        shipUpdate1.setRequestId(wh.getRequestId());
+                        shipUpdate1.setStatus("Pending Packing List"); //as requested 2/11/16
+                        shipUpdate1.setItempkid(wh.getItempkid());
+                        shipUpdate1.setSfpkidLc("0");
+                        WhShippingDAO ushipDD = new WhShippingDAO();
+                        QueryResult u1 = ushipDD.updateWhShippingStatusWithItemPkidAndSfpkidLc(shipUpdate1);
+
+                        //update request table      
+                        WhRequestDAO reqUpdateDAO = new WhRequestDAO();
+                        WhRequest requpdateBack = reqUpdateDAO.getWhRequest(wh.getRequestId());
+                        requpdateBack.setModifiedBy(userSession.getFullname());
+                        requpdateBack.setStatus("Pending Packing List"); //as requested 2/11/16
+                        requpdateBack.setSfpkidLc("0");
+                        requpdateBack.setId(wh.getRequestId());
+                        reqUpdateDAO = new WhRequestDAO();
+                        QueryResult ru1 = reqUpdateDAO.updateWhRequestStatusWithSfpkidLc(requpdateBack);
+
+                        //update statusLog
+                        WhStatusLog stat = new WhStatusLog();
+                        stat.setRequestId(whMpListId);
+                        stat.setModule("cdars_wh_mp_list");
+                        stat.setStatus("Deleted from Packing List");
+                        stat.setCreatedBy(userSession.getFullname());
+                        stat.setFlag("0");
+                        WhStatusLogDAO statD = new WhStatusLogDAO();
+                        QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+
+                    } else {
+                        LOGGER.info("transaction failed pcb Qual A");
+                    }
+                }
+                if (!"0".equals(wh.getProgramCardQty())) {
+                    System.out.println("GET ITEM PCB B BY PARAM...");
+                    JSONObject paramsB = new JSONObject();
+                    String itemIDQualB = wh.getProgramCard();
+                    paramsB.put("itemID", itemIDQualB);
+                    JSONArray getItemByParamQualB = SPTSWebService.getItemByParam(paramsB);
+                    System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamQualB.length());
+                    int itempkidQualB = getItemByParamQualB.getJSONObject(0).getInt("PKID");
+                    LOGGER.info("itempkidQualB............." + itempkidQualB);
+
+                    //                        //insert transaction spts for pcb qual b
+                    JSONObject paramsB2 = new JSONObject();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String formattedDate = dateFormat.format(date);
+                    paramsB2.put("dateTime", formattedDate);
+                    paramsB2.put("itemsPKID", itempkidQualB);
+                    paramsB2.put("transType", "20");
+                    paramsB2.put("transQty", wh.getProgramCardQty());
+                    paramsB2.put("remarks", "Cancel shipment to SBN Factory");
+                    SPTSResponse TransPkidQualB = SPTSWebService.insertTransaction(paramsB2);
+                    System.out.println("TransPkidQualB: " + TransPkidQualB.getResponseId());
+
+                    if (TransPkidQualB.getResponseId() > 0) {
+                        LOGGER.info("transaction done pcb Qual B");
+
+                        WhRequestDAO reqD = new WhRequestDAO();
+                        WhRequest reqSf = reqD.getWhRequest(wh.getRequestId());
+
+                        //get item from sfitem
+                        System.out.println("GET SFITEM PCB QUAL B BY PARAM...");
+                        JSONObject paramsQualB = new JSONObject();
+                        paramsQualB.put("pkID", reqSf.getSfpkidPc());
+                        JSONArray getItemByParamB = SPTSWebService.getSFItemByParam(paramsQualB);
+                        System.out.println("COUNT GET ITEM BY PARAM..." + getItemByParamB.length());
+                        int itemSfBpkid = getItemByParamB.getJSONObject(0).getInt("PKID");
+                        String versionSfB = getItemByParamB.getJSONObject(0).getString("Version");
+
+                        //delete sfitem
+                        JSONObject paramsdeleteSfB = new JSONObject();
+                        paramsdeleteSfB.put("pkID", itemSfBpkid);
+                        paramsdeleteSfB.put("version", versionSfB);
+                        SPTSResponse deleteB = SPTSWebService.DeleteSFItem(paramsdeleteSfB);
+                        if (deleteB.getStatus()) {
+                            System.out.println("Delete Success pcb B: " + itemIDQualB);
+                        } else {
+                            System.out.println("Delete Failed pcb B: " + itemIDQualB);
+                        }
+
+                        //update ship table
+                        WhShipping shipUpdate1 = new WhShipping();
+                        shipUpdate1.setId(whMpList.getWhShipId());
+                        shipUpdate1.setRequestId(wh.getRequestId());
+                        shipUpdate1.setStatus("Pending Packing List"); //as requested 2/11/16
+                        shipUpdate1.setItempkid(wh.getItempkid());
+                        shipUpdate1.setSfpkidPc("0");
+                        WhShippingDAO ushipDD = new WhShippingDAO();
+                        QueryResult u1 = ushipDD.updateWhShippingStatusWithItemPkidAndSfpkidPc(shipUpdate1);
+
+                        //update request table      
+                        WhRequestDAO reqUpdateDAO = new WhRequestDAO();
+                        WhRequest requpdateBack = reqUpdateDAO.getWhRequest(wh.getRequestId());
+                        requpdateBack.setModifiedBy(userSession.getFullname());
+                        requpdateBack.setStatus("Pending Packing List"); //as requested 2/11/16
+                        requpdateBack.setSfpkidPc("0");
+                        requpdateBack.setId(wh.getRequestId());
+                        reqUpdateDAO = new WhRequestDAO();
+                        QueryResult ru1 = reqUpdateDAO.updateWhRequestStatusWithSfpkidPc(requpdateBack);
+
+                        //update statusLog
+                        WhStatusLog stat = new WhStatusLog();
+                        stat.setRequestId(whMpListId);
+                        stat.setModule("cdars_wh_mp_list");
+                        stat.setStatus("Deleted from Packing List");
+                        stat.setCreatedBy(userSession.getFullname());
+                        stat.setFlag("0");
+                        WhStatusLogDAO statD = new WhStatusLogDAO();
+                        QueryResult queryResultStat = statD.insertWhStatusLog(stat);
+                    } else {
+                        LOGGER.info("transaction failed pcb Qual B");
                     }
                 }
             } else {

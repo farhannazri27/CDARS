@@ -1,8 +1,12 @@
 package com.onsemi.cdars.controller;
 
+import com.onsemi.cdars.dao.CardPairingDAO;
 import com.onsemi.cdars.dao.EmailConfigDAO;
+import com.onsemi.cdars.dao.MasterGroupDAO;
 import com.onsemi.cdars.dao.ParameterDetailsDAO;
 import com.onsemi.cdars.dao.PcbLimitDAO;
+import com.onsemi.cdars.dao.UserDAO;
+import com.onsemi.cdars.dao.UserGroupDAO;
 import com.onsemi.cdars.dao.WhInventoryDAO;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,9 +17,13 @@ import com.onsemi.cdars.dao.WhRequestDAO;
 import com.onsemi.cdars.dao.WhRetrievalDAO;
 import com.onsemi.cdars.dao.WhShippingDAO;
 import com.onsemi.cdars.dao.WhStatusLogDAO;
+import com.onsemi.cdars.model.CardPairing;
 import com.onsemi.cdars.model.EmailConfig;
+import com.onsemi.cdars.model.MasterGroup;
 import com.onsemi.cdars.model.ParameterDetails;
 import com.onsemi.cdars.model.PcbLimit;
+import com.onsemi.cdars.model.User;
+import com.onsemi.cdars.model.UserGroup;
 import com.onsemi.cdars.model.WhRequest;
 import com.onsemi.cdars.model.UserSession;
 import com.onsemi.cdars.model.WhInventory;
@@ -81,8 +89,20 @@ public class WhRequestController {
             Model model, @ModelAttribute UserSession userSession
     ) {
         WhRequestDAO whRequestDAO = new WhRequestDAO();
-        List<WhRequest> whRequestList = whRequestDAO.getWhRequestListWithoutRetrievalAndStatusApproved();
+//        List<WhRequest> whRequestList = whRequestDAO.getWhRequestListWithoutRetrievalAndStatusApproved();
         String groupId = userSession.getGroup();
+        UserGroupDAO userD = new UserGroupDAO();
+        UserGroup userGroup = userD.getGroup(groupId);
+        String mgId = "";
+        if (userGroup.getMasterGroupId().equals("0")) {
+            mgId = "3";
+        } else {
+            mgId = userGroup.getMasterGroupId();
+        }
+        MasterGroupDAO masterGroupD = new MasterGroupDAO();
+        MasterGroup masterGroup = masterGroupD.getMasterGroup(mgId);
+        String type = masterGroup.getType();
+        List<WhRequest> whRequestList = whRequestDAO.getWhRequestListWithoutRetrievalAndStatusApprovedBasedMasterGroupId(type);
 
         model.addAttribute("whRequestList", whRequestList);
         model.addAttribute("groupId", groupId);
@@ -90,10 +110,8 @@ public class WhRequestController {
         return "whRequest/whRequest";
     }
 
-    @RequestMapping(value = "/whRequest/add", method = RequestMethod.GET)
-    public String add(Model model, @ModelAttribute UserSession userSession)
-            throws IOException {
-
+    @RequestMapping(value = "/whRequest/request", method = RequestMethod.GET)
+    public String request(Model model) {
         ParameterDetailsDAO sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> requestType = sDAO.getGroupParameterDetailList("", "006");
 
@@ -103,89 +121,376 @@ public class WhRequestController {
         sDAO = new ParameterDetailsDAO();
         List<ParameterDetails> retrievalReason = sDAO.getGroupParameterDetailList("", "017");
 
-        WhInventoryDAO inventory = new WhInventoryDAO();
-        List<WhInventory> inventoryListMb = inventory.getWhInventoryMbActiveList("");
-
-        inventory = new WhInventoryDAO();
-        List<WhInventory> inventoryListStencil = inventory.getWhInventoryStencilActiveList("");
-
-        inventory = new WhInventoryDAO();
-        List<WhInventory> inventoryListTray = inventory.getWhInventoryTrayActiveList("");
-
-        inventory = new WhInventoryDAO();
-        List<WhInventory> inventoryListPCB = inventory.getWhInventoryPCBActiveList("");
-
-        PcbLimitDAO pcbDao = new PcbLimitDAO();
-        List< PcbLimit> pcbType = pcbDao.getPcbLimitList2("");
-
-        JSONObject paramBib = new JSONObject();
-        paramBib.put("itemType", "BIB");
-        paramBib.put("itemStatus", "0");
-        paramBib.put("status", "1");
-        JSONArray getItemByParamBib = SPTSWebService.getItemByParam(paramBib);
-        List<LinkedHashMap<String, String>> itemListbib = SystemUtil.jsonArrayToList(getItemByParamBib);
-
-        JSONObject paramTray = new JSONObject();
-        paramTray.put("itemType", "TRAY");
-        paramTray.put("itemStatus", "0");
-//        paramTray.put("status", "1");
-        JSONArray getItemByParamTray = SPTSWebService.getItemByParam(paramTray);
-        List<LinkedHashMap<String, String>> itemListtray = SystemUtil.jsonArrayToList(getItemByParamTray);
-
-        JSONObject paramStencil = new JSONObject();
-        paramStencil.put("itemType", "Stencil");
-        paramStencil.put("itemStatus", "0");
-        paramStencil.put("status", "1");
-        JSONArray getItemByParamStencil = SPTSWebService.getItemByParam(paramStencil);
-        List<LinkedHashMap<String, String>> stencil = SystemUtil.jsonArrayToList(getItemByParamStencil);
-
-        JSONObject paramPcbA = new JSONObject();
-        paramPcbA.put("itemType", "PCB%");
-        paramPcbA.put("itemStatus", "0");
-        paramPcbA.put("itemID", "%QUAL A");
-        JSONArray getItemByParamPcbA = SPTSWebService.getItemByParam(paramPcbA);
-        List<LinkedHashMap<String, String>> itemListpcbQualA = SystemUtil.jsonArrayToList(getItemByParamPcbA);
-
-        JSONObject paramPcbB = new JSONObject();
-        paramPcbB.put("itemType", "PCB%");
-        paramPcbB.put("itemStatus", "0");
-        paramPcbB.put("itemID", "%QUAL B");
-        JSONArray getItemByParamPcbB = SPTSWebService.getItemByParam(paramPcbB);
-        List<LinkedHashMap<String, String>> itemListpcbQualB = SystemUtil.jsonArrayToList(getItemByParamPcbB);
-
-        JSONObject paramPcbC = new JSONObject();
-        paramPcbC.put("itemType", "PCB%");
-        paramPcbC.put("itemStatus", "0");
-        paramPcbC.put("itemID", "%QUAL C");
-        JSONArray getItemByParamPcbC = SPTSWebService.getItemByParam(paramPcbC);
-        List<LinkedHashMap<String, String>> itemListpcbQualC = SystemUtil.jsonArrayToList(getItemByParamPcbC);
-
-        JSONObject paramPcbCtr = new JSONObject();
-        paramPcbCtr.put("itemType", "PCB%");
-        paramPcbCtr.put("itemStatus", "0");
-        paramPcbCtr.put("itemID", "%CONTROL");
-        JSONArray getItemByParamPcbCtr = SPTSWebService.getItemByParam(paramPcbCtr);
-        List<LinkedHashMap<String, String>> itemListpcbCtr = SystemUtil.jsonArrayToList(getItemByParamPcbCtr);
-
-        model.addAttribute("StencilItemList", stencil);
-        model.addAttribute("bibItemList", itemListbib);
-        model.addAttribute("trayItemList", itemListtray);
-        model.addAttribute("pcbItemListA", itemListpcbQualA);
-        model.addAttribute("pcbItemListB", itemListpcbQualB);
-        model.addAttribute("pcbItemListC", itemListpcbQualC);
-        model.addAttribute("pcbItemListCtr", itemListpcbCtr);
-
-        model.addAttribute("pcbType", pcbType);
-
-        String username = userSession.getFullname();
         model.addAttribute("retrievalReason", retrievalReason);
         model.addAttribute("requestType", requestType);
         model.addAttribute("equipmentType", equipmentType);
-        model.addAttribute("inventoryListMb", inventoryListMb);
-        model.addAttribute("inventoryListTray", inventoryListTray);
-        model.addAttribute("inventoryListStencil", inventoryListStencil);
-        model.addAttribute("inventoryListPCB", inventoryListPCB);
+        return "whRequest/request";
+    }
 
+    @RequestMapping(value = "/whRequest/add", method = RequestMethod.GET)
+    public String add(Model model,
+            @ModelAttribute UserSession userSession,
+            @RequestParam(required = false) String requestType,
+            @RequestParam(required = false) String retrievalReason,
+            @RequestParam(required = false) String equipmentType
+    )
+            throws IOException {
+
+//        ParameterDetailsDAO sDAO = new ParameterDetailsDAO();
+//        List<ParameterDetails> requestType = sDAO.getGroupParameterDetailList("", "006");
+//
+//        sDAO = new ParameterDetailsDAO();
+//        List<ParameterDetails> equipmentType = sDAO.getGroupParameterDetailList("", "002");
+//
+//        sDAO = new ParameterDetailsDAO();
+//        List<ParameterDetails> retrievalReason = sDAO.getGroupParameterDetailList("", "017");
+        String requestType1 = requestType;
+        String retrievalReason1 = retrievalReason;
+        String equipmentType1 = equipmentType;
+        if ("Ship".equals(requestType)) {
+
+            if ("Motherboard".equals(equipmentType)) {
+                JSONObject paramBib = new JSONObject();
+                paramBib.put("itemType", "BIB");
+                paramBib.put("itemStatus", "0");
+                paramBib.put("status", "1");
+                JSONArray getItemByParamBib = SPTSWebService.getItemByParam(paramBib);
+                List<LinkedHashMap<String, String>> itemListbib = SystemUtil.jsonArrayToList(getItemByParamBib);
+                model.addAttribute("bibItemList", itemListbib);
+            } else if ("Stencil".equals(equipmentType)) {
+                JSONObject paramStencil = new JSONObject();
+                paramStencil.put("itemType", "Stencil");
+                paramStencil.put("itemStatus", "0");
+                paramStencil.put("status", "1");
+                JSONArray getItemByParamStencil = SPTSWebService.getItemByParam(paramStencil);
+                List<LinkedHashMap<String, String>> stencil = SystemUtil.jsonArrayToList(getItemByParamStencil);
+                model.addAttribute("StencilItemList", stencil);
+            } else if ("Tray".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "TRAY");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamTray = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListtray = SystemUtil.jsonArrayToList(getItemByParamTray);
+                model.addAttribute("trayItemList", itemListtray);
+            } else if ("PCB".equals(equipmentType)) {
+                PcbLimitDAO pcbDao = new PcbLimitDAO();
+                List< PcbLimit> pcbType = pcbDao.getPcbLimitList2("");
+
+                JSONObject paramPcbA = new JSONObject();
+                paramPcbA.put("itemType", "PCB%");
+                paramPcbA.put("itemStatus", "0");
+                paramPcbA.put("itemID", "%QUAL A");
+                JSONArray getItemByParamPcbA = SPTSWebService.getItemByParam(paramPcbA);
+                List<LinkedHashMap<String, String>> itemListpcbQualA = SystemUtil.jsonArrayToList(getItemByParamPcbA);
+
+                JSONObject paramPcbB = new JSONObject();
+                paramPcbB.put("itemType", "PCB%");
+                paramPcbB.put("itemStatus", "0");
+                paramPcbB.put("itemID", "%QUAL B");
+                JSONArray getItemByParamPcbB = SPTSWebService.getItemByParam(paramPcbB);
+                List<LinkedHashMap<String, String>> itemListpcbQualB = SystemUtil.jsonArrayToList(getItemByParamPcbB);
+
+                JSONObject paramPcbC = new JSONObject();
+                paramPcbC.put("itemType", "PCB%");
+                paramPcbC.put("itemStatus", "0");
+                paramPcbC.put("itemID", "%QUAL C");
+                JSONArray getItemByParamPcbC = SPTSWebService.getItemByParam(paramPcbC);
+                List<LinkedHashMap<String, String>> itemListpcbQualC = SystemUtil.jsonArrayToList(getItemByParamPcbC);
+
+                JSONObject paramPcbCtr = new JSONObject();
+                paramPcbCtr.put("itemType", "PCB%");
+                paramPcbCtr.put("itemStatus", "0");
+                paramPcbCtr.put("itemID", "%CONTROL");
+                JSONArray getItemByParamPcbCtr = SPTSWebService.getItemByParam(paramPcbCtr);
+                List<LinkedHashMap<String, String>> itemListpcbCtr = SystemUtil.jsonArrayToList(getItemByParamPcbCtr);
+
+                model.addAttribute("pcbItemListA", itemListpcbQualA);
+                model.addAttribute("pcbItemListB", itemListpcbQualB);
+                model.addAttribute("pcbItemListC", itemListpcbQualC);
+                model.addAttribute("pcbItemListCtr", itemListpcbCtr);
+
+                model.addAttribute("pcbType", pcbType);
+
+            } else if ("Load Card".equals(equipmentType)) {
+                JSONObject paramLc = new JSONObject();
+                paramLc.put("itemType", "BIB Card");
+                paramLc.put("itemStatus", "0");
+                paramLc.put("itemID", "LC%");
+                JSONArray getItemByParamLc = SPTSWebService.getItemByParam(paramLc);
+                List<LinkedHashMap<String, String>> itemListLc = SystemUtil.jsonArrayToList(getItemByParamLc);
+                model.addAttribute("itemListLc", itemListLc);
+
+            } else if ("Program Card".equals(equipmentType)) {
+                JSONObject paramPc = new JSONObject();
+                paramPc.put("itemType", "BIB Card");
+                paramPc.put("itemStatus", "0");
+                paramPc.put("itemID", "PC%");
+                JSONArray getItemByParamPc = SPTSWebService.getItemByParam(paramPc);
+                List<LinkedHashMap<String, String>> itemListPc = SystemUtil.jsonArrayToList(getItemByParamPc);
+                model.addAttribute("itemListPc", itemListPc);
+
+            } else if ("Load Card & Program Card".equals(equipmentType)) {
+                JSONObject paramLc = new JSONObject();
+                paramLc.put("itemType", "BIB Card");
+                paramLc.put("itemStatus", "0");
+                paramLc.put("itemID", "LC%");
+                JSONArray getItemByParamLc = SPTSWebService.getItemByParam(paramLc);
+                List<LinkedHashMap<String, String>> itemListLc = SystemUtil.jsonArrayToList(getItemByParamLc);
+                model.addAttribute("itemListLc", itemListLc);
+
+                JSONObject paramPc = new JSONObject();
+                paramPc.put("itemType", "BIB Card");
+                paramPc.put("itemStatus", "0");
+                paramPc.put("itemID", "PC%");
+                JSONArray getItemByParamPc = SPTSWebService.getItemByParam(paramPc);
+                List<LinkedHashMap<String, String>> itemListPc = SystemUtil.jsonArrayToList(getItemByParamPc);
+                model.addAttribute("itemListPc", itemListPc);
+
+            } else if ("BIB Parts".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "BIB Parts");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamBibParts = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListBibParts = SystemUtil.jsonArrayToList(getItemByParamBibParts);
+                model.addAttribute("bibPartsItemList", itemListBibParts);
+
+            } else if ("ATE_SPAREPART_DTS".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_DTS");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATEDTS = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListatedts = SystemUtil.jsonArrayToList(getItemByParamATEDTS);
+                model.addAttribute("ateDtsItemList", itemListatedts);
+
+            } else if ("ATE_SPAREPART_FET".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_FET");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATEFET = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListatefet = SystemUtil.jsonArrayToList(getItemByParamATEFET);
+                model.addAttribute("ateFetItemList", itemListatefet);
+
+            } else if ("ATE_SPAREPART_PFT".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_PFT");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATEPFT = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListatepft = SystemUtil.jsonArrayToList(getItemByParamATEPFT);
+                model.addAttribute("atePftItemList", itemListatepft);
+
+            } else if ("ATE_SPAREPART_TESEC".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_TESEC");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATETESEC = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListatetesec = SystemUtil.jsonArrayToList(getItemByParamATETESEC);
+                model.addAttribute("ateTesecItemList", itemListatetesec);
+
+            } else if ("ATE_SPAREPART_TESTFIXTURE".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_TESTFIXTURE");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATETEST = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListatetest = SystemUtil.jsonArrayToList(getItemByParamATETEST);
+                model.addAttribute("ateTestItemList", itemListatetest);
+
+            } else if ("ATE_SPAREPART_ETS".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_ETS");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATEETS = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListatetets = SystemUtil.jsonArrayToList(getItemByParamATEETS);
+                model.addAttribute("ateEtsItemList", itemListatetets);
+
+            } else if ("ATE_SPAREPART_ESD".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_ESD");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATEESD = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListateesd = SystemUtil.jsonArrayToList(getItemByParamATEESD);
+                model.addAttribute("ateEsdItemList", itemListateesd);
+
+            } else if ("ATE_SPAREPART_ACC".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "ATE_SPAREPART_ACC");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamATEACC = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListateacc = SystemUtil.jsonArrayToList(getItemByParamATEACC);
+                model.addAttribute("ateAccItemList", itemListateacc);
+
+            } else if ("EQP_SPAREPART_GENERAL".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "EQP_SPAREPART_GENERAL");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamEQPG = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListeqpg = SystemUtil.jsonArrayToList(getItemByParamEQPG);
+                model.addAttribute("eqpGeneralItemList", itemListeqpg);
+
+            } else if ("EQP_SPAREPART_H3TRB_AC_HAST".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "EQP_SPAREPART_H3TRB_AC_HAST");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamEQPH = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListeqph = SystemUtil.jsonArrayToList(getItemByParamEQPH);
+                model.addAttribute("eqpHastItemList", itemListeqph);
+
+            } else if ("EQP_SPAREPART_HTS_HTB_WF".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "EQP_SPAREPART_HTS_HTB_WF");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamEQPW = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListeqpw = SystemUtil.jsonArrayToList(getItemByParamEQPW);
+                model.addAttribute("eqpWfItemList", itemListeqpw);
+
+            } else if ("EQP_SPAREPART_IOL".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "EQP_SPAREPART_IOL");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamEQPI = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListeqpi = SystemUtil.jsonArrayToList(getItemByParamEQPI);
+                model.addAttribute("eqpIolItemList", itemListeqpi);
+
+            } else if ("EQP_SPAREPART_TC_PTC".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "EQP_SPAREPART_TC_PTC");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamEQPP = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListeqpp = SystemUtil.jsonArrayToList(getItemByParamEQPP);
+                model.addAttribute("eqpPtcItemList", itemListeqpp);
+
+            } else if ("EQP_SPAREPART_FOL".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "EQP_SPAREPART_FOL");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamEQPF = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListeqpf = SystemUtil.jsonArrayToList(getItemByParamEQPF);
+                model.addAttribute("eqpFolItemList", itemListeqpf);
+
+            } else if ("EQP_SPAREPART_BLR".equals(equipmentType)) {
+                JSONObject paramTray = new JSONObject();
+                paramTray.put("itemType", "EQP_SPAREPART_BLR");
+                paramTray.put("itemStatus", "0");
+                JSONArray getItemByParamEQPB = SPTSWebService.getItemByParam(paramTray);
+                List<LinkedHashMap<String, String>> itemListeqpb = SystemUtil.jsonArrayToList(getItemByParamEQPB);
+                model.addAttribute("eqpBlrItemList", itemListeqpb);
+            }
+
+        } else if ("Retrieve".equals(requestType)) {
+            model.addAttribute("retrievalReason1", retrievalReason1);
+            if ("Motherboard".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListMb = inventory.getWhInventoryMbActiveList("");
+                model.addAttribute("inventoryListMb", inventoryListMb);
+            } else if ("Stencil".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListStencil = inventory.getWhInventoryStencilActiveList("");
+                model.addAttribute("inventoryListStencil", inventoryListStencil);
+            } else if ("Tray".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListTray = inventory.getWhInventoryTrayActiveList("");
+                model.addAttribute("inventoryListTray", inventoryListTray);
+            } else if ("PCB".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListPCB = inventory.getWhInventoryPCBActiveList("");
+                model.addAttribute("inventoryListPCB", inventoryListPCB);
+            } else if ("Load Card".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListLoadCard = inventory.getWhInventoryLoadCardActiveList("");
+                model.addAttribute("inventoryListLoadCard", inventoryListLoadCard);
+            } else if ("Program Card".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListProgramCard = inventory.getWhInventoryProgramCardActiveList("");
+                model.addAttribute("inventoryListProgramCard", inventoryListProgramCard);
+            } else if ("Load Card & Program Card".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListLoadAndProgramCard = inventory.getWhInventoryLoadAndProgramCardActiveList("");
+                model.addAttribute("inventoryListLoadAndProgramCard", inventoryListLoadAndProgramCard);
+
+            } else if ("BIB Parts".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListBIBParts = inventory.getWhInventoryBibPartActiveList("");
+                model.addAttribute("inventoryListBIBParts", inventoryListBIBParts);
+
+            } else if ("ATE_SPAREPART_DTS".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartDts = inventory.getWhInventoryAteDtsActiveList("");
+                model.addAttribute("inventoryListAteDts", inventoryListAteSparePartDts);
+
+            } else if ("ATE_SPAREPART_FET".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartFet = inventory.getWhInventoryAteFetActiveList("");
+                model.addAttribute("inventoryListAteFet", inventoryListAteSparePartFet);
+
+            } else if ("ATE_SPAREPART_PFT".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartPft = inventory.getWhInventoryAtePftActiveList("");
+                model.addAttribute("inventoryListAtePft", inventoryListAteSparePartPft);
+
+            } else if ("ATE_SPAREPART_TESEC".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartTesec = inventory.getWhInventoryAteTesecActiveList("");
+                model.addAttribute("inventoryListAteTesec", inventoryListAteSparePartTesec);
+
+            } else if ("ATE_SPAREPART_TESTFIXTURE".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartTest = inventory.getWhInventoryAteTestActiveList("");
+                model.addAttribute("inventoryListAteTest", inventoryListAteSparePartTest);
+
+            } else if ("ATE_SPAREPART_ETS".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartEts = inventory.getWhInventoryAteEtsActiveList("");
+                model.addAttribute("inventoryListAteEts", inventoryListAteSparePartEts);
+
+            } else if ("ATE_SPAREPART_ESD".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartEsd = inventory.getWhInventoryAteEsdActiveList("");
+                model.addAttribute("inventoryListAteEsd", inventoryListAteSparePartEsd);
+
+            } else if ("ATE_SPAREPART_ACC".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListAteSparePartAcc = inventory.getWhInventoryAteAccActiveList("");
+                model.addAttribute("inventoryListAteAcc", inventoryListAteSparePartAcc);
+
+            } else if ("EQP_SPAREPART_GENERAL".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListEqpSparePartGeneral = inventory.getWhInventoryEqpGeneralActiveList("");
+                model.addAttribute("inventoryListEqpGeneral", inventoryListEqpSparePartGeneral);
+
+            } else if ("EQP_SPAREPART_H3TRB_AC_HAST".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListEqpSparePartHast = inventory.getWhInventoryEqpHastActiveList("");
+                model.addAttribute("inventoryListEqpHast", inventoryListEqpSparePartHast);
+
+            } else if ("EQP_SPAREPART_HTS_HTB_WF".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListEqpSparePartWf = inventory.getWhInventoryEqpWfActiveList("");
+                model.addAttribute("inventoryListEqpWf", inventoryListEqpSparePartWf);
+
+            } else if ("EQP_SPAREPART_IOL".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListEqpSparePartIol = inventory.getWhInventoryEqpIolActiveList("");
+                model.addAttribute("inventoryListEqpIol", inventoryListEqpSparePartIol);
+
+            } else if ("EQP_SPAREPART_TC_PTC".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListEqpSparePartPtc = inventory.getWhInventoryEqpPtcActiveList("");
+                model.addAttribute("inventoryListEqpPtc", inventoryListEqpSparePartPtc);
+
+            } else if ("EQP_SPAREPART_FOL".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListEqpSparePartFol = inventory.getWhInventoryEqpFolActiveList("");
+                model.addAttribute("inventoryListEqpFol", inventoryListEqpSparePartFol);
+
+            } else if ("EQP_SPAREPART_BLR".equals(equipmentType)) {
+                WhInventoryDAO inventory = new WhInventoryDAO();
+                List<WhInventory> inventoryListEqpSparePartBlr = inventory.getWhInventoryEqpBlrActiveList("");
+                model.addAttribute("inventoryListEqpBlr", inventoryListEqpSparePartBlr);
+            }
+        }
+
+        model.addAttribute("requestType1", requestType1);
+        model.addAttribute("equipmentType1", equipmentType1);
+        String username = userSession.getFullname();
         model.addAttribute("username", username);
         return "whRequest/add";
     }
@@ -202,10 +507,6 @@ public class WhRequestController {
             @RequestParam(required = false) String equipmentType,
             @RequestParam(required = false) String pcbType,
             @RequestParam(required = false) String pcbLimitId,
-            @RequestParam(required = false) String inventoryIdMb,
-            @RequestParam(required = false) String inventoryIdStencil,
-            @RequestParam(required = false) String inventoryIdTray,
-            @RequestParam(required = false) String inventoryIdPcb,
             @RequestParam(required = false) String equipmentId,
             @RequestParam(required = false) String equipmentIdpcbA,
             @RequestParam(required = false) String pcbAQty,
@@ -220,7 +521,91 @@ public class WhRequestController {
             @RequestParam(required = false) String equipmentIdStencil,
             @RequestParam(required = false) String equipmentIdPcb,
             @RequestParam(required = false) String quantity,
+            @RequestParam(required = false) String equipmentIdLc,
+            @RequestParam(required = false) String equipmentIdPc,
+            @RequestParam(required = false) String equipmentIdLc1,
+            @RequestParam(required = false) String equipmentIdPc1,
+            @RequestParam(required = false) String quantityLc,
+            @RequestParam(required = false) String quantityLc1,
+            @RequestParam(required = false) String quantityPc,
+            @RequestParam(required = false) String quantityPc1,
             @RequestParam(required = false) String requestedBy,
+            @RequestParam(required = false) String equipmentIdBibParts,
+            @RequestParam(required = false) String quantityBibParts,
+            @RequestParam(required = false) String equipmentIdAteDts,
+            @RequestParam(required = false) String quantityAteDts,
+            @RequestParam(required = false) String equipmentIdAteFet,
+            @RequestParam(required = false) String quantityAteFet,
+            @RequestParam(required = false) String equipmentIdAtePft,
+            @RequestParam(required = false) String quantityAtePft,
+            @RequestParam(required = false) String equipmentIdAteTesec,
+            @RequestParam(required = false) String quantityAteTesec,
+            @RequestParam(required = false) String equipmentIdAteTest,
+            @RequestParam(required = false) String quantityAteTest,
+            @RequestParam(required = false) String equipmentIdAteEts,
+            @RequestParam(required = false) String quantityAteEts,
+            @RequestParam(required = false) String equipmentIdAteEsd,
+            @RequestParam(required = false) String quantityAteEsd,
+            @RequestParam(required = false) String equipmentIdAteAcc,
+            @RequestParam(required = false) String quantityAteAcc,
+            @RequestParam(required = false) String equipmentIdEqpGeneral,
+            @RequestParam(required = false) String quantityEqpGeneral,
+            @RequestParam(required = false) String equipmentIdEqpHast,
+            @RequestParam(required = false) String quantityEqpHast,
+            @RequestParam(required = false) String equipmentIdEqpPtc,
+            @RequestParam(required = false) String quantityEqpPtc,
+            @RequestParam(required = false) String equipmentIdEqpWf,
+            @RequestParam(required = false) String quantityEqpWf,
+            @RequestParam(required = false) String equipmentIdEqpIol,
+            @RequestParam(required = false) String quantityEqpIol,
+            @RequestParam(required = false) String equipmentIdEqpFol,
+            @RequestParam(required = false) String quantityEqpFol,
+            @RequestParam(required = false) String equipmentIdEqpBlr,
+            @RequestParam(required = false) String quantityEqpBlr,
+            @RequestParam(required = false) String inventoryIdMb,
+            @RequestParam(required = false) String inventoryIdStencil,
+            @RequestParam(required = false) String inventoryIdTray,
+            @RequestParam(required = false) String inventoryIdPcb,
+            @RequestParam(required = false) String inventoryIdLc,
+            @RequestParam(required = false) String invQtyLc,
+            @RequestParam(required = false) String inventoryIdPc,
+            @RequestParam(required = false) String invQtyPc,
+            @RequestParam(required = false) String inventoryIdLc1,
+            @RequestParam(required = false) String invQtyLc1,
+            @RequestParam(required = false) String inventoryIdPc1,
+            @RequestParam(required = false) String invQtyPc1,
+            @RequestParam(required = false) String inventoryIdBibParts,
+            @RequestParam(required = false) String invQtyBibParts,
+            @RequestParam(required = false) String inventoryIdAteDts,
+            @RequestParam(required = false) String invQtyAteDts,
+            @RequestParam(required = false) String inventoryIdAteFet,
+            @RequestParam(required = false) String invQtyAteFet,
+            @RequestParam(required = false) String inventoryIdAtePft,
+            @RequestParam(required = false) String invQtyAtePft,
+            @RequestParam(required = false) String inventoryIdAteTesec,
+            @RequestParam(required = false) String invQtyAteTesec,
+            @RequestParam(required = false) String inventoryIdAteTest,
+            @RequestParam(required = false) String invQtyAteTest,
+            @RequestParam(required = false) String inventoryIdAteEts,
+            @RequestParam(required = false) String invQtyAteEts,
+            @RequestParam(required = false) String inventoryIdAteEsd,
+            @RequestParam(required = false) String invQtyAteEsd,
+            @RequestParam(required = false) String inventoryIdAteAcc,
+            @RequestParam(required = false) String invQtyAteAcc,
+            @RequestParam(required = false) String inventoryIdEqpGeneral,
+            @RequestParam(required = false) String invQtyEqpGeneral,
+            @RequestParam(required = false) String inventoryIdEqpHast,
+            @RequestParam(required = false) String invQtyEqpHast,
+            @RequestParam(required = false) String inventoryIdEqpWf,
+            @RequestParam(required = false) String invQtyEqpWf,
+            @RequestParam(required = false) String inventoryIdEqpIol,
+            @RequestParam(required = false) String invQtyEqpIol,
+            @RequestParam(required = false) String inventoryIdEqpPtc,
+            @RequestParam(required = false) String invQtyEqpPtc,
+            @RequestParam(required = false) String inventoryIdEqpFol,
+            @RequestParam(required = false) String invQtyEqpFol,
+            @RequestParam(required = false) String inventoryIdEqpBlr,
+            @RequestParam(required = false) String invQtyEqpBlr,
             @RequestParam(required = false) String remarks) {
 
         WhRequest whRequest = new WhRequest();
@@ -228,7 +613,6 @@ public class WhRequestController {
         whRequest.setEquipmentType(equipmentType);
 
         if ("Ship".equals(requestType)) {
-//            whRequest.setStatus("Waiting for Approval"); //original 3/11/16
             whRequest.setStatus("Pending Approval"); //as requested 2/11/16
             if ("Motherboard".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdMb);
@@ -237,6 +621,8 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
 
                 //check either item can be request or not
                 WhRequestDAO requestda = new WhRequestDAO();
@@ -244,7 +630,8 @@ public class WhRequestController {
                 if (countitemflag0 > 0) {
                     redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
                     model.addAttribute("whRequest", whRequest);
-                    return "redirect:/wh/whRequest/add";
+//                     return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                 }
             } else if ("Stencil".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdStencil);
@@ -253,6 +640,8 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
 
                 //check either item can be request or not
                 WhRequestDAO requestda = new WhRequestDAO();
@@ -260,7 +649,8 @@ public class WhRequestController {
                 if (countitemflag0 > 0) {
                     redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
                     model.addAttribute("whRequest", whRequest);
-                    return "redirect:/wh/whRequest/add";
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                 }
             } else if ("Tray".equals(equipmentType)) {
                 whRequest.setEquipmentId(equipmentIdTray);
@@ -269,31 +659,34 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
             } else if ("PCB".equals(equipmentType)) {
                 String[] pcbName = null;
 
                 if (!"".equals(equipmentIdpcbCtr)) {
                     pcbName = equipmentIdpcbCtr.split(" - ");
                     whRequest.setEquipmentId(pcbName[0]);
-                    LOGGER.info("qual CTR..............");
+
                 } else if (!"".equals(equipmentIdpcbA)) {
                     pcbName = equipmentIdpcbA.split(" - ");
                     whRequest.setEquipmentId(pcbName[0]);
-                    LOGGER.info("qual A..............");
+
                 } else if (!"".equals(equipmentIdpcbB)) {
                     pcbName = equipmentIdpcbB.split(" - ");
                     whRequest.setEquipmentId(pcbName[0]);
-                    LOGGER.info("qual B..............");
+
                 } else if (!"".equals(equipmentIdpcbC)) {
                     pcbName = equipmentIdpcbC.split(" - ");
                     whRequest.setEquipmentId(pcbName[0]);
-                    LOGGER.info("qual C..............");
                 }
                 whRequest.setPcbType(pcbType);
                 whRequest.setPcbA(equipmentIdpcbA);
                 whRequest.setPcbB(equipmentIdpcbB);
                 whRequest.setPcbC(equipmentIdpcbC);
                 whRequest.setPcbCtr(equipmentIdpcbCtr);
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
 
                 String AQty = "";
                 String BQty = "";
@@ -302,38 +695,38 @@ public class WhRequestController {
                 if ("".equals(pcbAQty)) {
                     whRequest.setPcbAQty("0");
                     AQty = "0";
-                    LOGGER.info("pcbAQty1........" + pcbAQty);
+
                 } else {
                     whRequest.setPcbAQty(pcbAQty);
                     AQty = pcbAQty;
-                    LOGGER.info("pcbAQty2........" + pcbAQty);
+
                 }
                 if ("".equals(pcbBQty)) {
                     whRequest.setPcbBQty("0");
                     BQty = "0";
-                    LOGGER.info("pcbBQty1........" + pcbBQty);
+
                 } else {
                     whRequest.setPcbBQty(pcbBQty);
                     BQty = pcbBQty;
-                    LOGGER.info("pcbBQty2........" + pcbBQty);
+
                 }
                 if ("".equals(pcbCQty)) {
                     whRequest.setPcbCQty("0");
                     CQty = "0";
-                    LOGGER.info("pcbCQty1........" + pcbCQty);
+
                 } else {
                     whRequest.setPcbCQty(pcbCQty);
                     CQty = pcbCQty;
-                    LOGGER.info("pcbCQty2........" + pcbCQty);
+
                 }
                 if ("".equals(pcbCtrQty)) {
                     whRequest.setPcbCtrQty("0");
                     CtrQty = "0";
-                    LOGGER.info("pcbCtrQty1........" + pcbCtrQty);
+
                 } else {
                     whRequest.setPcbCtrQty(pcbCtrQty);
                     CtrQty = pcbCtrQty;
-                    LOGGER.info("pcbCtrQty2........" + pcbCtrQty);
+
                 }
 
                 Integer totalQty = Integer.valueOf(AQty) + Integer.valueOf(BQty) + Integer.valueOf(CQty) + Integer.valueOf(CtrQty);
@@ -344,14 +737,16 @@ public class WhRequestController {
                 if (totalQty > Integer.valueOf(pcb.getQuantity())) {
                     redirectAttrs.addFlashAttribute("error", "Total of PCB quantity exceeded the PCB limit.Please re-check.");
                     model.addAttribute("whRequest", whRequest);
-                    return "redirect:/wh/whRequest/add";
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                 }
                 if (!"".equals(equipmentIdpcbCtr)) {
                     String[] qualCtr = equipmentIdpcbCtr.split(" - ");
                     if (!pcbName[0].equals(qualCtr[0])) {
                         redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
                         model.addAttribute("whRequest", whRequest);
-                        return "redirect:/wh/whRequest/add";
+//                        return "redirect:/wh/whRequest/add";
+                        return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                     }
                 }
                 if (!"".equals(equipmentIdpcbA)) {
@@ -359,7 +754,8 @@ public class WhRequestController {
                     if (!pcbName[0].equals(qualA[0])) {
                         redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
                         model.addAttribute("whRequest", whRequest);
-                        return "redirect:/wh/whRequest/add";
+//                        return "redirect:/wh/whRequest/add";
+                        return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                     }
                 }
                 if (!"".equals(equipmentIdpcbB)) {
@@ -367,7 +763,8 @@ public class WhRequestController {
                     if (!pcbName[0].equals(qualB[0])) {
                         redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
                         model.addAttribute("whRequest", whRequest);
-                        return "redirect:/wh/whRequest/add";
+//                        return "redirect:/wh/whRequest/add";
+                        return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                     }
                 }
                 if (!"".equals(equipmentIdpcbC)) {
@@ -375,11 +772,241 @@ public class WhRequestController {
                     if (!pcbName[0].equals(qualC[0])) {
                         redirectAttrs.addFlashAttribute("error", "Pcb ID are not tally. Please re-check.");
                         model.addAttribute("whRequest", whRequest);
-                        return "redirect:/wh/whRequest/add";
+//                        return "redirect:/wh/whRequest/add";
+                        return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                     }
                 }
+            } else if ("Load Card".equals(equipmentType)) {
+                CardPairingDAO pairD = new CardPairingDAO();
+                int count = pairD.getCountLoadCardSingle(equipmentIdLc);
+                if (count == 1) {
+                    pairD = new CardPairingDAO();
+                    CardPairing cardP = pairD.getCardPairingWithLoadCardSingle(equipmentIdLc);
+                    whRequest.setEquipmentId(cardP.getPairId() + " - " + cardP.getType());
+                    whRequest.setQuantity(quantityLc);
+                    whRequest.setPcbAQty("0");
+                    whRequest.setPcbBQty("0");
+                    whRequest.setPcbCQty("0");
+                    whRequest.setPcbCtrQty("0");
+                    whRequest.setLoadCard(equipmentIdLc);
+                    whRequest.setLoadCardQty(quantityLc);
+
+                } else {
+                    redirectAttrs.addFlashAttribute("error", "Load Card ID is not in the Card Pairing Table. Please re-check.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+            } else if ("Program Card".equals(equipmentType)) {
+                CardPairingDAO pairD = new CardPairingDAO();
+                int count = pairD.getCountProgramCardSingle(equipmentIdPc);
+                if (count == 1) {
+                    pairD = new CardPairingDAO();
+                    CardPairing cardP = pairD.getCardPairingWithProgramCardSingle(equipmentIdPc);
+                    whRequest.setEquipmentId(cardP.getPairId() + " - " + cardP.getType());
+                    whRequest.setQuantity(quantityPc);
+                    whRequest.setPcbAQty("0");
+                    whRequest.setPcbBQty("0");
+                    whRequest.setPcbCQty("0");
+                    whRequest.setPcbCtrQty("0");
+                    whRequest.setProgramCard(equipmentIdPc);
+                    whRequest.setProgramCardQty(quantityPc);
+                } else {
+                    redirectAttrs.addFlashAttribute("error", "Program Card ID is not in the Card Pairing Table. Please re-check.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+            } else if ("Load Card & Program Card".equals(equipmentType)) {
+                CardPairingDAO pairD = new CardPairingDAO();
+                int count = pairD.getCountLoadCardProgramCardPair(equipmentIdLc1, equipmentIdPc1);
+                if (count == 1) {
+                    pairD = new CardPairingDAO();
+                    CardPairing cardP = pairD.getCardPairingWithLoadCardProgramCardPair(equipmentIdLc1, equipmentIdPc1);
+                    whRequest.setEquipmentId(cardP.getPairId() + " - " + cardP.getType());
+                    //total quantity
+                    Integer totalQty = Integer.valueOf(quantityLc1) + Integer.valueOf(quantityPc1);
+                    whRequest.setQuantity(totalQty.toString());
+                    whRequest.setPcbAQty("0");
+                    whRequest.setPcbBQty("0");
+                    whRequest.setPcbCQty("0");
+                    whRequest.setPcbCtrQty("0");
+                    whRequest.setProgramCard(equipmentIdPc1);
+                    whRequest.setProgramCardQty(quantityPc1);
+                    whRequest.setLoadCard(equipmentIdLc1);
+                    whRequest.setLoadCardQty(quantityLc1);
+                } else {
+                    redirectAttrs.addFlashAttribute("error", "Those Bib Card ID is not tally. Please re-check.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+            } else if ("BIB Parts".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdBibParts);
+                whRequest.setQuantity(quantityBibParts);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_DTS".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAteDts);
+                whRequest.setQuantity(quantityAteDts);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_FET".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAteFet);
+                whRequest.setQuantity(quantityAteFet);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_PFT".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAtePft);
+                whRequest.setQuantity(quantityAtePft);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_TESEC".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAteTesec);
+                whRequest.setQuantity(quantityAteTesec);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_TESTFIXTURE".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAteTest);
+                whRequest.setQuantity(quantityAteTest);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_ETS".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAteEts);
+                whRequest.setQuantity(quantityAteEts);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_ESD".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAteEsd);
+                whRequest.setQuantity(quantityAteEsd);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("ATE_SPAREPART_ACC".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdAteAcc);
+                whRequest.setQuantity(quantityAteAcc);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("EQP_SPAREPART_GENERAL".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdEqpGeneral);
+                whRequest.setQuantity(quantityEqpGeneral);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("EQP_SPAREPART_H3TRB_AC_HAST".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdEqpHast);
+                whRequest.setQuantity(quantityEqpHast);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("EQP_SPAREPART_HTS_HTB_WF".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdEqpWf);
+                whRequest.setQuantity(quantityEqpWf);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("EQP_SPAREPART_IOL".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdEqpIol);
+                whRequest.setQuantity(quantityEqpIol);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("EQP_SPAREPART_TC_PTC".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdEqpPtc);
+                whRequest.setQuantity(quantityEqpPtc);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("EQP_SPAREPART_FOL".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdEqpFol);
+                whRequest.setQuantity(quantityEqpFol);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+            } else if ("EQP_SPAREPART_BLR".equals(equipmentType)) {
+                whRequest.setEquipmentId(equipmentIdEqpBlr);
+                whRequest.setQuantity(quantityEqpBlr);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
             }
-        } else {
+        } // retrieve
+        else {
             whRequest.setRetrievalReason(retrievalReason);
             whRequest.setStatus("New Request");
             if ("Motherboard".equals(equipmentType)) {
@@ -397,6 +1024,8 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
 
                 //check either item can be request or not
                 WhRequestDAO requestda = new WhRequestDAO();
@@ -404,7 +1033,8 @@ public class WhRequestController {
                 if (countitemflag0 > 0) {
                     redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
                     model.addAttribute("whRequest", whRequest);
-                    return "redirect:/wh/whRequest/add";
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                 }
 
                 //update status at master table request for ship
@@ -441,6 +1071,8 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
 
                 //check either item can be request or not
                 WhRequestDAO requestda = new WhRequestDAO();
@@ -448,7 +1080,8 @@ public class WhRequestController {
                 if (countitemflag0 > 0) {
                     redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
                     model.addAttribute("whRequest", whRequest);
-                    return "redirect:/wh/whRequest/add";
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                 }
 
                 //update status at master table request for ship
@@ -485,13 +1118,16 @@ public class WhRequestController {
                 whRequest.setPcbBQty("0");
                 whRequest.setPcbCQty("0");
                 whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
 
                 WhRequestDAO requestda = new WhRequestDAO();
                 int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
                 if (countitemflag0 > 0) {
                     redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
                     model.addAttribute("whRequest", whRequest);
-                    return "redirect:/wh/whRequest/add";
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                 }
 
                 //update status at master table request for ship
@@ -532,13 +1168,16 @@ public class WhRequestController {
                 whRequest.setRack(inventory.getInventoryRack());
                 whRequest.setShelf(inventory.getInventoryShelf());
                 whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
 
                 WhRequestDAO requestda = new WhRequestDAO();
                 int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
                 if (countitemflag0 > 0) {
                     redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
                     model.addAttribute("whRequest", whRequest);
-                    return "redirect:/wh/whRequest/add";
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
                 }
 
                 //update status at master table request for ship
@@ -559,16 +1198,970 @@ public class WhRequestController {
                 } else {
                     LOGGER.info("[WhRequest-retrieval request] - requestId not found");
                 }
+            } //load card
+            else if ("Load Card".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdLc);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdLc);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setLoadCard(inventory.getLoadCard());
+                whRequest.setLoadCardQty(inventory.getLoadCardQty());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+            } else if ("Program Card".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdPc);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdPc);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setProgramCard(inventory.getProgramCard());
+                whRequest.setProgramCardQty(inventory.getProgramCardQty());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setLoadCardQty("0");
+
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+            } else if ("Load Card & Program Card".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdLc1);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdLc1);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setLoadCard(inventory.getLoadCard());
+                whRequest.setLoadCardQty(inventory.getLoadCardQty());
+                whRequest.setProgramCard(inventory.getProgramCard());
+                whRequest.setProgramCardQty(inventory.getProgramCardQty());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+            } else if ("BIB Parts".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdBibParts);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdBibParts);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_DTS".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAteDts);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAteDts);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_FET".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAteFet);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAteFet);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_PFT".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAtePft);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAtePft);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_TESEC".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAteTesec);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAteTesec);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_TESTFIXTURE".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAteTest);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAteTest);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_ETS".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAteEts);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAteEts);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_ESD".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAteEsd);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAteEsd);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("ATE_SPAREPART_ACC".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdAteAcc);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdAteAcc);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("EQP_SPAREPART_GENERAL".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdEqpGeneral);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdEqpGeneral);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("EQP_SPAREPART_H3TRB_AC_HAST".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdEqpHast);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdEqpHast);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("EQP_SPAREPART_HTS_HTB_WF".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdEqpWf);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdEqpWf);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("EQP_SPAREPART_IOL".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdEqpIol);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdEqpIol);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("EQP_SPAREPART_TC_PTC".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdEqpPtc);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdEqpPtc);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("EQP_SPAREPART_FOL".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdEqpFol);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdEqpFol);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
+            } else if ("EQP_SPAREPART_BLR".equals(equipmentType)) {
+                whRequest.setInventoryId(inventoryIdEqpBlr);
+
+                WhInventoryDAO inventoryD = new WhInventoryDAO();
+                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdEqpBlr);
+                whRequest.setEquipmentId(inventory.getEquipmentId());
+                whRequest.setMpNo(inventory.getMpNo());
+                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+                whRequest.setRack(inventory.getInventoryRack());
+                whRequest.setShelf(inventory.getInventoryShelf());
+                whRequest.setQuantity(inventory.getQuantity());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCardQty("0");
+                whRequest.setLoadCardQty("0");
+
+                //check either item can be request or not
+                WhRequestDAO requestda = new WhRequestDAO();
+                int countitemflag0 = requestda.getCountRetrieveEquipmentIdAndMpNoAndStatusCancelled(inventory.getEquipmentId(), inventory.getMpNo());
+                if (countitemflag0 > 0) {
+                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+                    model.addAttribute("whRequest", whRequest);
+//                    return "redirect:/wh/whRequest/add";
+                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+                }
+
+                //update status at master table request for ship
+                WhRequestDAO reqD = new WhRequestDAO();
+                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+                if (countReq == 1) {
+                    WhRequest reqUpdate = new WhRequest();
+                    reqUpdate.setModifiedBy(userSession.getFullname());
+                    reqUpdate.setStatus("Requested for Retrieval");
+                    reqUpdate.setId(inventory.getRequestId());
+                    reqD = new WhRequestDAO();
+                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+                    if (ru.getResult() == 1) {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+                    } else {
+                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+                    }
+                } else {
+                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+                }
+
             }
+//            else {
+//                whRequest.setInventoryId(inventoryIdStencil);
+//
+//                WhInventoryDAO inventoryD = new WhInventoryDAO();
+//                WhInventory inventory = inventoryD.getWhInventoryActive(inventoryIdStencil);
+//                whRequest.setEquipmentId(inventory.getEquipmentId());
+//                whRequest.setMpNo(inventory.getMpNo());
+//                whRequest.setMpExpiryDate(inventory.getMpExpiryDate());
+//                whRequest.setRack(inventory.getInventoryRack());
+//                whRequest.setShelf(inventory.getInventoryShelf());
+//                whRequest.setQuantity(inventory.getQuantity());
+//                whRequest.setPcbAQty("0");
+//                whRequest.setPcbBQty("0");
+//                whRequest.setPcbCQty("0");
+//                whRequest.setPcbCtrQty("0");
+//                whRequest.setProgramCardQty("0");
+//                whRequest.setLoadCardQty("0");
+//
+//                //check either item can be request or not
+//                WhRequestDAO requestda = new WhRequestDAO();
+//                int countitemflag0 = requestda.getCountFlag0ForRetrieve(inventory.getEquipmentId());
+//                if (countitemflag0 > 0) {
+//                    redirectAttrs.addFlashAttribute("error", "This equipment ID already requested. Please select another equipment ID.");
+//                    model.addAttribute("whRequest", whRequest);
+////                    return "redirect:/wh/whRequest/add";
+//                    return "redirect:/wh/whRequest/add?requestType=" + requestType + "&equipmentType=" + equipmentType + "&retrievalReason=" + retrievalReason;
+//                }
+//
+//                //update status at master table request for ship
+//                WhRequestDAO reqD = new WhRequestDAO();
+//                int countReq = reqD.getCountRequestId(inventory.getRequestId());
+//                if (countReq == 1) {
+//                    WhRequest reqUpdate = new WhRequest();
+//                    reqUpdate.setModifiedBy(userSession.getFullname());
+//                    reqUpdate.setStatus("Requested for Retrieval");
+//                    reqUpdate.setId(inventory.getRequestId());
+//                    reqD = new WhRequestDAO();
+//                    QueryResult ru = reqD.updateWhRequestStatus(reqUpdate);
+//                    if (ru.getResult() == 1) {
+//                        LOGGER.info("[WhRequest-retrieval request] - update status at request table done");
+//                    } else {
+//                        LOGGER.info("[WhRequest-retrieval request] - update status at request table failed");
+//                    }
+//                } else {
+//                    LOGGER.info("[WhRequest-retrieval request] - requestId not found");
+//                }
+//
+//            }
         }
 
+        //end if else for requestType
         whRequest.setRequestedBy(userSession.getFullname());
 
+        //modified equipmentType
+        String equipmentType1 = "";
+        if (equipmentType.contains("ATE")) {
+            equipmentType1 = "ATE";
+        } else if (equipmentType.contains("EQP")) {
+            equipmentType1 = "EQP";
+        } else if (equipmentType.contains("Card")) {
+            equipmentType1 = "Bib Cards";
+        } else {
+            equipmentType1 = equipmentType;
+        }
+
+        //save approver email
         EmailConfigDAO econfD = new EmailConfigDAO();
-        int count = econfD.getCountTask(equipmentType);
+        int count = econfD.getCountTaskWildCard(equipmentType1);
         if (count == 1) {
             econfD = new EmailConfigDAO();
-            EmailConfig econ = econfD.getEmailConfigByTask(equipmentType);
+            EmailConfig econ = econfD.getEmailConfigByTaskWildCard(equipmentType1);
             String email = econ.getEmail();
             whRequest.setRequestorEmail(email);//email supervisor base on equipment type 
         } else {
@@ -587,6 +2180,8 @@ public class WhRequestController {
         whRequest.setSfpkidB("0");
         whRequest.setSfpkidC("0");
         whRequest.setSfpkidCtr("0");//new 11/11/16
+        whRequest.setSfpkidLc("0");
+        whRequest.setSfpkidPc("0");
 
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         QueryResult queryResult = whRequestDAO.insertWhRequest(whRequest);
@@ -679,6 +2274,17 @@ public class WhRequestController {
                     emaildistList4 = distList4.getEmail();
                     a.add(emaildistList4);
                 }
+                String equipId = "";
+                if ("Load Card".equals(equipmentType)) {
+                    equipId = req2.getLoadCard();
+                } else if ("Program Card".equals(equipmentType)) {
+                    equipId = req2.getProgramCard();
+                } else if ("Load Card & Program Card".equals(equipmentType)) {
+                    equipId = req2.getLoadCard() + " & " + req2.getProgramCard();
+                } else {
+                    equipId = req2.getEquipmentId();
+                }
+
                 String[] myArray = new String[a.size()];
                 String[] emailTo = a.toArray(myArray);
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
@@ -694,7 +2300,8 @@ public class WhRequestController {
                         //                    subject
                         "New Hardware Request for Sending to SBN Factory",
                         //                    msg
-                        "New Hardware Request for id : " + req2.getEquipmentId() + " has been added to HIMS. Please go to this link "
+                        //                        "New Hardware Request for id : " + req2.getEquipmentId() + " has been added to HIMS. Please go to this link "
+                        "New Hardware Request for id : " + equipId + " has been added to HIMS. Please go to this link "
                         //local pc
                         //                        + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/approval/" + queryResult.getGeneratedKey() + "\">HIMS</a>"
                         //                        + " for approval process."
@@ -723,6 +2330,10 @@ public class WhRequestController {
                 whRetrieval.setPcbCQty(whrequest.getPcbCQty());
                 whRetrieval.setPcbCtr(whrequest.getPcbCtr());
                 whRetrieval.setPcbCtrQty(whrequest.getPcbCtrQty());
+                whRetrieval.setLoadCard(whrequest.getLoadCard());
+                whRetrieval.setLoadCardQty(whrequest.getLoadCardQty());
+                whRetrieval.setProgramCard(whrequest.getProgramCard());
+                whRetrieval.setProgramCardQty(whrequest.getProgramCardQty());
                 whRetrieval.setHardwareQty(whrequest.getQuantity());
                 whRetrieval.setRack(whrequest.getRack());
                 whRetrieval.setShelf(whrequest.getShelf());
@@ -767,13 +2378,46 @@ public class WhRequestController {
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getRetrievalReason());
                         fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbA());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbAQty());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbB());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbBQty());
+                        if ("Load Card".equals(wh.getEquipmentType())) {
+                            fileWriter.append(wh.getLoadCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getLoadCardQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbB());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbBQty());
+                        } else if ("Program Card".equals(wh.getEquipmentType())) {
+                            fileWriter.append(wh.getPcbA());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbAQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCardQty());
+                        } else if ("Load Card & Program Card".equals(wh.getEquipmentType())) {
+                            fileWriter.append(wh.getLoadCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getLoadCardQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCardQty());
+                        } else {
+                            fileWriter.append(wh.getPcbA());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbAQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbB());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbBQty());
+                        }
+//                        fileWriter.append(wh.getPcbA());
+//                        fileWriter.append(COMMA_DELIMITER);
+//                        fileWriter.append(wh.getPcbAQty());
+//                        fileWriter.append(COMMA_DELIMITER);
+//                        fileWriter.append(wh.getPcbB());
+//                        fileWriter.append(COMMA_DELIMITER);
+//                        fileWriter.append(wh.getPcbBQty());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getPcbC());
                         fileWriter.append(COMMA_DELIMITER);
@@ -836,13 +2480,46 @@ public class WhRequestController {
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getRetrievalReason());
                         fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbA());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbAQty());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbB());
-                        fileWriter.append(COMMA_DELIMITER);
-                        fileWriter.append(wh.getPcbBQty());
+                        if ("Load Card".equals(wh.getEquipmentType())) {
+                            fileWriter.append(wh.getLoadCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getLoadCardQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbB());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbBQty());
+                        } else if ("Program Card".equals(wh.getEquipmentType())) {
+                            fileWriter.append(wh.getPcbA());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbAQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCardQty());
+                        } else if ("Load Card & Program Card".equals(wh.getEquipmentType())) {
+                            fileWriter.append(wh.getLoadCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getLoadCardQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCard());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getProgramCardQty());
+                        } else {
+                            fileWriter.append(wh.getPcbA());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbAQty());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbB());
+                            fileWriter.append(COMMA_DELIMITER);
+                            fileWriter.append(wh.getPcbBQty());
+                        }
+//                        fileWriter.append(wh.getPcbA());
+//                        fileWriter.append(COMMA_DELIMITER);
+//                        fileWriter.append(wh.getPcbAQty());
+//                        fileWriter.append(COMMA_DELIMITER);
+//                        fileWriter.append(wh.getPcbB());
+//                        fileWriter.append(COMMA_DELIMITER);
+//                        fileWriter.append(wh.getPcbBQty());
                         fileWriter.append(COMMA_DELIMITER);
                         fileWriter.append(wh.getPcbC());
                         fileWriter.append(COMMA_DELIMITER);
@@ -891,8 +2568,8 @@ public class WhRequestController {
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname(userSession.getFullname());
-//                String[] to = {"hmsrelon@gmail.com"};  //9/11/16
-                String[] to = {"hmsrelontest@gmail.com"};
+                String[] to = {"hmsrelon@gmail.com"};  //9/11/16
+//                String[] to = {"hmsrelontest@gmail.com"};
                 emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
@@ -912,6 +2589,7 @@ public class WhRequestController {
                 user2.setFullname("All");
 //                String[] to2 = {"sbnfactory@gmail.com", "fg79cj@onsemi.com"};
                 String[] to2 = {"sbnfactory@gmail.com"};
+//                String[] to2 = {"fg79cj@onsemi.com"};
                 emailSenderSbnFactory.htmlEmailManyTo(
                         servletContext,
                         //                    user name
@@ -937,83 +2615,251 @@ public class WhRequestController {
     ) throws IOException {
         WhRequestDAO whRequestDAO = new WhRequestDAO();
         WhRequest whRequest = whRequestDAO.getWhRequest(whRequestId);
-        PcbLimitDAO pcbLimitD = new PcbLimitDAO();
-        int countPcbL = pcbLimitD.getCountPcbType(whRequest.getPcbType());
 
-        if (countPcbL == 1) {
-            pcbLimitD = new PcbLimitDAO();
-            PcbLimit pcbLimit = pcbLimitD.getPcbLimitByType(whRequest.getPcbType());
-            String PcbLimitQty = pcbLimit.getQuantity();
-            model.addAttribute("PcbLimitQty", PcbLimitQty);
-        } else {
-            String PcbLimitQty = "";
-            model.addAttribute("PcbLimitQty", PcbLimitQty);
+        if ("Motherboard".equals(whRequest.getEquipmentType())) {
+            JSONObject paramBib = new JSONObject();
+            paramBib.put("itemType", "BIB");
+            paramBib.put("itemStatus", "0");
+            paramBib.put("status", "1");
+            JSONArray getItemByParamBib = SPTSWebService.getItemByParam(paramBib);
+            List<LinkedHashMap<String, String>> itemListbib = SystemUtil.jsonArrayToList(getItemByParamBib);
+
+            model.addAttribute("bibItemList", itemListbib);
+
+        } else if ("Stencil".equals(whRequest.getEquipmentType())) {
+            JSONObject paramStencil = new JSONObject();
+            paramStencil.put("itemType", "Stencil");
+            paramStencil.put("itemStatus", "0");
+            paramStencil.put("status", "1");
+            JSONArray getItemByParamStencil = SPTSWebService.getItemByParam(paramStencil);
+            List<LinkedHashMap<String, String>> itemListstencil = SystemUtil.jsonArrayToList(getItemByParamStencil);
+
+            model.addAttribute("StencilItemList", itemListstencil);
+
+        } else if ("Tray".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "TRAY");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamTray = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListtray = SystemUtil.jsonArrayToList(getItemByParamTray);
+
+            model.addAttribute("trayItemList", itemListtray);
+
+        } else if ("PCB".equals(whRequest.getEquipmentType())) {
+
+            PcbLimitDAO pcbLimitD = new PcbLimitDAO();
+            int countPcbL = pcbLimitD.getCountPcbType(whRequest.getPcbType());
+
+            if (countPcbL == 1) {
+                pcbLimitD = new PcbLimitDAO();
+                PcbLimit pcbLimit = pcbLimitD.getPcbLimitByType(whRequest.getPcbType());
+                String PcbLimitQty = pcbLimit.getQuantity();
+                model.addAttribute("PcbLimitQty", PcbLimitQty);
+            } else {
+                String PcbLimitQty = "";
+                model.addAttribute("PcbLimitQty", PcbLimitQty);
+            }
+
+            PcbLimitDAO pcbDao = new PcbLimitDAO();
+            List< PcbLimit> pcbType = pcbDao.getPcbLimitList2(whRequest.getPcbType());
+
+            JSONObject paramPcbA = new JSONObject();
+            paramPcbA.put("itemType", "PCB%");
+            paramPcbA.put("itemStatus", "0");
+            paramPcbA.put("itemID", "%QUAL A");
+            JSONArray getItemByParamPcbA = SPTSWebService.getItemByParam(paramPcbA);
+            List<LinkedHashMap<String, String>> itemListpcbQualA = SystemUtil.jsonArrayToList(getItemByParamPcbA);
+
+            JSONObject paramPcbB = new JSONObject();
+            paramPcbB.put("itemType", "PCB%");
+            paramPcbB.put("itemStatus", "0");;
+            paramPcbB.put("itemID", "%QUAL B");
+            JSONArray getItemByParamPcbB = SPTSWebService.getItemByParam(paramPcbB);
+            List<LinkedHashMap<String, String>> itemListpcbQualB = SystemUtil.jsonArrayToList(getItemByParamPcbB);
+
+            JSONObject paramPcbC = new JSONObject();
+            paramPcbC.put("itemType", "PCB%");
+            paramPcbC.put("itemStatus", "0");
+            paramPcbC.put("itemID", "%QUAL C");
+            JSONArray getItemByParamPcbC = SPTSWebService.getItemByParam(paramPcbC);
+            List<LinkedHashMap<String, String>> itemListpcbQualC = SystemUtil.jsonArrayToList(getItemByParamPcbC);
+
+            JSONObject paramPcbCtr = new JSONObject();
+            paramPcbCtr.put("itemType", "PCB%");
+            paramPcbCtr.put("itemStatus", "0");
+            paramPcbCtr.put("itemID", "%CONTROL");
+            JSONArray getItemByParamPcbCtr = SPTSWebService.getItemByParam(paramPcbCtr);
+            List<LinkedHashMap<String, String>> itemListpcbCtr = SystemUtil.jsonArrayToList(getItemByParamPcbCtr);
+
+            model.addAttribute("pcbType", pcbType);
+            model.addAttribute("pcbItemListA", itemListpcbQualA);
+            model.addAttribute("pcbItemListB", itemListpcbQualB);
+            model.addAttribute("pcbItemListC", itemListpcbQualC);
+            model.addAttribute("pcbItemListCtr", itemListpcbCtr);
+        } else if ("Load Card".equals(whRequest.getEquipmentType())) {
+            JSONObject paramLc = new JSONObject();
+            paramLc.put("itemType", "BIB Card");
+            paramLc.put("itemStatus", "0");
+            paramLc.put("itemID", "LC%");
+            JSONArray getItemByParamLc = SPTSWebService.getItemByParam(paramLc);
+            List<LinkedHashMap<String, String>> itemListLc = SystemUtil.jsonArrayToList(getItemByParamLc);
+            model.addAttribute("itemListLc", itemListLc);
+
+        } else if ("Program Card".equals(whRequest.getEquipmentType())) {
+            JSONObject paramPc = new JSONObject();
+            paramPc.put("itemType", "BIB Card");
+            paramPc.put("itemStatus", "0");
+            paramPc.put("itemID", "PC%");
+            JSONArray getItemByParamPc = SPTSWebService.getItemByParam(paramPc);
+            List<LinkedHashMap<String, String>> itemListPc = SystemUtil.jsonArrayToList(getItemByParamPc);
+            model.addAttribute("itemListPc", itemListPc);
+
+        } else if ("Load Card & Program Card".equals(whRequest.getEquipmentType())) {
+            JSONObject paramLc = new JSONObject();
+            paramLc.put("itemType", "BIB Card");
+            paramLc.put("itemStatus", "0");
+            paramLc.put("itemID", "LC%");
+            JSONArray getItemByParamLc = SPTSWebService.getItemByParam(paramLc);
+            List<LinkedHashMap<String, String>> itemListLc = SystemUtil.jsonArrayToList(getItemByParamLc);
+            model.addAttribute("itemListLc", itemListLc);
+
+            JSONObject paramPc = new JSONObject();
+            paramPc.put("itemType", "BIB Card");
+            paramPc.put("itemStatus", "0");
+            paramPc.put("itemID", "PC%");
+            JSONArray getItemByParamPc = SPTSWebService.getItemByParam(paramPc);
+            List<LinkedHashMap<String, String>> itemListPc = SystemUtil.jsonArrayToList(getItemByParamPc);
+            model.addAttribute("itemListPc", itemListPc);
+
+        } else if ("BIB Parts".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "BIB Parts");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamBibParts = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListBibParts = SystemUtil.jsonArrayToList(getItemByParamBibParts);
+            model.addAttribute("bibPartsItemList", itemListBibParts);
+
+        } else if ("ATE_SPAREPART_DTS".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_DTS");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATEDTS = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListatedts = SystemUtil.jsonArrayToList(getItemByParamATEDTS);
+            model.addAttribute("ateDtsItemList", itemListatedts);
+
+        } else if ("ATE_SPAREPART_FET".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_FET");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATEFET = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListatefet = SystemUtil.jsonArrayToList(getItemByParamATEFET);
+            model.addAttribute("ateFetItemList", itemListatefet);
+
+        } else if ("ATE_SPAREPART_PFT".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_PFT");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATEPFT = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListatepft = SystemUtil.jsonArrayToList(getItemByParamATEPFT);
+            model.addAttribute("atePftItemList", itemListatepft);
+
+        } else if ("ATE_SPAREPART_TESEC".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_TESEC");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATETESEC = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListatetesec = SystemUtil.jsonArrayToList(getItemByParamATETESEC);
+            model.addAttribute("ateTesecItemList", itemListatetesec);
+
+        } else if ("ATE_SPAREPART_TESTFIXTURE".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_TESTFIXTURE");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATETEST = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListatetest = SystemUtil.jsonArrayToList(getItemByParamATETEST);
+            model.addAttribute("ateTestItemList", itemListatetest);
+
+        } else if ("ATE_SPAREPART_ETS".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_ETS");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATEETS = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListatetets = SystemUtil.jsonArrayToList(getItemByParamATEETS);
+            model.addAttribute("ateEtsItemList", itemListatetets);
+
+        } else if ("ATE_SPAREPART_ESD".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_ESD");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATEESD = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListateesd = SystemUtil.jsonArrayToList(getItemByParamATEESD);
+            model.addAttribute("ateEsdItemList", itemListateesd);
+
+        } else if ("ATE_SPAREPART_ACC".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "ATE_SPAREPART_ACC");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamATEACC = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListateacc = SystemUtil.jsonArrayToList(getItemByParamATEACC);
+            model.addAttribute("ateAccItemList", itemListateacc);
+
+        } else if ("EQP_SPAREPART_GENERAL".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "EQP_SPAREPART_GENERAL");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamEQPG = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListeqpg = SystemUtil.jsonArrayToList(getItemByParamEQPG);
+            model.addAttribute("eqpGeneralItemList", itemListeqpg);
+
+        } else if ("EQP_SPAREPART_H3TRB_AC_HAST".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "EQP_SPAREPART_H3TRB_AC_HAST");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamEQPH = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListeqph = SystemUtil.jsonArrayToList(getItemByParamEQPH);
+            model.addAttribute("eqpHastItemList", itemListeqph);
+
+        } else if ("EQP_SPAREPART_HTS_HTB_WF".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "EQP_SPAREPART_HTS_HTB_WF");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamEQPW = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListeqpw = SystemUtil.jsonArrayToList(getItemByParamEQPW);
+            model.addAttribute("eqpWfItemList", itemListeqpw);
+
+        } else if ("EQP_SPAREPART_IOL".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "EQP_SPAREPART_IOL");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamEQPI = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListeqpi = SystemUtil.jsonArrayToList(getItemByParamEQPI);
+            model.addAttribute("eqpIolItemList", itemListeqpi);
+
+        } else if ("EQP_SPAREPART_TC_PTC".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "EQP_SPAREPART_TC_PTC");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamEQPP = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListeqpp = SystemUtil.jsonArrayToList(getItemByParamEQPP);
+            model.addAttribute("eqpPtcItemList", itemListeqpp);
+
+        } else if ("EQP_SPAREPART_FOL".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "EQP_SPAREPART_FOL");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamEQPF = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListeqpf = SystemUtil.jsonArrayToList(getItemByParamEQPF);
+            model.addAttribute("eqpFolItemList", itemListeqpf);
+
+        } else if ("EQP_SPAREPART_BLR".equals(whRequest.getEquipmentType())) {
+            JSONObject paramTray = new JSONObject();
+            paramTray.put("itemType", "EQP_SPAREPART_BLR");
+            paramTray.put("itemStatus", "0");
+            JSONArray getItemByParamEQPB = SPTSWebService.getItemByParam(paramTray);
+            List<LinkedHashMap<String, String>> itemListeqpb = SystemUtil.jsonArrayToList(getItemByParamEQPB);
+            model.addAttribute("eqpBlrItemList", itemListeqpb);
         }
 
-        PcbLimitDAO pcbDao = new PcbLimitDAO();
-        List< PcbLimit> pcbType = pcbDao.getPcbLimitList2(whRequest.getPcbType());
-
-        JSONObject paramBib = new JSONObject();
-        paramBib.put("itemType", "BIB");
-        paramBib.put("itemStatus", "0");
-        paramBib.put("status", "1");
-        JSONArray getItemByParamBib = SPTSWebService.getItemByParam(paramBib);
-        List<LinkedHashMap<String, String>> itemListbib = SystemUtil.jsonArrayToList(getItemByParamBib);
-
-        JSONObject paramTray = new JSONObject();
-        paramTray.put("itemType", "TRAY");
-        paramTray.put("itemStatus", "0");
-//        paramTray.put("status", "1");
-        JSONArray getItemByParamTray = SPTSWebService.getItemByParam(paramTray);
-        List<LinkedHashMap<String, String>> itemListtray = SystemUtil.jsonArrayToList(getItemByParamTray);
-
-        JSONObject paramStencil = new JSONObject();
-        paramStencil.put("itemType", "Stencil");
-        paramStencil.put("itemStatus", "0");
-        paramStencil.put("status", "1");
-        JSONArray getItemByParamStencil = SPTSWebService.getItemByParam(paramStencil);
-        List<LinkedHashMap<String, String>> itemListstencil = SystemUtil.jsonArrayToList(getItemByParamStencil);
-
-        JSONObject paramPcbA = new JSONObject();
-        paramPcbA.put("itemType", "PCB%");
-        paramPcbA.put("itemStatus", "0");
-//        paramPcbA.put("status", "1");
-        paramPcbA.put("itemID", "%QUAL A");
-        JSONArray getItemByParamPcbA = SPTSWebService.getItemByParam(paramPcbA);
-        List<LinkedHashMap<String, String>> itemListpcbQualA = SystemUtil.jsonArrayToList(getItemByParamPcbA);
-
-        JSONObject paramPcbB = new JSONObject();
-        paramPcbB.put("itemType", "PCB%");
-        paramPcbB.put("itemStatus", "0");
-//        paramPcbB.put("status", "1");
-        paramPcbB.put("itemID", "%QUAL B");
-        JSONArray getItemByParamPcbB = SPTSWebService.getItemByParam(paramPcbB);
-        List<LinkedHashMap<String, String>> itemListpcbQualB = SystemUtil.jsonArrayToList(getItemByParamPcbB);
-
-        JSONObject paramPcbC = new JSONObject();
-        paramPcbC.put("itemType", "PCB%");
-        paramPcbC.put("itemStatus", "0");
-//        paramPcbC.put("status", "1");
-        paramPcbC.put("itemID", "%QUAL C");
-        JSONArray getItemByParamPcbC = SPTSWebService.getItemByParam(paramPcbC);
-        List<LinkedHashMap<String, String>> itemListpcbQualC = SystemUtil.jsonArrayToList(getItemByParamPcbC);
-
-        JSONObject paramPcbCtr = new JSONObject();
-        paramPcbCtr.put("itemType", "PCB%");
-        paramPcbCtr.put("itemStatus", "0");
-//        paramPcbCtr.put("status", "1");
-        paramPcbCtr.put("itemID", "%CONTROL");
-        JSONArray getItemByParamPcbCtr = SPTSWebService.getItemByParam(paramPcbCtr);
-        List<LinkedHashMap<String, String>> itemListpcbCtr = SystemUtil.jsonArrayToList(getItemByParamPcbCtr);
-
-        model.addAttribute("pcbType", pcbType);
-        model.addAttribute("itemListbib", itemListbib);
-        model.addAttribute("itemListtray", itemListtray);
-        model.addAttribute("itemListstencil", itemListstencil);
-        model.addAttribute("itemListpcbQualA", itemListpcbQualA);
-        model.addAttribute("itemListpcbQualB", itemListpcbQualB);
-        model.addAttribute("itemListpcbQualC", itemListpcbQualC);
-        model.addAttribute("itemListpcbCtr", itemListpcbCtr);
         model.addAttribute("whRequest", whRequest);
 
         return "whRequest/edit";
@@ -1043,6 +2889,55 @@ public class WhRequestController {
             @RequestParam(required = false) String pcbCQty,
             @RequestParam(required = false) String pcbCtrQty,
             @RequestParam(required = false) String quantity,
+            @RequestParam(required = false) String equipmentIdLc,
+            @RequestParam(required = false) String equipmentIdPc,
+            @RequestParam(required = false) String equipmentIdLc1,
+            @RequestParam(required = false) String equipmentIdPc1,
+            @RequestParam(required = false) String quantityLc,
+            @RequestParam(required = false) String quantityLc1,
+            @RequestParam(required = false) String quantityPc,
+            @RequestParam(required = false) String quantityPc1,
+            @RequestParam(required = false) String requestedBy,
+            @RequestParam(required = false) String inventoryIdLc,
+            @RequestParam(required = false) String invQtyLc,
+            @RequestParam(required = false) String inventoryIdPc,
+            @RequestParam(required = false) String invQtyPc,
+            @RequestParam(required = false) String inventoryIdLc1,
+            @RequestParam(required = false) String invQtyLc1,
+            @RequestParam(required = false) String inventoryIdPc1,
+            @RequestParam(required = false) String invQtyPc1,
+            @RequestParam(required = false) String equipmentIdBibParts,
+            @RequestParam(required = false) String quantityBibParts,
+            @RequestParam(required = false) String equipmentIdAteDts,
+            @RequestParam(required = false) String quantityAteDts,
+            @RequestParam(required = false) String equipmentIdAteFet,
+            @RequestParam(required = false) String quantityAteFet,
+            @RequestParam(required = false) String equipmentIdAtePft,
+            @RequestParam(required = false) String quantityAtePft,
+            @RequestParam(required = false) String equipmentIdAteTesec,
+            @RequestParam(required = false) String quantityAteTesec,
+            @RequestParam(required = false) String equipmentIdAteTest,
+            @RequestParam(required = false) String quantityAteTest,
+            @RequestParam(required = false) String equipmentIdAteEts,
+            @RequestParam(required = false) String quantityAteEts,
+            @RequestParam(required = false) String equipmentIdAteEsd,
+            @RequestParam(required = false) String quantityAteEsd,
+            @RequestParam(required = false) String equipmentIdAteAcc,
+            @RequestParam(required = false) String quantityAteAcc,
+            @RequestParam(required = false) String equipmentIdEqpGeneral,
+            @RequestParam(required = false) String quantityEqpGeneral,
+            @RequestParam(required = false) String equipmentIdEqpHast,
+            @RequestParam(required = false) String quantityEqpHast,
+            @RequestParam(required = false) String equipmentIdEqpPtc,
+            @RequestParam(required = false) String quantityEqpPtc,
+            @RequestParam(required = false) String equipmentIdEqpWf,
+            @RequestParam(required = false) String quantityEqpWf,
+            @RequestParam(required = false) String equipmentIdEqpIol,
+            @RequestParam(required = false) String quantityEqpIol,
+            @RequestParam(required = false) String equipmentIdEqpFol,
+            @RequestParam(required = false) String quantityEqpFol,
+            @RequestParam(required = false) String equipmentIdEqpBlr,
+            @RequestParam(required = false) String quantityEqpBlr,
             @RequestParam(required = false) String remarks,
             @RequestParam(required = false) String remarksLog,
             @RequestParam(required = false) String flag
@@ -1167,6 +3062,198 @@ public class WhRequestController {
             whRequest.setPcbBQty("0");
             whRequest.setPcbCQty("0");
             whRequest.setPcbCtrQty("0");
+        } else if ("Load Card".equals(equipmentType)) {
+            CardPairingDAO pairD = new CardPairingDAO();
+            int count = pairD.getCountLoadCardSingle(equipmentIdLc);
+            if (count == 1) {
+                pairD = new CardPairingDAO();
+                CardPairing cardP = pairD.getCardPairingWithLoadCardSingle(equipmentIdLc);
+                whRequest.setEquipmentId(cardP.getPairId() + " - " + cardP.getType());
+                whRequest.setQuantity(quantityLc);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setLoadCard(equipmentIdLc);
+                whRequest.setLoadCardQty(quantityLc);
+            } else {
+                redirectAttrs.addFlashAttribute("error", "Load Card ID is not in the Card Pairing Table. Please re-check.");
+                model.addAttribute("whRequest", whRequest);
+                return "redirect:/wh/whRequest/add";
+            }
+
+        } else if ("Program Card".equals(equipmentType)) {
+            CardPairingDAO pairD = new CardPairingDAO();
+            int count = pairD.getCountProgramCardSingle(equipmentIdPc);
+            if (count == 1) {
+                pairD = new CardPairingDAO();
+                CardPairing cardP = pairD.getCardPairingWithProgramCardSingle(equipmentIdPc);
+                whRequest.setEquipmentId(cardP.getPairId() + " - " + cardP.getType());
+                whRequest.setQuantity(quantityPc);
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCard(equipmentIdPc);
+                whRequest.setProgramCardQty(quantityPc);
+            } else {
+                redirectAttrs.addFlashAttribute("error", "Program Card ID is not in the Card Pairing Table. Please re-check.");
+                model.addAttribute("whRequest", whRequest);
+                return "redirect:/wh/whRequest/add";
+            }
+
+        } else if ("Load Card & Program Card".equals(equipmentType)) {
+            CardPairingDAO pairD = new CardPairingDAO();
+            int count = pairD.getCountLoadCardProgramCardPair(equipmentIdLc1, equipmentIdPc1);
+            if (count == 1) {
+                pairD = new CardPairingDAO();
+                CardPairing cardP = pairD.getCardPairingWithLoadCardProgramCardPair(equipmentIdLc1, equipmentIdPc1);
+                whRequest.setEquipmentId(cardP.getPairId() + " - " + cardP.getType());
+                //total quantity
+                Integer totalQty = Integer.valueOf(quantityLc1) + Integer.valueOf(quantityPc1);
+                whRequest.setQuantity(totalQty.toString());
+                whRequest.setPcbAQty("0");
+                whRequest.setPcbBQty("0");
+                whRequest.setPcbCQty("0");
+                whRequest.setPcbCtrQty("0");
+                whRequest.setProgramCard(equipmentIdPc1);
+                whRequest.setProgramCardQty(quantityPc1);
+                whRequest.setLoadCard(equipmentIdLc1);
+                whRequest.setLoadCardQty(quantityLc1);
+            } else {
+                redirectAttrs.addFlashAttribute("error", "Those Bib Card ID is not tally. Please re-check.");
+                model.addAttribute("whRequest", whRequest);
+                return "redirect:/wh/whRequest/add";
+            }
+
+        } else if ("BIB Parts".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdBibParts);
+            whRequest.setQuantity(quantityBibParts);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_DTS".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAteDts);
+            whRequest.setQuantity(quantityAteDts);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_FET".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAteFet);
+            whRequest.setQuantity(quantityAteFet);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_PFT".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAtePft);
+            whRequest.setQuantity(quantityAtePft);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_TESEC".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAteTesec);
+            whRequest.setQuantity(quantityAteTesec);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_TESTFIXTURE".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAteTest);
+            whRequest.setQuantity(quantityAteTest);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_ETS".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAteEts);
+            whRequest.setQuantity(quantityAteEts);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_ESD".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAteEsd);
+            whRequest.setQuantity(quantityAteEsd);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("ATE_SPAREPART_ACC".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdAteAcc);
+            whRequest.setQuantity(quantityAteAcc);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("EQP_SPAREPART_GENERAL".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdEqpGeneral);
+            whRequest.setQuantity(quantityEqpGeneral);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("EQP_SPAREPART_H3TRB_AC_HAST".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdEqpHast);
+            whRequest.setQuantity(quantityEqpHast);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("EQP_SPAREPART_HTS_HTB_WF".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdEqpWf);
+            whRequest.setQuantity(quantityEqpWf);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("EQP_SPAREPART_IOL".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdEqpIol);
+            whRequest.setQuantity(quantityEqpIol);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("EQP_SPAREPART_TC_PTC".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdEqpPtc);
+            whRequest.setQuantity(quantityEqpPtc);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("EQP_SPAREPART_FOL".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdEqpFol);
+            whRequest.setQuantity(quantityEqpFol);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
+        } else if ("EQP_SPAREPART_BLR".equals(equipmentType)) {
+            whRequest.setEquipmentId(equipmentIdEqpBlr);
+            whRequest.setQuantity(quantityEqpBlr);
+            whRequest.setPcbAQty("0");
+            whRequest.setPcbBQty("0");
+            whRequest.setPcbCQty("0");
+            whRequest.setPcbCtrQty("0");
+
         } else {
             whRequest.setPcbAQty("0");
             whRequest.setPcbBQty("0");
@@ -1370,6 +3457,17 @@ public class WhRequestController {
             whRequestDAO = new WhRequestDAO();
             WhRequest whRequestEmail = whRequestDAO.getWhRequest(id);
 
+            String equipId = "";
+            if ("Load Card".equals(equipmentType)) {
+                equipId = whRequestEmail.getLoadCard();
+            } else if ("Program Card".equals(equipmentType)) {
+                equipId = whRequestEmail.getProgramCard();
+            } else if ("Load Card & Program Card".equals(equipmentType)) {
+                equipId = whRequestEmail.getLoadCard() + " & " + whRequestEmail.getProgramCard();
+            } else {
+                equipId = whRequestEmail.getEquipmentId();
+            }
+
             emailSender.htmlEmail(
                     servletContext,
                     //                    user name
@@ -1379,7 +3477,7 @@ public class WhRequestController {
                     //                    subject
                     "Approval Status for New Hardware Request for Sending to SBN Factory",
                     //                    msg
-                    "Approval status for New Hardware Request for id : " + whRequestEmail.getEquipmentId() + " has been made. Please go to this link "
+                    "Approval status for New Hardware Request for id : " + equipId + " has been made. Please go to this link "
                     //for testing development
                     //                    + "<a href=\"" + request.getScheme() + "://fg79cj-l1:" + request.getServerPort() + request.getContextPath() + "/wh/whRequest/edit/" + id + "\">HIMS</a>"
                     //                    + " for approval status checking."
@@ -1402,6 +3500,8 @@ public class WhRequestController {
                 ship.setSfpkidB("0");
                 ship.setSfpkidC("0");
                 ship.setSfpkidCtr("0");
+                ship.setSfpkidLc("0");
+                ship.setSfpkidPc("0");
                 ship.setItempkid("0");
                 WhShippingDAO whShippingDAO = new WhShippingDAO();
                 QueryResult queryResultShip = whShippingDAO.insertWhShipping(ship);
@@ -1526,25 +3626,25 @@ public class WhRequestController {
                 }
             }
         }
-        
+
         if (shippingDate != null) {
             if (!shippingDate.equals("")) {
                 count++;
                 if (count == 1) {
-                    query = " sh.shipping_date LIKE '"+ shippingDate + "%'";
+                    query = " sh.shipping_date LIKE '" + shippingDate + "%'";
                 } else if (count > 1) {
-                    query = query + " AND sh.shipping_date LIKE '"+ shippingDate + "%'";
+                    query = query + " AND sh.shipping_date LIKE '" + shippingDate + "%'";
                 }
             }
         }
-        
+
         if (receivedDate != null) {
             if (!receivedDate.equals("")) {
                 count++;
                 if (count == 1) {
-                    query = " ret.shipping_date LIKE '"+ receivedDate + "%'";
+                    query = " ret.shipping_date LIKE '" + receivedDate + "%'";
                 } else if (count > 1) {
-                    query = query + " AND ret.shipping_date LIKE '"+ receivedDate + "%'";
+                    query = query + " AND ret.shipping_date LIKE '" + receivedDate + "%'";
                 }
             }
         }

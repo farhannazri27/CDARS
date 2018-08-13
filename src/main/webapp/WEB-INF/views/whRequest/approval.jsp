@@ -34,16 +34,65 @@
                                     <input type="text" class="form-control" id="equipmentType" name="equipmentType" value="${whRequest.equipmentType}" readonly>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="equipmentId" class="col-lg-2 control-label">${IdLabel}</label>
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.equipmentId}" readonly>
+                            <c:if test="${whRequest.equipmentType == 'Load Card'}">
+                                <div class="form-group">
+                                    <label for="equipmentId" class="col-lg-2 control-label">Load Card ID</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.loadCard}" readonly>
+                                    </div>
+                                    <label for="quantity" class="col-lg-1 control-label">Total Quantity </label>
+                                    <div class="col-lg-1">
+                                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.loadCardQty}" readonly>
+                                    </div>
                                 </div>
-                                 <label for="quantity" class="col-lg-1 control-label">Total Quantity </label>
-                                <div class="col-lg-1">
-                                    <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.quantity}" readonly>
+                            </c:if>
+                            <c:if test="${whRequest.equipmentType == 'Program Card'}">
+                                <div class="form-group">
+                                    <label for="equipmentId" class="col-lg-2 control-label">Program Card ID</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.programCard}" readonly>
+                                    </div>
+                                    <label for="quantity" class="col-lg-1 control-label">Total Quantity </label>
+                                    <div class="col-lg-1">
+                                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.programCardQty}" readonly>
+                                    </div>
                                 </div>
-                            </div>
+                            </c:if>
+                            <c:if test="${whRequest.equipmentType == 'Load Card & Program Card'}">
+                                <div class="form-group">
+                                    <label for="equipmentId" class="col-lg-2 control-label">Load Card ID</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.loadCard}" readonly>
+                                    </div>
+                                    <label for="quantity" class="col-lg-1 control-label">Total Quantity </label>
+                                    <div class="col-lg-1">
+                                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.loadCardQty}" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="equipmentId" class="col-lg-2 control-label">Program Card ID</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.programCard}" readonly>
+                                    </div>
+                                    <label for="quantity" class="col-lg-1 control-label">Total Quantity </label>
+                                    <div class="col-lg-1">
+                                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.programCardQty}" readonly>
+                                    </div>
+                                </div>
+                            </c:if>
+                            <c:if test="${whRequest.equipmentType != 'Load Card & Program Card' && whRequest.equipmentType != 'Load Card' && whRequest.equipmentType != 'Program Card'}">
+                                <div class="form-group">
+                                    <label for="equipmentId" class="col-lg-2 control-label">${IdLabel}</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="equipmentId" name="equipmentId" value="${whRequest.equipmentId}" readonly>
+                                    </div>
+                                    <label for="quantity" class="col-lg-1 control-label">Total Quantity </label>
+                                    <div class="col-lg-1">
+                                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Quantity" value="${whRequest.quantity}" readonly>
+                                    </div>
+                                </div>
+                            </c:if>
+
                             <div class="form-group" id="quantitydiv" hidden>
                                 <label for="quantity" class="col-lg-2 control-label">Quantity </label>
                                 <div class="col-lg-2">
@@ -55,7 +104,7 @@
                                 <div class="col-lg-6">
                                     <input type="text" class="form-control" id="pcbA" name="pcbA" value="${whRequest.pcbA}" readonly>
                                 </div>
-                             <label for="pcbAQty" class="col-lg-1 control-label">Quantity</label>
+                                <label for="pcbAQty" class="col-lg-1 control-label">Quantity</label>
                                 <div class="col-lg-1">
                                     <input type="text" class="form-control" id="pcbAQty" name="pcbAQty" value="${whRequest.pcbAQty}" readonly>
                                 </div>   
@@ -139,10 +188,10 @@
     <s:layout-component name="page_js_inline">
         <script>
             $(document).ready(function () {
-                
+
                 var elementReqType = $('#requestType');
                 if (elementReqType.val() === "Retrieve") {
-                     $("#submit").attr("disabled", true);
+                    $("#submit").attr("disabled", true);
                     $("#finalApprovedStatus").attr("disabled", true);
                     $("#remarksApprover").attr("readonly", true);
                 }

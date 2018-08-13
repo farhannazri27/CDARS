@@ -222,7 +222,7 @@ public class LDAPUserDAO {
     public List<LDAPUser> list() {
         List<LDAPUser> list = new ArrayList<LDAPUser>();
         String sql = "SELECT u.*, IFNULL(ug.code, '') AS group_code, IFNULL(ug.name, '') AS group_name FROM cdars_user_ldap u "
-                + "LEFT JOIN cdars_user_group ug ON (u.group_id = ug.id)";
+                + "LEFT JOIN cdars_user_group ug ON (u.group_id = ug.id) ORDER BY u.firstname ASC";
         try {
             ResultSetHandler<List<LDAPUser>> h = new ResultSetHandler<List<LDAPUser>>() {
                 @Override

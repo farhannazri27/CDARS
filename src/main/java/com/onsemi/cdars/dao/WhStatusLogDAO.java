@@ -514,6 +514,94 @@ public class WhStatusLogDAO {
 
     }
 
+    public List<WhStatusLog> getTLReqToInventoryList() { //timelapse notification ship
+        String sql = "SELECT re.id AS request_id, re.load_card_id AS load_card, re.program_card_id AS program_card, "
+                + "re.equipment_type AS equipment_type, re.equipment_id AS equipment_id, re.mp_no AS mp_no, re.status AS status, "
+                + "HOUR(TIMEDIFF(re.requested_date,re.final_approved_date)) AS req_to_approve_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(re.requested_date, re.final_approved_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(re.requested_date, final_approved_date)), 24), ' hours, ', MINUTE(TIMEDIFF(re.requested_date, final_approved_date)), ' mins, ', SECOND(TIMEDIFF(re.requested_date, final_approved_date)), ' secs') AS req_to_approve, "
+                + "HOUR(TIMEDIFF(re.requested_date,IFNULL(re.final_approved_date,NOW()))) AS req_to_approve_temp_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(re.requested_date, IFNULL(re.final_approved_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(re.requested_date, IFNULL(final_approved_date,NOW()))), ' secs') AS req_to_approve_temp, "
+                + "HOUR(TIMEDIFF(final_approved_date,re.mp_created_date)) AS approve_to_mp_created_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(final_approved_date, re.mp_created_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(final_approved_date, re.mp_created_date)), 24), ' hours, ', MINUTE(TIMEDIFF(final_approved_date, re.mp_created_date)), ' mins, ', SECOND(TIMEDIFF(final_approved_date, re.mp_created_date)), ' secs') AS approve_to_mp_created, "
+                + "HOUR(TIMEDIFF(final_approved_date,IFNULL(re.mp_created_date,NOW()))) AS approve_to_mp_created_temp_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(final_approved_date,  IFNULL(re.mp_created_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(final_approved_date, IFNULL(re.mp_created_date,NOW()))), ' secs') AS approve_to_mp_created_temp, "
+                + "HOUR(TIMEDIFF(shi.mp_created_date,shi.date_scan_1)) AS mp_created_to_tt_scan_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.mp_created_date, shi.date_scan_1)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.mp_created_date, shi.date_scan_1)), 24), ' hours, ', MINUTE(TIMEDIFF(shi.mp_created_date, shi.date_scan_1)), ' mins, ', SECOND(TIMEDIFF(shi.mp_created_date, shi.date_scan_1)), ' secs') AS mp_created_to_tt_scan, "
+                + "HOUR(TIMEDIFF(shi.mp_created_date,IFNULL(shi.date_scan_1,NOW()))) AS mp_created_to_tt_scan_temp_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.mp_created_date, IFNULL(shi.date_scan_1,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.mp_created_date, IFNULL(shi.date_scan_1,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(shi.mp_created_date, IFNULL(shi.date_scan_1,NOW()))), ' mins, ', SECOND(TIMEDIFF(shi.mp_created_date, IFNULL(shi.date_scan_1,NOW()))), ' secs') AS mp_created_to_tt_scan_temp, "
+                + "HOUR(TIMEDIFF(shi.date_scan_1,shi.date_scan_2)) AS tt_scan_to_bs_scan_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.date_scan_1, shi.date_scan_2)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.date_scan_1, shi.date_scan_2)), 24), ' hours, ', MINUTE(TIMEDIFF(shi.date_scan_1,shi.date_scan_2)), ' mins, ', SECOND(TIMEDIFF(shi.date_scan_1,shi.date_scan_2)), ' secs') AS tt_scan_to_bs_scan, "
+                + "HOUR(TIMEDIFF(shi.date_scan_1,IFNULL(shi.date_scan_2,NOW()))) AS tt_scan_to_bs_scan_temp_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.date_scan_1, IFNULL(shi.date_scan_2,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.date_scan_1, IFNULL(shi.date_scan_2,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(shi.date_scan_1, IFNULL(shi.date_scan_2,NOW()))), ' mins, ', SECOND(TIMEDIFF(shi.date_scan_1, IFNULL(shi.date_scan_2,NOW()))), ' secs') AS tt_scan_to_bs_scan_temp, "
+                + "HOUR(TIMEDIFF(shi.date_scan_2,shi.shipping_date)) AS bs_scan_to_ship_date_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.date_scan_2, shi.shipping_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.date_scan_2, shi.shipping_date)), 24), ' hours, ', MINUTE(TIMEDIFF(shi.date_scan_2,shi.shipping_date)), ' mins, ', SECOND(TIMEDIFF(shi.date_scan_2,shi.shipping_date)), ' secs') AS bs_scan_to_ship_date, "
+                + "HOUR(TIMEDIFF(shi.date_scan_2,IFNULL(shi.shipping_date,NOW()))) AS bs_scan_to_ship_date_temp_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.date_scan_2, IFNULL(shi.shipping_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.date_scan_2, IFNULL(shi.shipping_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(shi.date_scan_2, IFNULL(shi.shipping_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(shi.date_scan_2, IFNULL(shi.shipping_date,NOW()))), ' secs') AS bs_scan_to_ship_date_temp, "
+                + "HOUR(TIMEDIFF(shi.shipping_date,shi.inventory_date)) AS ship_date_to_inv_date_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.shipping_date, shi.inventory_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.shipping_date, shi.inventory_date)), 24), ' hours, ', MINUTE(TIMEDIFF(shi.shipping_date, shi.inventory_date)), ' mins, ', SECOND(TIMEDIFF(shi.shipping_date, shi.inventory_date)), ' secs') AS ship_date_to_inv_date, "
+                + "HOUR(TIMEDIFF(shi.shipping_date,IFNULL(shi.inventory_date,NOW()))) AS ship_date_to_inv_date_temp_24, "
+                + "CONCAT(FLOOR(HOUR(TIMEDIFF(shi.shipping_date, IFNULL(shi.inventory_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(shi.shipping_date, IFNULL(shi.inventory_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(shi.shipping_date, IFNULL(shi.inventory_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(shi.shipping_date, IFNULL(shi.inventory_date,NOW()))), ' secs') AS ship_date_to_inv_date_temp "
+                + "FROM cdars_wh_request re LEFT JOIN cdars_wh_shipping shi ON re.id = shi.request_id "
+                + "WHERE re.request_type = 'Ship' "
+                + "AND re.flag = '0' AND re.status NOT IN ('In SF Inventory','Requested for Retrieval') "
+                + "ORDER BY re.equipment_type ASC ";
+        List<WhStatusLog> whStatusLogList = new ArrayList<WhStatusLog>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            WhStatusLog whStatusLog;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                whStatusLog = new WhStatusLog();
+                whStatusLog.setRequestId(rs.getString("request_id"));
+                whStatusLog.setEquipmentType(rs.getString("equipment_type"));
+                whStatusLog.setEquipmentId(rs.getString("equipment_id"));
+                whStatusLog.setMpNo(rs.getString("mp_no"));
+                whStatusLog.setStatus(rs.getString("status"));
+                whStatusLog.setLoadCard(rs.getString("load_card"));
+                whStatusLog.setProgramCard(rs.getString("program_card"));
+                whStatusLog.setRequestToApprove(rs.getString("req_to_approve"));
+                whStatusLog.setApproveToMPCreated(rs.getString("approve_to_mp_created"));
+                whStatusLog.setRequestToApproveTemp(rs.getString("req_to_approve_temp"));
+                whStatusLog.setApproveToMPCreatedTemp(rs.getString("approve_to_mp_created_temp"));
+                whStatusLog.setRequestToApprove24(rs.getString("req_to_approve_24"));
+                whStatusLog.setApproveToMPCreated24(rs.getString("approve_to_mp_created_24"));
+                whStatusLog.setRequestToApproveTemp24(rs.getString("req_to_approve_temp_24"));
+                whStatusLog.setApproveToMPCreatedTemp24(rs.getString("approve_to_mp_created_temp_24"));
+                whStatusLog.setMpCreatedToTtScan(rs.getString("mp_created_to_tt_scan"));
+                whStatusLog.setTtScanToBsScan(rs.getString("tt_scan_to_bs_scan"));
+                whStatusLog.setBsScanToShip(rs.getString("bs_scan_to_ship_date"));
+                whStatusLog.setShipToInventory(rs.getString("ship_date_to_inv_date"));
+                whStatusLog.setMpCreatedToTtScanTemp(rs.getString("mp_created_to_tt_scan_temp"));
+                whStatusLog.setTtScanToBsScanTemp(rs.getString("tt_scan_to_bs_scan_temp"));
+                whStatusLog.setBsScanToShipTemp(rs.getString("bs_scan_to_ship_date_temp"));
+                whStatusLog.setShipToInventoryTemp(rs.getString("ship_date_to_inv_date_temp"));
+                whStatusLog.setMpCreatedToTtScan24(rs.getString("mp_created_to_tt_scan_24"));
+                whStatusLog.setTtScanToBsScan24(rs.getString("tt_scan_to_bs_scan_24"));
+                whStatusLog.setBsScanToShip24(rs.getString("bs_scan_to_ship_date_24"));
+                whStatusLog.setShipToInventory24(rs.getString("ship_date_to_inv_date_24"));
+                whStatusLog.setMpCreatedToTtScanTemp24(rs.getString("mp_created_to_tt_scan_temp_24"));
+                whStatusLog.setTtScanToBsScanTemp24(rs.getString("tt_scan_to_bs_scan_temp_24"));
+                whStatusLog.setBsScanToShipTemp24(rs.getString("bs_scan_to_ship_date_temp_24"));
+                whStatusLog.setShipToInventoryTemp24(rs.getString("ship_date_to_inv_date_temp_24"));
+                whStatusLogList.add(whStatusLog);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return whStatusLogList;
+
+    }
+
     public WhStatusLog getTLMpCreatedToFinalInventoryDate(String id) {
         String sql = "SELECT "
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(mp_created_date, IFNULL(date_scan_1,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(mp_created_date, IFNULL(date_scan_1,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(mp_created_date, IFNULL(date_scan_1,NOW()))), ' mins, ', SECOND(TIMEDIFF(mp_created_date, IFNULL(date_scan_1,NOW()))), ' secs') AS mp_created_to_tt_scan, "
@@ -589,7 +677,7 @@ public class WhStatusLogDAO {
     public List<WhStatusLog> getTLRetrieveRequestToCloseList() { //timelapse notification for retrieve
         String sql = "SELECT "
                 + "request_id,"
-                + "hardware_type, hardware_id, mp_no, "
+                + "hardware_type, hardware_id, mp_no,load_card_id, program_card_id, "
                 + "HOUR(TIMEDIFF(requested_date,verified_date)) AS req_received_date_24, "
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(requested_date, verified_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(requested_date, verified_date)), 24), ' hours, ', MINUTE(TIMEDIFF(requested_date, verified_date)), ' mins, ', SECOND(TIMEDIFF(requested_date, verified_date)), ' secs') AS req_received_date, "
                 + "HOUR(TIMEDIFF(requested_date,IFNULL(verified_date,NOW()))) AS req_received_date_temp_24, "
@@ -606,7 +694,8 @@ public class WhStatusLogDAO {
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(barcode_verified_date,tt_verified_date)) / 24), ' days, ', MOD(HOUR(TIMEDIFF(barcode_verified_date,tt_verified_date)), 24), ' hours, ', MINUTE(TIMEDIFF(barcode_verified_date,tt_verified_date)), ' mins, ', SECOND(TIMEDIFF(barcode_verified_date,tt_verified_date)), ' secs') AS bs_scan_to_tt_scan, "
                 + "HOUR(TIMEDIFF(barcode_verified_date,IFNULL(tt_verified_date,NOW()))) AS bs_scan_to_tt_scan_temp_24, "
                 + "CONCAT(FLOOR(HOUR(TIMEDIFF(barcode_verified_date, IFNULL(tt_verified_date,NOW()))) / 24), ' days, ', MOD(HOUR(TIMEDIFF(barcode_verified_date, IFNULL(tt_verified_date,NOW()))), 24), ' hours, ', MINUTE(TIMEDIFF(barcode_verified_date, IFNULL(tt_verified_date,NOW()))), ' mins, ', SECOND(TIMEDIFF(barcode_verified_date, IFNULL(tt_verified_date,NOW()))), ' secs') AS bs_scan_to_tt_scan_temp "
-                + "FROM  cdars_wh_retrieval "
+                + "FROM cdars_wh_retrieval "
+                + "WHERE flag = '0' "
                 + "ORDER BY hardware_type ASC";
         List<WhStatusLog> whStatusLogList = new ArrayList<WhStatusLog>();
         try {
@@ -618,6 +707,8 @@ public class WhStatusLogDAO {
                 whStatusLog.setEquipmentId(rs.getString("hardware_id"));
                 whStatusLog.setEquipmentType(rs.getString("hardware_type"));
                 whStatusLog.setMpNo(rs.getString("mp_no"));
+                whStatusLog.setLoadCard(rs.getString("load_card_id"));
+                whStatusLog.setProgramCard(rs.getString("program_card_id"));
                 whStatusLog.setRequestToVerifiedDate(rs.getString("req_received_date"));
                 whStatusLog.setVerifiedDatetoShipDate(rs.getString("received_date_to_ship_date"));
                 whStatusLog.setShipDateToBsScan(rs.getString("ship_date_to_bs_scan"));
@@ -781,9 +872,9 @@ public class WhStatusLogDAO {
         }
         return whStatusLog;
     }
-    
+
     public WhStatusLog getCountShipRequestIdAtRetrieval(String id) {
-        String sql = "SELECT count(*) "
+        String sql = "SELECT count(*) AS count "
                 + "FROM cdars_wh_request re, "
                 + "(SELECT DISTINCT Item.request_id AS request_id FROM (SELECT lo.* FROM cdars_wh_status_log lo, "
                 + "(SELECT re.id AS id FROM cdars_wh_request re, "

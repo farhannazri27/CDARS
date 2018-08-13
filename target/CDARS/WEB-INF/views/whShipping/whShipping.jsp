@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="${contextPath}/resources/private/datatables/css/jquery.dataTables.css" type="text/css" />
     </s:layout-component>
     <s:layout-component name="page_css_inline">
-          <style>
+        <style>
             @media print {
                 table thead {
                     border-top: #000 solid 2px;
@@ -25,7 +25,7 @@
                 text-align:right;
             }
 
-            
+
         </style>
     </s:layout-component>
     <s:layout-component name="page_container">
@@ -67,12 +67,12 @@
                                 <thead>
                                     <tr>
                                         <th><span>No</span></th>
-                                        <th><span>Hardware Type</span></th>
-                                        <th><span>Hardware ID</span></th>
+                                        <th class="col-lg-1"><span>Hardware Type</span></th>
+                                        <th class="col-lg-2"><span>Hardware ID</span></th>
                                         <th><span>Qty</span></th>
-                                        <th><span>Material Pass No</span></th>
-                                        <th><span>Requested By</span></th>
-                                        <th><span>Requested Date</span></th>
+                                        <th><span>M. Pass No</span></th>
+                                        <th><span>Request By</span></th>
+                                        <th><span>Request Date</span></th>
                                         <th><span>Status</span></th>
                                         <th><span>Manage</span></th>
                                     </tr>
@@ -82,7 +82,20 @@
                                         <tr>
                                             <td><c:out value="${whShippingLoop.index+1}"/></td>
                                             <td><c:out value="${whShipping.requestEquipmentType}"/></td>
-                                            <td id="modal_delete_info_${whShipping.id}"><c:out value="${whShipping.requestEquipmentId}"/></td>
+                                            <c:choose>
+                                                <c:when test="${whShipping.requestEquipmentType == 'Load Card'}">
+                                                    <td id="modal_delete_info_${whShipping.id}"><c:out value="${whShipping.loadCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whShipping.requestEquipmentType == 'Program Card'}">
+                                                    <td id="modal_delete_info_${whShipping.id}"><c:out value="${whShipping.programCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whShipping.requestEquipmentType == 'Load Card & Program Card'}">
+                                                    <td id="modal_delete_info_${whShipping.id}"><c:out value="${whShipping.loadCard}"/><br><c:out value="${whShipping.programCard}"/></td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                    <td id="modal_delete_info_${whShipping.id}"><c:out value="${whShipping.requestEquipmentId}"/></td>
+                                                </c:otherwise>
+                                            </c:choose>
                                             <td><c:out value="${whShipping.requestQuantity}"/></td>
                                             <td><c:out value="${whShipping.mpNo}"/></td>
                                             <td><c:out value="${whShipping.requestRequestedBy}"/></td>
@@ -157,13 +170,13 @@
                                                                     },
                                                                     {
                                                                         extend: 'excel',
-                                                                         exportOptions: {
+                                                                        exportOptions: {
                                                                             columns: [0, 1, 2, 3, 4, 5, 6, 7]
                                                                         }
                                                                     },
                                                                     {
                                                                         extend: 'pdf',
-                                                                         exportOptions: {
+                                                                        exportOptions: {
                                                                             columns: [0, 1, 2, 3, 4, 5, 6, 7]
                                                                         }
                                                                     },

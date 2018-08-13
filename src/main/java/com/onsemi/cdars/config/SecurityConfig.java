@@ -26,6 +26,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
+                .jdbcAuthentication()
+                .dataSource(dataSource)
+                .usersByUsernameQuery(getUserQuery())
+                .passwordEncoder(new BCryptPasswordEncoder())
+                .authoritiesByUsernameQuery(getAuthoritiesQuery());
+
+        //Config LDAP Login
+        //                .ldapAuthentication()
+        //                //Config Onsemi
+        //                .userDnPatterns("cn={0},ou=seremban,ou=onsemi")
+        //                //Config Local Development
+        //                //                .userDnPatterns("cn={0},ou=Users")
+        //                .contextSource()
+        //                //Config Onsemi
+        //                .url("ldap://edir.onsemi.com:389/o=ondex");
+        //        //Config Local Development
+        ////                .url("ldap://192.168.84.20:389/dc=edir,dc=onsemi,dc=com");
+        //Config LDAP Login
+//                .ldapAuthentication()
+//                .userSearchFilter("cn={0}")
+//                .userSearchBase("ou=onsemi")
+//                .contextSource()
+//                .url(env.getProperty("ldap.url"));
+    }
+
+    @Autowired
+    public void configureGlobal2(AuthenticationManagerBuilder auth) throws Exception {
+        auth
                 //                .jdbcAuthentication()
                 //                .dataSource(dataSource)
                 //                .usersByUsernameQuery(getUserQuery())
@@ -33,20 +61,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //                .authoritiesByUsernameQuery(getAuthoritiesQuery());
 
                 //Config LDAP Login
-                //                .ldapAuthentication()
-                //                //Config Onsemi
-                //                .userDnPatterns("cn={0},ou=seremban,ou=onsemi")
-                //                //Config Local Development
-                //                //                .userDnPatterns("cn={0},ou=Users")
-                //                .contextSource()
-                //                //Config Onsemi
-                //                .url("ldap://edir.onsemi.com:389/o=ondex");
-                //        //Config Local Development
-                ////                .url("ldap://192.168.84.20:389/dc=edir,dc=onsemi,dc=com");
-
-                //Config LDAP Login
                 .ldapAuthentication()
-                .userDnPatterns(env.getProperty("ldap.userDnPatterns"))
+                //                .userDnPatterns(env.getProperty("ldap.userDnPatterns"))
+                .userSearchFilter("cn={0}")
+                .userSearchBase("ou=onsemi")
                 .contextSource()
                 .url(env.getProperty("ldap.url"));
     }

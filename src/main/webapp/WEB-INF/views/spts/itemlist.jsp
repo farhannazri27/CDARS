@@ -2,10 +2,28 @@
 <%@include file="/WEB-INF/base/taglibs.jsp" %>
 <s:layout-render name="/WEB-INF/base/base.jsp">
     <s:layout-component name="page_css">
+        <link rel="stylesheet" href="${contextPath}/resources/private/datatables/css/buttons.dataTables.min.css" type="text/css" />
         <link rel="stylesheet" href="${contextPath}/resources/private/datatables/css/jquery.dataTables.css" type="text/css" />
-        <link rel="stylesheet" href="${contextPath}/resources/private/datatables/css/dataTables.tableTools.css" type="text/css" />
     </s:layout-component>
     <s:layout-component name="page_css_inline">
+        <style>
+            @media print {
+                table thead {
+                    border-top: #000 solid 2px;
+                    border-bottom: #000 solid 2px;
+                }
+                table tbody {
+                    border-top: #000 solid 2px;
+                    border-bottom: #000 solid 2px;
+                }
+            }
+            .dataTables_wrapper .dt-buttons {
+                float:none;  
+                text-align:right;
+            }
+
+
+        </style>
     </s:layout-component>
     <s:layout-component name="page_container">
         <div class="col-lg-12">
@@ -49,26 +67,30 @@
                                 <thead>
                                     <tr>
                                         <th><span>No</span></th>
-                                        <th><span>PKID</span></th>
+                                        <th><span>Item Type</span></th>
                                         <th><span>Item ID</span></th>
                                         <th><span>Item Name</span></th>
-                                        <th><span>Rack</span></th>
-                                        <th><span>Shelf</span></th>
-                                        <th><span>Version</span></th>
-                                        <th><span>Manage</span></th>
+                                            <th><span>Model</span></th>
+                                        <th><span>Last Prod Date</span></th>
+                                         <th><span>Sf Qty</span></th>
+                                        <th><span>SF</span></th>
+                                        <th><span>date Last Used</span></th>
+                                        <!--<th><span>Manage</span></th>-->
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <c:forEach items="${itemList}" var="item" varStatus="itemLoop">
                                         <tr>
                                             <td><c:out value="${itemLoop.index+1}"/></td>
-                                            <td><c:out value="${item.PKID}"/></td>
+                                            <td><c:out value="${item.ItemType}"/></td>
                                             <td><c:out value="${item.ItemID}"/></td>
                                             <td id="modal_delete_info_${item.PKID}"><c:out value="${item.ItemName}"/></td>
-                                            <td><c:out value="${item.Rack}"/></td>
-                                            <td><c:out value="${item.Shelf}"/></td>
-                                            <td><c:out value="${item.Version}"/></td>
-                                            <td align="center">
+                                            <td><c:out value="${item.Model}"/></td>
+                                            <td><c:out value="${item.LastProdReturnDatetime}"/></td>
+                                             <td><c:out value="${item.StorageFactoryQty}"/></td>
+                                            <td><c:out value="${item.LastSFMovementDatetime}"/></td>
+                                            <td><c:out value="${item.LastMovementDatetime}"/></td>
+<!--                                            <td align="center">
                                                 <a href="${contextPath}/spts/view/${item.PKID}" class="table-link" title="View">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
@@ -87,7 +109,7 @@
                                                         <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                            </td>
+                                            </td>-->
                                         </tr>
                                     </c:forEach>
                                 </tbody>
@@ -100,66 +122,71 @@
     </s:layout-component>
     <s:layout-component name="page_js">
         <script src="${contextPath}/resources/private/datatables/js/jquery.dataTables.min.js"></script>
-        <script src="${contextPath}/resources/private/datatables/js/dataTables.tableTools.js"></script>
+        <script src="${contextPath}/resources/private/datatables/js/dataTables.buttons.min.js"></script>
+        <script src="${contextPath}/resources/private/datatables/js/buttons.print.min.js"></script>
+        <script src="${contextPath}/resources/private/datatables/js/buttons.flash.min.js"></script>
+        <script src="${contextPath}/resources/private/datatables/js/buttons.html5.min.js"></script>
     </s:layout-component>
     <s:layout-component name="page_js_inline">
         <script>
-            $(document).ready(function () {
-                oTable = $('#dt_spml').DataTable({
-                    "pageLength": 10,
-                    "order": [],
-                    "aoColumnDefs": [
-                        {"bSortable": false, "aTargets": [0]},
-                        {"bSortable": false, "aTargets": [4]}
-                    ],
-                    "sDom": "tp"
-                });
-                var exportTitle = "SPTS Item List";
-                var tt = new $.fn.dataTable.TableTools(oTable, {
-                    "sSwfPath": "${contextPath}/resources/private/datatables/swf/copy_csv_xls_pdf.swf",
-                    "aButtons": [
-                        {
-                            "sExtends": "copy",
-                            "sButtonText": "Copy",
-                            "sTitle": exportTitle,
-                            "mColumns": [0,1,2,3]
-                        },
-                        {
-                            "sExtends": "xls",
-                            "sButtonText": "Excel",
-                            "sTitle": exportTitle,
-                            "mColumns": [0,1,2,3]
-                        },
-                        {
-                            "sExtends": "pdf",
-                            "sButtonText": "PDF",
-                            "sTitle": exportTitle,
-                            "mColumns": [0,1,2,3]
-                        },
-                        {
-                            "sExtends": "print",
-                            "sButtonText": "Print"
-                        }
-                    ]
-                });
-                $(tt.fnContainer()).appendTo("#dt_spml_tt");
-                $('#dt_spml_search').keyup(function () {
-                    oTable.search($(this).val()).draw();
-                });
-                $("#dt_spml_rows").change(function () {
-                    oTable.page.len($(this).val()).draw();
-                });
-            });
-            
-            function modalDelete(e) {
-                var deleteId = $(e).attr("modaldeleteid");
-                var deleteVersion = $(e).attr("modaldeleteversion");
-                var deleteInfo = $("#modal_delete_info_" + deleteId).html();
-                var deleteUrl = "${contextPath}/spts/delete/" + deleteId + "/" + deleteVersion;
-                var deleteMsg = "<f:message key='general.label.delete.confirmation'><f:param value='" + deleteInfo + "'/></f:message>";
-                $("#delete_modal .modal-body").html(deleteMsg);
-                $("#modal_delete_button").attr("href", deleteUrl);
-            }
-        </script>
+                                                    $(document).ready(function () {
+                                                        oTable = $('#dt_spml').DataTable({
+                                                            dom: 'Brtip',
+                                                            buttons: [
+                                                                {
+                                                                    extend: 'copy',
+                                                                    exportOptions: {
+                                                                        columns: [0, 1, 2, 3, 4, 5,6,7,8]
+                                                                    }
+                                                                },
+                                                                {
+                                                                    extend: 'excel',
+                                                                    exportOptions: {
+                                                                        columns: [0, 1, 2, 3, 4, 5,6,7,8]
+                                                                    }
+                                                                },
+                                                                {
+                                                                    extend: 'pdf',
+                                                                    exportOptions: {
+                                                                        columns: [0, 1, 2, 3, 4, 5,6,7,8]
+                                                                    }
+                                                                },
+                                                                {
+                                                                    extend: 'print',
+                                                                    exportOptions: {
+                                                                        columns: [0, 1, 2, 3, 4, 5,6,7,8]
+                                                                    },
+                                                                    customize: function (win) {
+                                                                        $(win.document.body)
+                                                                                .css('font-size', '10pt');
+                                                                        $(win.document.body).find('table')
+                                                                                .addClass('compact')
+                                                                                .css('font-size', 'inherit');
+                                                                    }
+                                                                }
+                                                            ]
+                                                        });
+
+//                oTable.buttons().container().appendTo($("#dt_spml_tt", oTable.table().container() ) );
+
+                                                        $('#dt_spml_search').keyup(function () {
+                                                            oTable.search($(this).val()).draw();
+                                                        });
+
+                                                        $("#dt_spml_rows").change(function () {
+                                                            oTable.page.len($(this).val()).draw();
+                                                        });
+                                                    });
+
+                                                    function modalDelete(e) {
+                                                        var deleteId = $(e).attr("modaldeleteid");
+                                                        var deleteVersion = $(e).attr("modaldeleteversion");
+                                                        var deleteInfo = $("#modal_delete_info_" + deleteId).html();
+                                                        var deleteUrl = "${contextPath}/spts/delete/" + deleteId + "/" + deleteVersion;
+                                                        var deleteMsg = "<f:message key='general.label.delete.confirmation'><f:param value='" + deleteInfo + "'/></f:message>";
+                                                        $("#delete_modal .modal-body").html(deleteMsg);
+                                                        $("#modal_delete_button").attr("href", deleteUrl);
+                                                    }
+            </script>
     </s:layout-component>
 </s:layout-render>

@@ -78,25 +78,76 @@ public class WhInventoryPdf extends AbstractITextPdfViewPotrait {
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whInventory.getEquipmentId(), fontContent));
             table.addCell(cellContent);
-            
+
             cellHeader.setPhrase(new Phrase("Quantity Qual A", fontHeader));
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whInventory.getPcbAQty(), fontContent));
             table.addCell(cellContent);
-            
+
             cellHeader.setPhrase(new Phrase("Quantity Qual B", fontHeader));
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whInventory.getPcbBQty(), fontContent));
             table.addCell(cellContent);
-            
-             cellHeader.setPhrase(new Phrase("Quantity Qual C", fontHeader));
+
+            cellHeader.setPhrase(new Phrase("Quantity Qual C", fontHeader));
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whInventory.getPcbCQty(), fontContent));
             table.addCell(cellContent);
-            
+
             cellHeader.setPhrase(new Phrase("Quantity CONTROL", fontHeader));
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whInventory.getPcbCtrQty(), fontContent));
+            table.addCell(cellContent);
+
+        } else if ("Load Card".equals(whInventory.getEquipmentType())) {
+
+            cellHeader.setPhrase(new Phrase("Pair ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getEquipmentId(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Load Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getLoadCard(), fontContent));
+            table.addCell(cellContent);
+
+        } else if ("Program Card".equals(whInventory.getEquipmentType())) {
+
+            cellHeader.setPhrase(new Phrase("Pair ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getEquipmentId(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Program Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getProgramCard(), fontContent));
+            table.addCell(cellContent);
+
+        } else if ("Load Card & Program Card".equals(whInventory.getEquipmentType())) {
+
+            cellHeader.setPhrase(new Phrase("Pair ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getEquipmentId(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Load Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getLoadCard(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Load Card Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getLoadCardQty(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Program Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getProgramCard(), fontContent));
+            table.addCell(cellContent);
+
+            cellHeader.setPhrase(new Phrase("Program Card Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whInventory.getProgramCardQty(), fontContent));
             table.addCell(cellContent);
 
         } else {
@@ -105,28 +156,28 @@ public class WhInventoryPdf extends AbstractITextPdfViewPotrait {
             cellContent.setPhrase(new Phrase(whInventory.getEquipmentId(), fontContent));
             table.addCell(cellContent);
         }
-        
+
         cellHeader.setPhrase(new Phrase("Total Quantity", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whInventory.getQuantity(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Material Pass No.", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whInventory.getMpNo(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Material Pass Expiry Date", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whInventory.getViewMpExpiryDate(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Rack", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whInventory.getInventoryRack(), fontContent));
         table.addCell(cellContent);
-        
-         cellHeader.setPhrase(new Phrase("Shelf", fontHeader));
+
+        cellHeader.setPhrase(new Phrase("Shelf", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whInventory.getInventoryShelf(), fontContent));
         table.addCell(cellContent);
@@ -135,7 +186,7 @@ public class WhInventoryPdf extends AbstractITextPdfViewPotrait {
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whInventory.getViewInventoryDate(), fontContent));
         table.addCell(cellContent);
-        
+
         cellHeader.setPhrase(new Phrase("Inventory By", fontHeader));
         table.addCell(cellHeader);
         cellContent.setPhrase(new Phrase(whInventory.getInventoryBy(), fontContent));

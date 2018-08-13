@@ -1,6 +1,7 @@
 package com.onsemi.cdars.model;
 
 public class UserGroup {
+
     private String id;
     private String code;
     private String name;
@@ -10,26 +11,31 @@ public class UserGroup {
     private String modifiedTime;
     private String selected;
 
+    //new
+    private String masterGroupId;
+
     public UserGroup() {
     }
 
-    public UserGroup(String id, String code, String name, String selected) {
+    public UserGroup(String id, String code, String name, String masterGroupId, String selected) {
         this.id = id;
         this.code = code;
         this.name = name;
+        this.masterGroupId = masterGroupId;
         this.selected = selected;
     }
-    
-    public UserGroup(String id, String code, String name, String createdBy, String createdTime, String modifiedBy, String modifiedTime) {
+
+    public UserGroup(String id, String code, String name, String masterGroupId, String createdBy, String createdTime, String modifiedBy, String modifiedTime) {
         this.id = id;
         this.code = code;
         this.name = name;
+        this.masterGroupId = masterGroupId;
         this.createdBy = createdBy;
         this.createdTime = createdTime;
         this.modifiedBy = modifiedBy;
         this.modifiedTime = modifiedTime;
     }
-    
+
     public String getId() {
         return id;
     }
@@ -93,5 +99,13 @@ public class UserGroup {
     public void setSelected(String selected) {
         this.selected = selected;
     }
-    
+
+    public String getMasterGroupId() {
+        return masterGroupId;
+    }
+
+    public void setMasterGroupId(String masterGroupId) {
+        this.masterGroupId = masterGroupId;
+    }
+
 }

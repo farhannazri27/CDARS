@@ -36,6 +36,7 @@ public class WhBarcodeStickerPdf extends AbstractITextPdfViewPotraitBarcodeStick
         table.setSpacingBefore(20);
 
         Font fontHeader = fontOpenSans(10f, Font.BOLD);
+        Font fontsmall = fontOpenSans(7f, Font.BOLD);
 //        fontHeader.setColor(BaseColor.WHITE);
 
         PdfPCell cellHeader = new PdfPCell();
@@ -77,10 +78,29 @@ public class WhBarcodeStickerPdf extends AbstractITextPdfViewPotraitBarcodeStick
         cellContent.setPhrase(new Phrase("", fontHeader));
         table.addCell(cellContent);
 
-        cellHeader.setPhrase(new Phrase("HW ID: " + whShipping.getRequestEquipmentId(), fontHeader));
-        table.addCell(cellHeader);
-        cellContent.setPhrase(new Phrase("", fontContent));
-        table.addCell(cellContent);
+//        if ("Load Card".equals(whShipping.getRequestEquipmentType()) || "Program Card".equals(whShipping.getRequestEquipmentType()) || "Load Card & Program Card".equals(whShipping.getRequestEquipmentType())) {
+        if ("Load Card".equals(whShipping.getRequestEquipmentType())) {
+//            cellHeader.setPhrase(new Phrase("Pair ID: " + whShipping.getRequestEquipmentId(), fontHeader));
+            cellHeader.setPhrase(new Phrase("HW ID: " + whShipping.getLoadCard(), fontsmall));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+        } else if ("Program Card".equals(whShipping.getRequestEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("HW ID: " + whShipping.getProgramCard(), fontsmall));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+        } else if ("Load Card & Program Card".equals(whShipping.getRequestEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("HW ID: " + whShipping.getLoadCard() + " & " + whShipping.getProgramCard(), fontsmall));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+        } else {
+            cellHeader.setPhrase(new Phrase("HW ID: " + whShipping.getRequestEquipmentId(), fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase("", fontContent));
+            table.addCell(cellContent);
+        }
 
         cellHeader.setPhrase(new Phrase("Requested Date: " + whShipping.getRequestViewRequestedDate(), fontHeader));
         table.addCell(cellHeader);

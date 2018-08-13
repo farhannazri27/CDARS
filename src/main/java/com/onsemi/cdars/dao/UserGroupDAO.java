@@ -27,7 +27,7 @@ public class UserGroupDAO {
         QueryResult queryResult = new QueryResult();
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO cdars_user_group (code, name, created_by, created_time) VALUES (?,?,?,NOW())", Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO cdars_user_group (code, name, created_by, created_time,master_group_id) VALUES (?,?,?,NOW(),'0')", Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, userGroup.getCode());
             ps.setString(2, userGroup.getName());
@@ -80,7 +80,7 @@ public class UserGroupDAO {
         }
         return queryResult;
     }
-    
+
     public QueryResult deleteGroup(String groupId) {
         QueryResult queryResult = new QueryResult();
         try {
@@ -103,10 +103,10 @@ public class UserGroupDAO {
         }
         return queryResult;
     }
-    
+
     public UserGroup getGroup(String groupId) {
         String sql = "SELECT * FROM cdars_user_group WHERE id = '" + groupId + "'";
-            UserGroup userGroup = null;
+        UserGroup userGroup = null;
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -115,6 +115,7 @@ public class UserGroupDAO {
                         rs.getString("id"),
                         rs.getString("code"),
                         rs.getString("name"),
+                        rs.getString("master_group_id"),
                         rs.getString("created_by"),
                         rs.getString("created_time"),
                         rs.getString("modified_by"),
@@ -138,7 +139,7 @@ public class UserGroupDAO {
     }
 
     public List<UserGroup> getGroupList(String groupId) {
-        String sql = "SELECT id, code, name, IF(id=\"" + groupId + "\",\"selected=''\",\"\") AS selected FROM cdars_user_group ORDER BY name";
+        String sql = "SELECT id, code, name, master_group_id, IF(id=\"" + groupId + "\",\"selected=''\",\"\") AS selected FROM cdars_user_group ORDER BY name";
         List<UserGroup> userGroupList = new ArrayList<UserGroup>();
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -149,10 +150,99 @@ public class UserGroupDAO {
                         rs.getString("id"),
                         rs.getString("code"),
                         rs.getString("name"),
+                        rs.getString("master_group_id"),
                         rs.getString("selected")
                 );
                 userGroupList.add(userGroup);
             }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return userGroupList;
+    }
+
+    public QueryResult updateMasterGroupId(UserGroup userGroup) {
+        QueryResult queryResult = new QueryResult();
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE cdars_user_group SET master_group_id = ?, modified_by = ?, modified_time = NOW() WHERE id = ?"
+            );
+            ps.setString(1, userGroup.getMasterGroupId());
+            ps.setString(2, userGroup.getModifiedBy());
+            ps.setString(3, userGroup.getId());
+            queryResult.setResult(ps.executeUpdate());
+            ps.close();
+        } catch (SQLException e) {
+            queryResult.setErrorMessage(e.getMessage());
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return queryResult;
+    }
+
+    public List<UserGroup> getGroupListforMaster() {
+        String sql = "SELECT id, code, name, master_group_id FROM cdars_user_group ORDER BY name ASC";
+        List<UserGroup> userGroupList = new ArrayList<UserGroup>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            UserGroup userGroup;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                userGroup = new UserGroup();
+                userGroup.setId(rs.getString("id"));
+                userGroup.setCode(rs.getString("code"));
+                userGroup.setMasterGroupId(rs.getString("master_group_id"));
+                userGroup.setName(rs.getString("name"));
+                userGroupList.add(userGroup);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+        }
+        return userGroupList;
+    }
+
+    public List<UserGroup> getGroupListbyMasterGroupId(String masterGroupId) {
+        String sql = "SELECT id, code, name, master_group_id FROM cdars_user_group WHERE master_group_id = '" + masterGroupId + "' ORDER BY name ASC";
+        List<UserGroup> userGroupList = new ArrayList<UserGroup>();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            UserGroup userGroup;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                userGroup = new UserGroup();
+                userGroup.setId(rs.getString("id"));
+                userGroup.setCode(rs.getString("code"));
+                userGroup.setMasterGroupId(rs.getString("master_group_id"));
+                userGroup.setName(rs.getString("name"));
+                userGroupList.add(userGroup);
+            }
+            rs.close();
+            ps.close();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         } finally {

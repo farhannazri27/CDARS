@@ -109,7 +109,8 @@ public class AdminController {
                 //Local
 //                results = ctx.search("ou=Users", "(cn=" + loginId + ")", controls);
                 //Onsemi
-                results = ctx.search("ou=Seremban,ou=ONSemi", "(cn=" + loginId + ")", controls);
+//                results = ctx.search("ou=Seremban,ou=ONSemi", "(cn=" + loginId + ")", controls);
+                results = ctx.search("ou=ONSemi", "(cn=" + loginId + ")", controls);
 
                 while (results.hasMore()) {
                     SearchResult searchResult = (SearchResult) results.next();
@@ -257,7 +258,8 @@ public class AdminController {
             //Local
 //            results = ctx.search("ou=Users", "(cn=" + loginId + ")", controls);
             //Onsemi
-            results = ctx.search("ou=Seremban,ou=ONSemi", "(cn=" + loginId + ")", controls);
+//            results = ctx.search("ou=Seremban,ou=ONSemi", "(cn=" + loginId + ")", controls);
+            results = ctx.search("ou=ONSemi", "(cn=" + loginId + ")", controls);
 
             while (results.hasMore()) {
                 SearchResult searchResult = (SearchResult) results.next();

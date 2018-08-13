@@ -131,6 +131,33 @@ public class WhRequestPdf extends AbstractITextPdfViewPotrait {
             table.addCell(cellHeader);
             cellContent.setPhrase(new Phrase(whRequest.getPcbCtrQty(), fontContent));
             table.addCell(cellContent);
+        } else if ("Load Card".equals(whRequest.getEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("Load Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getLoadCard(), fontContent));
+            table.addCell(cellContent);
+        } else if ("Program Card".equals(whRequest.getEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("Program Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getProgramCard(), fontContent));
+            table.addCell(cellContent);
+        } else if ("Load Card & Program Card".equals(whRequest.getEquipmentType())) {
+            cellHeader.setPhrase(new Phrase("Load Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getLoadCard(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getLoadCardQty(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("Program Card ID", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getProgramCard(), fontContent));
+            table.addCell(cellContent);
+            cellHeader.setPhrase(new Phrase("Quantity", fontHeader));
+            table.addCell(cellHeader);
+            cellContent.setPhrase(new Phrase(whRequest.getProgramCardQty(), fontContent));
+            table.addCell(cellContent);
         } else {
             cellHeader.setPhrase(new Phrase("Equipment ID", fontHeader));
             table.addCell(cellHeader);

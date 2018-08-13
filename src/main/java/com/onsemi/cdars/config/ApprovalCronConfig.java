@@ -9,12 +9,28 @@ import com.onsemi.cdars.dao.EmailConfigDAO;
 import com.onsemi.cdars.dao.WhInventoryDAO;
 import com.onsemi.cdars.dao.WhMpListDAO;
 import com.onsemi.cdars.dao.WhRequestDAO;
+import com.onsemi.cdars.dao.WhStatusLogDAO;
 import com.onsemi.cdars.model.EmailConfig;
 import com.onsemi.cdars.model.WhInventory;
 import com.onsemi.cdars.model.WhMpList;
+import com.onsemi.cdars.model.WhStatusLog;
 import com.onsemi.cdars.tools.EmailSender;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletContext;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +53,7 @@ public class ApprovalCronConfig {
 
 //    @Scheduled(fixedRate = 60000)
 //    hold for now
-//    @Scheduled(cron = "0 5 * * * *") //every hour after 5 minute every day
-    @Scheduled(cron = "0 0 8 * * *") //every 8.00am
+//    @Scheduled(cron = "0 0 8 * * *") //every 8.00am
     public void EmailForPendingApprovalDisposition() {
 
         //utk inventory
@@ -54,16 +69,48 @@ public class ApprovalCronConfig {
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname("All");
 
+                List<String> a = new ArrayList<String>();
+
+                String emailApprover = "";
+//                String emaildistList1 = "";
+//                String emaildistList2 = "";
+//                String emaildistList3 = "";
+//                String emaildistList4 = "";
+                String emailApprover1 = "";
+                String motherboard = "";
+                String pcb = "";
+
+                emailApprover = "fg79cj@onsemi.com";
+                a.add(emailApprover);
+
                 EmailConfigDAO econfD = new EmailConfigDAO();
-                EmailConfig approver = econfD.getEmailConfigByTask("Approver 1");
+                int countapprover1 = econfD.getCountTask("Approver 1");
+                if (countapprover1 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig Approver1 = econfD.getEmailConfigByTask("Approver 1");
+                    emailApprover1 = Approver1.getEmail();
+                    a.add(emailApprover1);
+                }
+                econfD = new EmailConfigDAO();
+                int countmb = econfD.getCountTask("Motherboard");
+                if (countmb == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig mb = econfD.getEmailConfigByTask("Motherboard");
+                    motherboard = mb.getEmail();
+                    a.add(motherboard);
+                }
 
                 econfD = new EmailConfigDAO();
-                EmailConfig Motherboard = econfD.getEmailConfigByTask("Motherboard");
+                int countpcb = econfD.getCountTask("PCB");
+                if (countpcb == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig pcb1 = econfD.getEmailConfigByTask("PCB");
+                    pcb = pcb1.getEmail();
+                    a.add(pcb);
+                }
 
-                econfD = new EmailConfigDAO();
-                EmailConfig PCB = econfD.getEmailConfigByTask("PCB");
-
-                String[] to = {approver.getEmail(), Motherboard.getEmail(), PCB.getEmail()};
+                String[] myArray = new String[a.size()];
+                String[] emailTo = a.toArray(myArray);
 
                 emailSender.htmlEmailManyTo(
                         servletContext,
@@ -71,7 +118,7 @@ public class ApprovalCronConfig {
                         user,
                         //                    to
                         //                        "fg79cj@onsemi.com",
-                        to,
+                        emailTo,
                         //                    subject
                         "Pending Approval Action for New Hardware Request",
                         //                    msg
@@ -96,7 +143,7 @@ public class ApprovalCronConfig {
 
     }
 
-    @Scheduled(cron = "0 0 8 * * *") //every 8.00am
+    @Scheduled(cron = "0 2 8 * * *") //every 8.00am
     public void EmailForMPExpiryDate() {
 
         //utk inventory
@@ -108,28 +155,200 @@ public class ApprovalCronConfig {
             int count = inventoryD.getCountMpExpiryDate();
             if (count > 0) {
 
+                //create excel file
+                String username = System.getProperty("user.name");
+                if (!"fg79cj".equals(username)) {
+                    username = "imperial";
+                }
+                DateFormat dateFormat = new SimpleDateFormat("ddMMMyyyy");
+                Date date = new Date();
+                String todayDate = dateFormat.format(date);
+
+                String reportName = "C:\\Users\\" + username + "\\Documents\\CDARS\\MP_expiry\\[HIMS] Material Pass Expire Within 30 Days (" + todayDate + ").xls";
+
+                FileOutputStream fileOut = new FileOutputStream(reportName);
+                HSSFWorkbook workbook = new HSSFWorkbook();
+                HSSFSheet sheet = workbook.createSheet("HIMS MP EXPIRE 30 DAYS");
+                CellStyle style = workbook.createCellStyle();
+                Font font = workbook.createFont();
+                font.setFontHeightInPoints((short) 10);
+                font.setFontName(HSSFFont.FONT_ARIAL);
+                font.setBoldweight(HSSFFont.COLOR_NORMAL);
+                font.setBold(true);
+                font.setColor(HSSFColor.DARK_BLUE.index);
+                style.setFont(font);
+                sheet.createFreezePane(0, 1); // Freeze 1st Row
+
+                HSSFRow rowhead = sheet.createRow((short) 0);
+                rowhead.setRowStyle(style);
+
+                HSSFCell cell1_0 = rowhead.createCell(0);
+                cell1_0.setCellStyle(style);
+                cell1_0.setCellValue("HARDWARE TYPE");
+
+                HSSFCell cell1_1 = rowhead.createCell(1);
+                cell1_1.setCellStyle(style);
+                cell1_1.setCellValue("HARDWARE ID");
+
+                HSSFCell cell1_2 = rowhead.createCell(2);
+                cell1_2.setCellStyle(style);
+                cell1_2.setCellValue("QUANTITY");
+
+                HSSFCell cell1_3 = rowhead.createCell(3);
+                cell1_3.setCellStyle(style);
+                cell1_3.setCellValue("MATERIAL PASS NO");
+
+                HSSFCell cell1_4 = rowhead.createCell(4);
+                cell1_4.setCellStyle(style);
+                cell1_4.setCellValue("MATERIAL PASS EXPIRY DATE");
+
+                String materialPassNo = "";
+                String hardwareId = "";
+                String hardwareType = "";
+                String materialPassExpiryDate = "";
+                String quantity = "";
+                String text = "";
+
+                WhInventoryDAO invD = new WhInventoryDAO();
+                List< WhInventory> whMpListList = invD.getWhInventoryListMpExpire30Days();
+
+                boolean checksize1 = false;
+                for (int i = 0; i < whMpListList.size(); i++) {
+                    checksize1 = true;
+                    hardwareType = whMpListList.get(i).getEquipmentType();
+                    hardwareId = whMpListList.get(i).getEquipmentId();
+                    materialPassNo = whMpListList.get(i).getMpNo();
+                    materialPassExpiryDate = whMpListList.get(i).getViewMpExpiryDate();
+                    quantity = whMpListList.get(i).getQuantity();
+
+                    HSSFRow contents = sheet.createRow(sheet.getLastRowNum() + 1);
+//                
+                    HSSFCell cell2_0 = contents.createCell(0);
+                    cell2_0.setCellValue(hardwareType);
+
+                    HSSFCell cell2_1 = contents.createCell(1);
+                    cell2_1.setCellValue(hardwareId);
+
+                    HSSFCell cell2_2 = contents.createCell(2);
+                    cell2_2.setCellValue(quantity);
+
+                    HSSFCell cell2_3 = contents.createCell(3);
+                    cell2_3.setCellValue(materialPassNo);
+
+                    HSSFCell cell2_4 = contents.createCell(4);
+                    cell2_4.setCellValue(materialPassExpiryDate);
+                }
+
+                if (checksize1 == true) {
+                    workbook.write(fileOut);
+                    workbook.close();
+                }
+
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname("All");
 
+                List<String> a = new ArrayList<String>();
+
+                String emailApprover = "";
+                String emaildistList1 = "";
+                String emaildistList2 = "";
+                String emaildistList3 = "";
+                String emaildistList4 = "";
+                String emailApprover1 = "";
+                String motherboard = "";
+                String pcb = "";
+                 String ate = "";
+                  String eqpt = "";
+
+                emailApprover = "fg79cj@onsemi.com";
+                a.add(emailApprover);
+
                 EmailConfigDAO econfD = new EmailConfigDAO();
-                EmailConfig approver = econfD.getEmailConfigByTask("Approver 1");
+                int countapprover1 = econfD.getCountTask("Approver 1");
+                if (countapprover1 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig Approver1 = econfD.getEmailConfigByTask("Approver 1");
+                    emailApprover1 = Approver1.getEmail();
+                    a.add(emailApprover1);
+                }
+                econfD = new EmailConfigDAO();
+                int countmb = econfD.getCountTask("Motherboard");
+                if (countmb == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig mb = econfD.getEmailConfigByTask("Motherboard");
+                    motherboard = mb.getEmail();
+                    a.add(motherboard);
+                }
 
                 econfD = new EmailConfigDAO();
-                EmailConfig Motherboard = econfD.getEmailConfigByTask("Motherboard");
+                int countpcb = econfD.getCountTask("PCB");
+                if (countpcb == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig pcb1 = econfD.getEmailConfigByTask("PCB");
+                    pcb = pcb1.getEmail();
+                    a.add(pcb);
+                }
 
                 econfD = new EmailConfigDAO();
-                EmailConfig PCB = econfD.getEmailConfigByTask("PCB");
+                int countDistList1 = econfD.getCountTask("Dist List 1");
+                if (countDistList1 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList1 = econfD.getEmailConfigByTask("Dist List 1");
+                    emaildistList1 = distList1.getEmail();
+                    a.add(emaildistList1);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList2 = econfD.getCountTask("Dist List 2");
+                if (countDistList2 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList2 = econfD.getEmailConfigByTask("Dist List 2");
+                    emaildistList2 = distList2.getEmail();
+                    a.add(emaildistList2);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList3 = econfD.getCountTask("Dist List 3");
+                if (countDistList3 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList3 = econfD.getEmailConfigByTask("Dist List 3");
+                    emaildistList3 = distList3.getEmail();
+                    a.add(emaildistList3);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList4 = econfD.getCountTask("Dist List 4");
+                if (countDistList4 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList4 = econfD.getEmailConfigByTask("Dist List 4");
+                    emaildistList4 = distList4.getEmail();
+                    a.add(emaildistList4);
+                }
+                econfD = new EmailConfigDAO();
+                int countAte = econfD.getCountTask("ATE");
+                if (countAte == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig ateEmail = econfD.getEmailConfigByTask("ATE");
+                    ate = ateEmail.getEmail();
+                    a.add(ate);
+                }
+                econfD = new EmailConfigDAO();
+                int countEqpt = econfD.getCountTask("EQP");
+                if (countEqpt == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig eqptEmail = econfD.getEmailConfigByTask("EQP");
+                    eqpt = eqptEmail.getEmail();
+                    a.add(eqpt);
+                }
+                String[] myArray = new String[a.size()];
+                String[] emailTo = a.toArray(myArray);
 
-                String[] to = {approver.getEmail(), Motherboard.getEmail(), PCB.getEmail()};
-
-                emailSender.htmlEmailManyTo(
+                emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
                         user,
                         //                    to
                         //                       
-                        to,
+                        emailTo,
+                        new File("C:\\Users\\" + username + "\\Documents\\CDARS\\MP_expiry\\[HIMS] Material Pass Expire Within 30 Days (" + todayDate + ").xls"),
                         //                    subject
                         "Material Pass Will Expire Within 30 Days",
                         //                    msg
@@ -141,17 +360,6 @@ public class ApprovalCronConfig {
                         + "<a href=\"http://mysed-rel-app03:8080" + servletContext.getContextPath() + "/wh/whRequest\">HIMS</a>"
                         + " to request a retrieval from Seremban Factory. "
                         + "<br /><br /> "
-                        + "<style>table, th, td {border: 1px solid black;} </style>"
-                        + "<table style=\"width:100%\">" //tbl
-                        + "<tr>"
-                        + "<th>MATERIAL PASS NO</th> "
-                        + "<th>MATERIAL PASS EXPIRY DATE</th> "
-                        + "<th>HARDWARE TYPE</th>"
-                        + "<th>HARDWARE ID</th>"
-                        + "<th>QUANTITY</th>"
-                        + "</tr>"
-                        + table()
-                        + "</table>"
                         + "<br />Thank you." //msg
                 );
 
@@ -179,16 +387,200 @@ public class ApprovalCronConfig {
             int count = inventoryD.getCountExpiredMp();
             if (count > 0) {
 
+                //create excel file
+                String username = System.getProperty("user.name");
+                if (!"fg79cj".equals(username)) {
+                    username = "imperial";
+                }
+                DateFormat dateFormat = new SimpleDateFormat("ddMMMyyyy");
+                Date date = new Date();
+                String todayDate = dateFormat.format(date);
+
+                String reportName = "C:\\Users\\" + username + "\\Documents\\CDARS\\MP_expiry\\[HIMS] Material Pass Has Expired(" + todayDate + ").xls";
+
+                FileOutputStream fileOut = new FileOutputStream(reportName);
+                HSSFWorkbook workbook = new HSSFWorkbook();
+                HSSFSheet sheet = workbook.createSheet("HIMS MP EXPIRED");
+                CellStyle style = workbook.createCellStyle();
+                Font font = workbook.createFont();
+                font.setFontHeightInPoints((short) 10);
+                font.setFontName(HSSFFont.FONT_ARIAL);
+                font.setBoldweight(HSSFFont.COLOR_NORMAL);
+                font.setBold(true);
+                font.setColor(HSSFColor.DARK_BLUE.index);
+                style.setFont(font);
+                sheet.createFreezePane(0, 1); // Freeze 1st Row
+
+                HSSFRow rowhead = sheet.createRow((short) 0);
+                rowhead.setRowStyle(style);
+
+                HSSFCell cell1_0 = rowhead.createCell(0);
+                cell1_0.setCellStyle(style);
+                cell1_0.setCellValue("HARDWARE TYPE");
+
+                HSSFCell cell1_1 = rowhead.createCell(1);
+                cell1_1.setCellStyle(style);
+                cell1_1.setCellValue("HARDWARE ID");
+
+                HSSFCell cell1_2 = rowhead.createCell(2);
+                cell1_2.setCellStyle(style);
+                cell1_2.setCellValue("QUANTITY");
+
+                HSSFCell cell1_3 = rowhead.createCell(3);
+                cell1_3.setCellStyle(style);
+                cell1_3.setCellValue("MATERIAL PASS NO");
+
+                HSSFCell cell1_4 = rowhead.createCell(4);
+                cell1_4.setCellStyle(style);
+                cell1_4.setCellValue("MATERIAL PASS EXPIRY DATE");
+
+                String materialPassNo = "";
+                String hardwareId = "";
+                String hardwareType = "";
+                String materialPassExpiryDate = "";
+                String quantity = "";
+                String text = "";
+
+                WhInventoryDAO invD = new WhInventoryDAO();
+                List< WhInventory> whMpListList = invD.getWhInventoryListMpHasExpired();
+
+                boolean checksize1 = false;
+                for (int i = 0; i < whMpListList.size(); i++) {
+                    checksize1 = true;
+                    hardwareType = whMpListList.get(i).getEquipmentType();
+                    hardwareId = whMpListList.get(i).getEquipmentId();
+                    materialPassNo = whMpListList.get(i).getMpNo();
+                    materialPassExpiryDate = whMpListList.get(i).getViewMpExpiryDate();
+                    quantity = whMpListList.get(i).getQuantity();
+
+                    HSSFRow contents = sheet.createRow(sheet.getLastRowNum() + 1);
+//                
+                    HSSFCell cell2_0 = contents.createCell(0);
+                    cell2_0.setCellValue(hardwareType);
+
+                    HSSFCell cell2_1 = contents.createCell(1);
+                    cell2_1.setCellValue(hardwareId);
+
+                    HSSFCell cell2_2 = contents.createCell(2);
+                    cell2_2.setCellValue(quantity);
+
+                    HSSFCell cell2_3 = contents.createCell(3);
+                    cell2_3.setCellValue(materialPassNo);
+
+                    HSSFCell cell2_4 = contents.createCell(4);
+                    cell2_4.setCellValue(materialPassExpiryDate);
+                }
+
+                if (checksize1 == true) {
+                    workbook.write(fileOut);
+                    workbook.close();
+                }
+
                 EmailSender emailSender = new EmailSender();
                 com.onsemi.cdars.model.User user = new com.onsemi.cdars.model.User();
                 user.setFullname("All");
 
-                emailSender.htmlEmail(
+                List<String> a = new ArrayList<String>();
+
+                String emailApprover = "";
+                String emaildistList1 = "";
+                String emaildistList2 = "";
+                String emaildistList3 = "";
+                String emaildistList4 = "";
+                String emailApprover1 = "";
+                String motherboard = "";
+                String pcb = "";
+                String ate = "";
+                String eqpt = "";
+
+                emailApprover = "fg79cj@onsemi.com";
+                a.add(emailApprover);
+
+                EmailConfigDAO econfD = new EmailConfigDAO();
+                int countapprover1 = econfD.getCountTask("Approver 1");
+                if (countapprover1 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig Approver1 = econfD.getEmailConfigByTask("Approver 1");
+                    emailApprover1 = Approver1.getEmail();
+                    a.add(emailApprover1);
+                }
+                econfD = new EmailConfigDAO();
+                int countmb = econfD.getCountTask("Motherboard");
+                if (countmb == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig mb = econfD.getEmailConfigByTask("Motherboard");
+                    motherboard = mb.getEmail();
+                    a.add(motherboard);
+                }
+
+                econfD = new EmailConfigDAO();
+                int countpcb = econfD.getCountTask("PCB");
+                if (countpcb == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig pcb1 = econfD.getEmailConfigByTask("PCB");
+                    pcb = pcb1.getEmail();
+                    a.add(pcb);
+                }
+
+                econfD = new EmailConfigDAO();
+                int countDistList1 = econfD.getCountTask("Dist List 1");
+                if (countDistList1 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList1 = econfD.getEmailConfigByTask("Dist List 1");
+                    emaildistList1 = distList1.getEmail();
+                    a.add(emaildistList1);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList2 = econfD.getCountTask("Dist List 2");
+                if (countDistList2 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList2 = econfD.getEmailConfigByTask("Dist List 2");
+                    emaildistList2 = distList2.getEmail();
+                    a.add(emaildistList2);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList3 = econfD.getCountTask("Dist List 3");
+                if (countDistList3 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList3 = econfD.getEmailConfigByTask("Dist List 3");
+                    emaildistList3 = distList3.getEmail();
+                    a.add(emaildistList3);
+                }
+                econfD = new EmailConfigDAO();
+                int countDistList4 = econfD.getCountTask("Dist List 4");
+                if (countDistList4 == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig distList4 = econfD.getEmailConfigByTask("Dist List 4");
+                    emaildistList4 = distList4.getEmail();
+                    a.add(emaildistList4);
+                }
+
+                econfD = new EmailConfigDAO();
+                int countAte = econfD.getCountTask("ATE");
+                if (countAte == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig ateEmail = econfD.getEmailConfigByTask("ATE");
+                    ate = ateEmail.getEmail();
+                    a.add(ate);
+                }
+                econfD = new EmailConfigDAO();
+                int countEqpt = econfD.getCountTask("EQP");
+                if (countEqpt == 1) {
+                    econfD = new EmailConfigDAO();
+                    EmailConfig eqptEmail = econfD.getEmailConfigByTask("EQP");
+                    eqpt = eqptEmail.getEmail();
+                    a.add(eqpt);
+                }
+                String[] myArray = new String[a.size()];
+                String[] emailTo = a.toArray(myArray);
+
+                emailSender.htmlEmailWithAttachment(
                         servletContext,
                         //                    user name
                         user,
                         //                    to
-                        "fg79cj@onsemi.com",
+                        emailTo,
+                        new File("C:\\Users\\" + username + "\\Documents\\CDARS\\MP_expiry\\[HIMS] Material Pass Has Expired(" + todayDate + ").xls"),
                         //                    subject
                         "Material Pass Has Expired",
                         //                    msg

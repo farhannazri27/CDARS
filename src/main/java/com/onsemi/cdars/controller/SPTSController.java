@@ -83,11 +83,13 @@ public class SPTSController {
             HttpServletRequest request
     ) throws IOException {
         JSONObject params = new JSONObject();
-        //params.put("itemName", "SO8FL 15032A Stencil");
-        //params.put("itemType", "Stencil");
-        //params.put("itemStatus", "0");
-        params.put("remarks", "CDARS_TEST");
-        JSONArray getItemByParam = SPTSWebService.getItemByParam(params);
+//        params.put("itemID", "PC%");
+        params.put("itemType", "Bib Card");
+        params.put("cardType", "Load Card");
+//        params.put("onHandQty", "1");
+//        params.put("rack", "%penang%");
+//        params.put("status", "10");
+        JSONArray getItemByParam = SPTSWebService.getItemByParam2(params);
         List<LinkedHashMap<String, String>> itemList = new ArrayList();
         for (int i = 0; i < getItemByParam.length(); i++) {
             JSONObject jsonObject = getItemByParam.getJSONObject(i);
@@ -150,8 +152,8 @@ public class SPTSController {
         response.setStatusMessage("SUCCESS");
         return response;
     }
-    
-     @RequestMapping(value = "/json/getsfitembyparam", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/json/getsfitembyparam", method = RequestMethod.GET)
     public @ResponseBody
     JSONResponse jsonGetSfItemByParam(
             @ModelAttribute UserSession userSession,
@@ -159,7 +161,7 @@ public class SPTSController {
     ) throws IOException {
         JSONResponse response = new JSONResponse();
         JSONObject params = new JSONObject();
-         params.put("itemPKID", "7687");
+        params.put("itemPKID", "7687");
 //           params.put("pkID", "2");
         JSONArray getItemByParam = SPTSWebService.getSFItemByParam(params);
         List<LinkedHashMap<String, String>> itemList = new ArrayList();
@@ -176,7 +178,7 @@ public class SPTSController {
         response.setStatusMessage("SUCCESS");
         return response;
     }
-    
+
     @RequestMapping(value = "/json/gettransactionbyparam", method = RequestMethod.GET)
     public @ResponseBody
     JSONResponse jsonGetTransactionByParam(
@@ -185,7 +187,7 @@ public class SPTSController {
     ) throws IOException {
         JSONResponse response = new JSONResponse();
         JSONObject params = new JSONObject();
-         params.put("itemsPKID", "7419");
+        params.put("itemsPKID", "7419");
 //           params.put("pkID", "2");
         JSONArray getItemByParam = SPTSWebService.getTransactionByParam(params);
         List<LinkedHashMap<String, String>> itemList = new ArrayList();
@@ -253,7 +255,7 @@ public class SPTSController {
 
         model.addAttribute("item", item);
         //For production comment out until here...
-        
+
         //RACK
         JSONArray getRackAll = SPTSWebService.getRackAll();
         List<LinkedHashMap<String, String>> rackList = SystemUtil.jsonArrayToList(getRackAll);
@@ -380,7 +382,7 @@ public class SPTSController {
         });
 
         model.addAttribute("item", item);
-        
+
         //RACK
         JSONArray getRackAll = SPTSWebService.getRackAll();
         List<LinkedHashMap<String, String>> rackList = SystemUtil.jsonArrayToList(getRackAll);
@@ -505,7 +507,7 @@ public class SPTSController {
         item.put("forceDelete", "false");
 
         SPTSResponse sr = SPTSWebService.deleteItem(item);
-        
+
         if (sr.getStatus()) {
             redirectAttrs.addFlashAttribute("success", "Item deleted!");
         } else {
@@ -519,7 +521,7 @@ public class SPTSController {
         }
         return "redirect:/spts";
     }
-    
+
     @RequestMapping(value = "/selectitem", method = RequestMethod.GET)
     public String selectItem(
             Model model,
@@ -538,11 +540,11 @@ public class SPTSController {
         model.addAttribute("itemList", itemList);
         return "spts/selectitem";
     }
-    
+
     @RequestMapping(value = "/view/{pkID}", method = RequestMethod.GET)
     public String view(
-            Model model, 
-            HttpServletRequest request, 
+            Model model,
+            HttpServletRequest request,
             @PathVariable("pkID") String pkID
     ) throws UnsupportedEncodingException {
         String pdfUrl = URLEncoder.encode(request.getContextPath() + "/spts/viewItemPdf/" + pkID, "UTF-8");
@@ -555,7 +557,7 @@ public class SPTSController {
 
     @RequestMapping(value = "/viewItemPdf/{pkID}", method = RequestMethod.GET)
     public ModelAndView viewHardwareQueuePdf(
-            Model model, 
+            Model model,
             @PathVariable("pkID") String pkID
     ) throws IOException {
         JSONObject jsonObject = SPTSWebService.getItemByPKID(pkID);

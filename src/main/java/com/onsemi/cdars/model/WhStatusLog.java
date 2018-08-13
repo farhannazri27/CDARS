@@ -13,6 +13,8 @@ public class WhStatusLog {
     private String equipmentType;
     private String equipmentId;
     private String mpNo;
+    private String loadCard;
+    private String programCard;
 
 //    for timelapse ship
     private String requestToApprove;
@@ -489,6 +491,22 @@ public class WhStatusLog {
 
     public void setMpNo(String mpNo) {
         this.mpNo = mpNo;
+    }
+
+    public String getLoadCard() {
+        return loadCard;
+    }
+
+    public void setLoadCard(String loadCard) {
+        this.loadCard = loadCard;
+    }
+
+    public String getProgramCard() {
+        return programCard;
+    }
+
+    public void setProgramCard(String programCard) {
+        this.programCard = programCard;
     }
 
 }

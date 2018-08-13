@@ -64,6 +64,7 @@
                                         <th><span>Hardware ID</span></th>
                                         <th><span>Quantity</span></th>
                                         <th><span>Material Pass No</span></th>
+                                        <th><span>MP Expiry Date</span></th>
                                         <th><span>Rack</span></th>
                                         <th><span>Shelf</span></th>
                                         <th><span>Inventory Date</span></th>
@@ -75,13 +76,35 @@
                                         <tr>
                                             <td><c:out value="${whInventoryLoop.index+1}"/></td>
                                             <td><c:out value="${whInventory.equipmentType}"/></td>
-                                            <td><c:out value="${whInventory.equipmentId}"/></td>
+                                            <c:choose>
+                                                <c:when test="${whInventory.equipmentType == 'Load Card'}">
+                                                    <td id="modal_delete_info_${whInventory.id}"><c:out value="${whInventory.loadCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whInventory.equipmentType == 'Program Card'}">
+                                                    <td id="modal_delete_info_${whInventory.id}"><c:out value="${whInventory.programCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whInventory.equipmentType == 'Load Card & Program Card'}">
+                                                    <td id="modal_delete_info_${whInventory.id}"><c:out value="${whInventory.loadCard}"/><br><c:out value="${whInventory.programCard}"/></td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                    <td id="modal_delete_info_${whInventory.id}"><c:out value="${whInventory.equipmentId}"/></td>
+                                                </c:otherwise>
+                                            </c:choose>
+
+                                            <!--<td><c:out value="${whInventory.equipmentId}"/></td>-->
                                             <td><c:out value="${whInventory.quantity}"/></td>
                                             <td><c:out value="${whInventory.mpNo}"/></td>
+                                            <td><c:out value="${whInventory.viewMpExpiryDate}"/></td>
                                             <td><c:out value="${whInventory.inventoryRack}"/></td>
                                             <td><c:out value="${whInventory.inventoryShelf}"/></td>
                                             <td><c:out value="${whInventory.viewInventoryDate}"/></td>
                                             <td align="left">
+                                                <a href="${contextPath}/wh/whInventory/edit/${whInventory.id}" class="table-link" title="Extend MP Expiry Date">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-square fa-stack-2x"></i>
+                                                        <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                    </span>
+                                                </a>
                                                 <a href="${contextPath}/wh/whInventory/view/${whInventory.id}" class="table-link" title="View">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
@@ -120,25 +143,25 @@
                         {
                             extend: 'copy',
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                             }
                         },
                         {
                             extend: 'excel',
                             exportOptions: {
-                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                             }
                         },
                         {
                             extend: 'pdf',
                             exportOptions: {
-                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                             }
                         },
                         {
                             extend: 'print',
-                             exportOptions: {
-                                 columns: [0, 1, 2, 3, 4, 5, 6, 7]
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
                             },
                             customize: function (win) {
                                 $(win.document.body)

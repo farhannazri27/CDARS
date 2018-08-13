@@ -45,6 +45,42 @@ public class SPTSRequestXML {
                 + "</soap:Envelope>";
         return xmlString;
     }
+    
+    public static String getItemByParam2(JSONObject params) throws IOException {
+        String paramsXmlString = "";
+        for (Iterator iterator = params.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            String value = params.get(key).toString();
+            paramsXmlString += "<" + key + ">" + value + "</" + key + ">";
+        }
+        String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+                + "<soap:Body>"
+                + "<GetItemByParam2 xmlns=\"http://tempuri.org/\">"
+                + paramsXmlString
+                + "</GetItemByParam2>"
+                + "</soap:Body>"
+                + "</soap:Envelope>";
+        return xmlString;
+    }
+    
+    public static String getItemWithSfByParam(JSONObject params) throws IOException {
+        String paramsXmlString = "";
+        for (Iterator iterator = params.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            String value = params.get(key).toString();
+            paramsXmlString += "<" + key + ">" + value + "</" + key + ">";
+        }
+        String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+                + "<soap:Body>"
+                + "<GetItemWithSFByParam xmlns=\"http://tempuri.org/\">"
+                + paramsXmlString
+                + "</GetItemWithSFByParam>"
+                + "</soap:Body>"
+                + "</soap:Envelope>";
+        return xmlString;
+    }
 
     public static String insertItem(JSONObject params) throws IOException {
         String paramsXmlString = "";

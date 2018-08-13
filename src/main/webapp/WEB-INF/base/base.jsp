@@ -85,7 +85,8 @@
             <link type="image/x-icon" href="${contextPath}/resources/img/favicondddd.ico" rel="shortcut icon"/>
 
             <!-- google font libraries -->
-            <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300|Titillium+Web:200,300,400' rel='stylesheet' type='text/css'>
+            <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300|Titillium+Web:200,300,400' rel='stylesheet' type='text/css'>-->
+            <link href='${contextPath}/resources/css/google-font-2.css' rel='stylesheet' type='text/css'>
 
             <!--[if lt IE 9]>
                     <script src="${contextPath}/resources/private/js/html5shiv.js"></script>

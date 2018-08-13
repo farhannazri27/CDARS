@@ -37,7 +37,7 @@
                             <h2 class="pull-left">Hardware Request List</h2>
 
                             <div class="filter-block pull-right">
-                                <a href="${contextPath}/wh/whRequest/add" class="btn btn-primary pull-right">
+                                <a href="${contextPath}/wh/whRequest/request" class="btn btn-primary pull-right">
                                     <i class="fa fa-plus-circle fa-lg"></i> Add New Request
                                 </a>
                             </div>
@@ -68,10 +68,10 @@
                                         <th><span>No</span></th>
                                         <th><span>Requested Type</span></th>
                                         <th><span>Hardware Type</span></th> 
-                                        <th><span>Hardware ID</span></th>
-                                        <th><span>Requested By</span></th>
+                                        <th class="col-lg-2"><span>Hardware ID</span></th>
+                                        <th ><span>Requested By</span></th>
                                         <th><span>Requested Date</span></th>
-                                        <th><span>Status</span></th>
+                                        <th class="col-lg-1"><span>Status</span></th>
                                         <th><span>Manage</span></th>
                                     </tr>
                                 </thead>
@@ -81,11 +81,24 @@
                                             <td><c:out value="${whRequestLoop.index+1}"/></td>
                                             <td><c:out value="${whRequest.requestType}"/></td>
                                             <td><c:out value="${whRequest.equipmentType}"/></td>
-                                            <td id="modal_delete_info_${whRequest.id}"><c:out value="${whRequest.equipmentId}"/></td>
+                                            <c:choose>
+                                                <c:when test="${whRequest.equipmentType == 'Load Card'}">
+                                                    <td id="modal_delete_info_${whRequest.id}"><c:out value="${whRequest.loadCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whRequest.equipmentType == 'Program Card'}">
+                                                    <td id="modal_delete_info_${whRequest.id}"><c:out value="${whRequest.programCard}"/></td>
+                                                </c:when>
+                                                <c:when test="${whRequest.equipmentType == 'Load Card & Program Card'}">
+                                                    <td id="modal_delete_info_${whRequest.id}"><c:out value="${whRequest.loadCard}"/><br><c:out value="${whRequest.programCard}"/></td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                    <td id="modal_delete_info_${whRequest.id}"><c:out value="${whRequest.equipmentId}"/></td>
+                                                </c:otherwise>
+                                            </c:choose>
                                             <td><c:out value="${whRequest.requestedBy}"/></td>
                                             <td><c:out value="${whRequest.requestedDateView}"/></td>
                                             <td><c:out value="${whRequest.status}"/></td>
-                                            <td align="center">
+                                            <td align="left">
                                                 <c:if test="${groupId == '1' || groupId == '2' || groupId == '29' || groupId == '25'}">
                                                     <a href="${contextPath}/wh/whRequest/approval/${whRequest.id}" id="approval" name="approval" class="table-link" title="Approval">
                                                         <span class="fa-stack">
